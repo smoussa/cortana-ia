@@ -87,7 +87,7 @@ public class Bid {
 	private int clearID = -1;
 	private String clearHash;
 	private String clearString;
-	private int clearQuantity;
+//	private int clearQuantity;
 
 	public Bid(int auction) {
 		this.auction = auction;
@@ -105,8 +105,8 @@ public class Bid {
 		this.rejectReason = oldBid.rejectReason;
 		this.processingState = oldBid.processingState;
 		this.timeProcessed = oldBid.timeProcessed;
-		this.timeClosed = timeClosed;
-		this.timeSubmitted = timeSubmitted;
+//		this.timeClosed = timeClosed;
+//		this.timeSubmitted = timeSubmitted;
 		parseBidString(bidString);
 	}
 
@@ -222,8 +222,7 @@ public class Bid {
 		}
 		// This is a "trick" for checking that this auction allow "sell"
 		if (auction < TACAgent.MIN_ENTERTAINMENT && quantity < 0) {
-			throw new IllegalArgumentException(
-					"Not allowed to sell in auction " + auction);
+			throw new IllegalArgumentException("Not allowed to sell in auction " + auction);
 		}
 
 		realloc();
@@ -250,16 +249,14 @@ public class Bid {
 
 	public int getQuantity(int index) {
 		if (quantity == null) {
-			throw new IndexOutOfBoundsException("Index: " + index + ", Size: "
-					+ len);
+			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + len);
 		}
 		return quantity[index];
 	}
 
 	public float getPrice(int index) {
 		if (price == null) {
-			throw new IndexOutOfBoundsException("Index: " + index + ", Size: "
-					+ len);
+			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + len);
 		}
 		return price[index];
 	}
@@ -270,8 +267,8 @@ public class Bid {
 			StringBuffer bid = new StringBuffer();
 			bid.append('(');
 			for (int i = 0; i < len; i++) {
-				bid.append('(').append(quantity[i]).append(' ')
-						.append(price[i]).append(')');
+				// I love how readable this code is
+				bid.append('(').append(quantity[i]).append(' ').append(price[i]).append(')');
 			}
 			bid.append(')');
 			this.bidString = bidString = bid.toString();

@@ -39,7 +39,7 @@ public class LogFormatter extends Formatter {
 
 	final static String EOL = System.getProperty("line.separator", "\r\n");
 
-	private Hashtable aliasTable;
+	private Hashtable<String, String> aliasTable;
 	private int aliasLevel = 0;
 
 	private SimpleDateFormat dFormat = new SimpleDateFormat("dd/MM HH:mm:ss");
@@ -78,12 +78,12 @@ public class LogFormatter extends Formatter {
 	}
 
 	private String getAliasFor(String name) {
-		Hashtable aliases = this.aliasTable;
+		Hashtable<String, String> aliases = this.aliasTable;
 		if (aliases == null) {
 			return name;
 		}
 
-		String value = (String) aliases.get(name);
+		String value = aliases.get(name);
 		if (value != null) {
 			return value;
 		}
@@ -125,7 +125,7 @@ public class LogFormatter extends Formatter {
 	public synchronized void setAliasLevel(int aliasLevel) {
 		if (this.aliasLevel != aliasLevel) {
 			this.aliasLevel = aliasLevel;
-			this.aliasTable = (aliasLevel > 0) ? new Hashtable() : null;
+			this.aliasTable = (aliasLevel > 0) ? new Hashtable<String, String>() : null;
 		}
 	}
 

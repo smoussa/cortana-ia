@@ -63,11 +63,9 @@ public abstract class AgentImpl {
 		return null;
 	}
 
-	public void quoteUpdated(Quote quote) {
-	}
+	public void quoteUpdated(Quote quote) {}
 
-	public void quoteUpdated(int auctionCategory) {
-	}
+	public void quoteUpdated(int auctionCategory) {}
 
 	public abstract void bidUpdated(Bid bid);
 
@@ -81,8 +79,7 @@ public abstract class AgentImpl {
 
 	public abstract void auctionClosed(int auction);
 
-	public void transaction(Transaction transaction) {
-	}
+	public void transaction(Transaction transaction) {}
 
 	/**
 	 * Called to notify the agent that a TAC Error message has been received.
@@ -96,8 +93,7 @@ public abstract class AgentImpl {
 	 *            the message to which a tac error was returned from the server
 	 */
 	protected void tacerrorReceived(TACMessage msg) {
-		agent.fatalError(
-				"tacerror for " + msg.getType() + ": " + msg.getValue(), 15000);
+		agent.fatalError("tacerror for " + msg.getType() + ": " + msg.getValue(), 15000);
 	}
 
 } // AgentImpl

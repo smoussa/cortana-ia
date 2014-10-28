@@ -169,7 +169,7 @@ public class TACAgent implements Task, TACMessageReceiver {
 	private int userID = -1;
 	private long timeDiff = 0;
 
-	private boolean isNextGameTaskRunning = false;
+//	private boolean isNextGameTaskRunning = false;
 
 	private int lastHotelAuction = -1;
 	private int clearID = 0;
@@ -695,7 +695,7 @@ public class TACAgent implements Task, TACMessageReceiver {
 		if (getGameID() < 0) {
 			throw new IllegalStateException("No game playing");
 		}
-		int auction = bid.getAuction();
+//		int auction = bid.getAuction();
 		bid.submitted();
 		TACMessage msg = new TACMessage("submitBid");
 		prepareBidMsg(msg, bid);
@@ -2008,6 +2008,8 @@ public class TACAgent implements Task, TACMessageReceiver {
 
 	private class AgentTableModel extends AbstractTableModel {
 
+		private static final long serialVersionUID = 507252324991226048L;
+		
 		private final String[] columnName = new String[] { "ID", "Type",
 				"Ask Price", "Bid Price", "Status", "PS", "BidString", "HQW",
 				"Allocation", "Own", "Cost" };

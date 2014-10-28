@@ -150,6 +150,7 @@ public class ArrayQueue implements Cloneable, java.io.Serializable {
 		return -1;
 	}
 
+	/*
 	private int lastIndexOf(Object element) {
 		if (size == 0) {
 			return -1;
@@ -186,7 +187,7 @@ public class ArrayQueue implements Cloneable, java.io.Serializable {
 			} while (index > 0);
 		}
 		return -1;
-	}
+	}*/
 
 	public Object get(int index) {
 		// getIndex will ensure that the index is valid

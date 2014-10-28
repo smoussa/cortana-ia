@@ -41,7 +41,7 @@ public class TACHttpConnection extends TACConnection implements Runnable {
 			.getName());
 
 	private URL url;
-	private ArrayList queue = new ArrayList();
+	private ArrayList<TACMessage> queue = new ArrayList<TACMessage>();
 	private boolean disconnected = false;
 
 	protected void init() {

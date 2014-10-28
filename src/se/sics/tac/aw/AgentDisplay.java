@@ -50,8 +50,7 @@ public class AgentDisplay implements ActionListener, WindowListener {
 
 	public AgentDisplay(TableModel tableModel, TACAgent agent) {
 		this.agent = agent;
-		window = new JFrame("Agent Display (TAC AgentWare " + TACAgent.VERSION
-				+ ')');
+		window = new JFrame("Agent Display (TAC AgentWare " + TACAgent.VERSION + ')');
 		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		window.addWindowListener(this);
 		window.setSize(800, 520);

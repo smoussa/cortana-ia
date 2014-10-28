@@ -49,7 +49,7 @@ public class TimeDispatcher extends Thread {
 		return dispatcher;
 	}
 
-	private ArrayList list = new ArrayList();
+	private ArrayList<TaskHolder> list = new ArrayList<TaskHolder>();
 	private long timeDiff;
 
 	private TimeDispatcher() {
@@ -61,15 +61,14 @@ public class TimeDispatcher extends Thread {
 		this.timeDiff = timeDiff;
 	}
 
-	public synchronized void addTask(long time, Object key, Object value,
-			Task task) {
+	public synchronized void addTask(long time, Object key, Object value, Task task) {
 		list.add(new TaskHolder(time, key, value, task));
 		notify();
 	}
 
 	public synchronized void cancelTask(Object key, Task task) {
 		for (int i = 0, n = list.size(); i < n; i++) {
-			TaskHolder h = (TaskHolder) list.get(i);
+			TaskHolder h = list.get(i);
 			if (h.key == key && h.task == task) {
 				list.remove(i);
 				i--;

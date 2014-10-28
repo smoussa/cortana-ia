@@ -38,7 +38,7 @@ public class TACMessage {
 	private static long totalResponseTime = 0;
 
 	private final String type;
-	private ArrayList msg;
+	private ArrayList<String> msg;
 
 	private String sentMessage;
 	private long timeSent;
@@ -52,7 +52,7 @@ public class TACMessage {
 
 	public TACMessage(String type) {
 		this.type = type;
-		msg = new ArrayList();
+		msg = new ArrayList<String>();
 	}
 
 	public String getType() {

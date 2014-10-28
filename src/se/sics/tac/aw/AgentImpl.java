@@ -24,75 +24,80 @@
  */
 
 package se.sics.tac.aw;
+
 import se.sics.tac.util.ArgEnumerator;
 
 public abstract class AgentImpl {
 
-  protected TACAgent agent;
+	protected TACAgent agent;
 
-  final void init(TACAgent agent, ArgEnumerator args) {
-    this.agent = agent;
+	final void init(TACAgent agent, ArgEnumerator args) {
+		this.agent = agent;
 
-    init(args);
-  }
+		init(args);
+	}
 
-  /**
-   * This method is used to initialize the agent implementation.
-   *
-   * @param args an <code>ArgEnumerator</code> value containing any
-   *	arguments for the agent implementation
-   */
-  protected abstract void init(ArgEnumerator args);
+	/**
+	 * This method is used to initialize the agent implementation.
+	 * 
+	 * @param args
+	 *            an <code>ArgEnumerator</code> value containing any arguments
+	 *            for the agent implementation
+	 */
+	protected abstract void init(ArgEnumerator args);
 
-  /**
-   * This function returns a human readable argument description for
-   * the agent implementation or <code>null</code> if the agent
-   * implementation takes no arguments.  Arguments can only be
-   * specified at runtime and overrides configuration parameters.
-   *
-   * This description is shown to the user as usage information when
-   * requested.  The default implementation returns <code>null</code>.
-   *
-   * @return a <code>String</code> value describing all arguments for
-   *	the agent implementation or <code>null</code> if the agent
-   *	implementation does not utilize any arguments.
-   */
-  protected String getUsage() {
-    return null;
-  }
+	/**
+	 * This function returns a human readable argument description for the agent
+	 * implementation or <code>null</code> if the agent implementation takes no
+	 * arguments. Arguments can only be specified at runtime and overrides
+	 * configuration parameters.
+	 * 
+	 * This description is shown to the user as usage information when
+	 * requested. The default implementation returns <code>null</code>.
+	 * 
+	 * @return a <code>String</code> value describing all arguments for the
+	 *         agent implementation or <code>null</code> if the agent
+	 *         implementation does not utilize any arguments.
+	 */
+	protected String getUsage() {
+		return null;
+	}
 
-  public void quoteUpdated(Quote quote) {
-  }
+	public void quoteUpdated(Quote quote) {
+	}
 
-  public void quoteUpdated(int auctionCategory) {
-  }
+	public void quoteUpdated(int auctionCategory) {
+	}
 
-  public abstract void bidUpdated(Bid bid);
-  public abstract void bidRejected(Bid bid);
-  public abstract void bidError(Bid bid, int error);
+	public abstract void bidUpdated(Bid bid);
 
-  public abstract void gameStarted();
+	public abstract void bidRejected(Bid bid);
 
-  public abstract void gameStopped();
+	public abstract void bidError(Bid bid, int error);
 
-  public abstract void auctionClosed(int auction);
+	public abstract void gameStarted();
 
-  public void transaction(Transaction transaction) {
-  }
+	public abstract void gameStopped();
 
-  /**
-   * Called to notify the agent that a TAC Error message has been received.
-   * The default behaviour is to exit the agent with an error code but
-   * agent implementations might override this with their own behaviour.
-   * Note however if a tac error is returned for some messages such as
-   * requests for transactions or bid information the agent state will be
-   * uncertain and the server connection should at least be reset.
-   *
-   * @param msg the message to which a tac error was returned from the server
-   */
-  protected void tacerrorReceived(TACMessage msg) {
-    agent.fatalError("tacerror for " + msg.getType() + ": " + msg.getValue(),
-		     15000);
-  }
+	public abstract void auctionClosed(int auction);
+
+	public void transaction(Transaction transaction) {
+	}
+
+	/**
+	 * Called to notify the agent that a TAC Error message has been received.
+	 * The default behaviour is to exit the agent with an error code but agent
+	 * implementations might override this with their own behaviour. Note
+	 * however if a tac error is returned for some messages such as requests for
+	 * transactions or bid information the agent state will be uncertain and the
+	 * server connection should at least be reset.
+	 * 
+	 * @param msg
+	 *            the message to which a tac error was returned from the server
+	 */
+	protected void tacerrorReceived(TACMessage msg) {
+		agent.fatalError(
+				"tacerror for " + msg.getType() + ": " + msg.getValue(), 15000);
+	}
 
 } // AgentImpl

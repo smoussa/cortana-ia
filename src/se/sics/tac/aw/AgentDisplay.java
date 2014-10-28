@@ -24,6 +24,7 @@
  */
 
 package se.sics.tac.aw;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,96 +40,92 @@ import javax.swing.table.TableModel;
 
 public class AgentDisplay implements ActionListener, WindowListener {
 
-  private JFrame window;
-  private JTable agentTable;
-  private TACAgent agent;
-  private JLabel status;
-  private Timer timer;
-  private boolean isVisible = false;
-  private boolean isClosing = false;
+	private JFrame window;
+	private JTable agentTable;
+	private TACAgent agent;
+	private JLabel status;
+	private Timer timer;
+	private boolean isVisible = false;
+	private boolean isClosing = false;
 
-  public AgentDisplay(TableModel tableModel, TACAgent agent) {
-    this.agent = agent;
-    window = new JFrame("Agent Display (TAC AgentWare "
-			+ TACAgent.VERSION + ')');
-    window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    window.addWindowListener(this);
-    window.setSize(800, 520);
-    JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-    agentTable = new JTable(tableModel);
-    panel.add(new JScrollPane(agentTable), BorderLayout.CENTER);
-    panel.add(status = new JLabel(" - "), BorderLayout.SOUTH);
-    window.getContentPane().add(panel);
-    timer = new Timer(1000, this);
-  }
+	public AgentDisplay(TableModel tableModel, TACAgent agent) {
+		this.agent = agent;
+		window = new JFrame("Agent Display (TAC AgentWare " + TACAgent.VERSION
+				+ ')');
+		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		window.addWindowListener(this);
+		window.setSize(800, 520);
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		agentTable = new JTable(tableModel);
+		panel.add(new JScrollPane(agentTable), BorderLayout.CENTER);
+		panel.add(status = new JLabel(" - "), BorderLayout.SOUTH);
+		window.getContentPane().add(panel);
+		timer = new Timer(1000, this);
+	}
 
-  public void setVisible(boolean visible) {
-    if (visible != isVisible) {
-      this.isVisible = visible;
-      window.setVisible(visible);
-      if (visible) {
-	isClosing = false;
-	timer.start();
-      } else {
-	window.dispose();
-	timer.stop();
-      }
-    }
-  }
+	public void setVisible(boolean visible) {
+		if (visible != isVisible) {
+			this.isVisible = visible;
+			window.setVisible(visible);
+			if (visible) {
+				isClosing = false;
+				timer.start();
+			} else {
+				window.dispose();
+				timer.stop();
+			}
+		}
+	}
 
-  public void setGameStatus(String status) {
-    window.setTitle(status);
-  }
+	public void setGameStatus(String status) {
+		window.setTitle(status);
+	}
 
+	// -------------------------------------------------------------------
+	// Action Listener
+	// -------------------------------------------------------------------
 
+	public void actionPerformed(ActionEvent ae) {
+		Object source = ae.getSource();
+		if (source == timer) {
+			if (isClosing) {
+				isClosing = false;
+				setVisible(false);
+			} else {
+				status.setText("Messages sent: " + TACMessage.getMessageCount()
+						+ "  Avg. response time: "
+						+ TACMessage.getAverageResponseTime() + " msek"
+						+ "  Time left: " + agent.getGameTimeLeftAsString());
+			}
+		}
+	}
 
-  // -------------------------------------------------------------------
-  // Action Listener
-  // -------------------------------------------------------------------
+	// -------------------------------------------------------------------
+	// WindowListener
+	// -------------------------------------------------------------------
 
-  public void actionPerformed(ActionEvent ae) {
-    Object source = ae.getSource();
-    if (source == timer) {
-      if (isClosing) {
-	isClosing = false;
-	setVisible(false);
-      } else {
-	status.setText("Messages sent: " + TACMessage.getMessageCount() +
-		       "  Avg. response time: " +
-		       TACMessage.getAverageResponseTime() + " msek" +
-		       "  Time left: " + agent.getGameTimeLeftAsString());
-      }
-    }
-  }
+	public void windowOpened(WindowEvent e) {
+	}
 
+	public void windowClosing(WindowEvent e) {
+		if (e.getSource() == window) {
+			isClosing = true;
+		}
+	}
 
+	public void windowClosed(WindowEvent e) {
+	}
 
-  // -------------------------------------------------------------------
-  // WindowListener
-  // -------------------------------------------------------------------
+	public void windowIconified(WindowEvent e) {
+	}
 
-  public void windowOpened(WindowEvent e) {
-  }
+	public void windowDeiconified(WindowEvent e) {
+	}
 
-  public void windowClosing(WindowEvent e) {
-    if (e.getSource() == window) {
-      isClosing = true;
-    }
-  }
+	public void windowActivated(WindowEvent e) {
+	}
 
-  public void windowClosed(WindowEvent e) {
-  }
-
-  public void windowIconified(WindowEvent e) {
-  }
-
-  public void windowDeiconified(WindowEvent e) {
-  }
-
-  public void windowActivated(WindowEvent e) {
-  }
-
-  public void windowDeactivated(WindowEvent e) {
-  }
+	public void windowDeactivated(WindowEvent e) {
+	}
 }

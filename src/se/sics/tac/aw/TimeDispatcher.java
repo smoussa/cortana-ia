@@ -31,93 +31,94 @@
  */
 
 package se.sics.tac.aw;
+
 import java.util.ArrayList;
 
 public class TimeDispatcher extends Thread {
 
-  private static TimeDispatcher dispatcher;
+	private static TimeDispatcher dispatcher;
 
-  public static TimeDispatcher getDefault() {
-    if (dispatcher == null) {
-      synchronized (TimeDispatcher.class) {
-	if (dispatcher == null) {
-	  dispatcher = new TimeDispatcher();
+	public static TimeDispatcher getDefault() {
+		if (dispatcher == null) {
+			synchronized (TimeDispatcher.class) {
+				if (dispatcher == null) {
+					dispatcher = new TimeDispatcher();
+				}
+			}
+		}
+		return dispatcher;
 	}
-      }
-    }
-    return dispatcher;
-  }
 
-  private ArrayList list = new ArrayList();
-  private long timeDiff;
+	private ArrayList list = new ArrayList();
+	private long timeDiff;
 
-  private TimeDispatcher() {
-    super("timer");
-    start();
-  }
-
-  public void setTimeDiff(long timeDiff) {
-    this.timeDiff = timeDiff;
-  }
-
-  public synchronized
-    void addTask(long time, Object key, Object value, Task task) {
-    list.add(new TaskHolder(time, key, value, task));
-    notify();
-  }
-
-  public synchronized void cancelTask(Object key, Task task) {
-    for (int i = 0, n = list.size(); i < n; i++) {
-      TaskHolder h = (TaskHolder) list.get(i);
-      if (h.key == key && h.task == task) {
-	list.remove(i);
-	i--; n--;
-      }
-    }
-  }
-
-  private synchronized TaskHolder nextTask() {
-    do {
-      long currentTime = System.currentTimeMillis() - timeDiff;
-      for (int i = 0, n = list.size(); i < n; i++) {
-	TaskHolder h = (TaskHolder) list.get(i);
-	if (h.time <= currentTime) {
-	  list.remove(i);
-	  return h;
+	private TimeDispatcher() {
+		super("timer");
+		start();
 	}
-      }
-      try {
-	wait(1000);
-      } catch (Exception e) {
-	e.printStackTrace();
-      }
-    } while (true);
-  }
 
-  public void run() {
-    do {
-      TaskHolder h = nextTask();
-      try {
-	h.task.performWork(h.time, h.key, h.value);
-      } catch (Exception e) {
-	e.printStackTrace();
-      }
-    } while (true);
-  }
+	public void setTimeDiff(long timeDiff) {
+		this.timeDiff = timeDiff;
+	}
 
+	public synchronized void addTask(long time, Object key, Object value,
+			Task task) {
+		list.add(new TaskHolder(time, key, value, task));
+		notify();
+	}
 
-  private static class TaskHolder {
-    public long time;
-    public Object key;
-    public Object value;
-    public Task task;
+	public synchronized void cancelTask(Object key, Task task) {
+		for (int i = 0, n = list.size(); i < n; i++) {
+			TaskHolder h = (TaskHolder) list.get(i);
+			if (h.key == key && h.task == task) {
+				list.remove(i);
+				i--;
+				n--;
+			}
+		}
+	}
 
-    public TaskHolder(long time, Object key, Object value, Task task) {
-      this.time = time;
-      this.key = key;
-      this.value = value;
-      this.task = task;
-    }
-  }
+	private synchronized TaskHolder nextTask() {
+		do {
+			long currentTime = System.currentTimeMillis() - timeDiff;
+			for (int i = 0, n = list.size(); i < n; i++) {
+				TaskHolder h = (TaskHolder) list.get(i);
+				if (h.time <= currentTime) {
+					list.remove(i);
+					return h;
+				}
+			}
+			try {
+				wait(1000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} while (true);
+	}
+
+	public void run() {
+		do {
+			TaskHolder h = nextTask();
+			try {
+				h.task.performWork(h.time, h.key, h.value);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} while (true);
+	}
+
+	private static class TaskHolder {
+		public long time;
+		public Object key;
+		public Object value;
+		public Task task;
+
+		public TaskHolder(long time, Object key, Object value, Task task) {
+			this.time = time;
+			this.key = key;
+			this.value = value;
+			this.task = task;
+		}
+	}
 
 } // TimeDispatcher

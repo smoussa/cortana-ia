@@ -26,5 +26,5 @@
 package se.sics.tac.aw;
 
 public interface TACMessageReceiver {
-  public void messageReceived(TACMessage msg);
+	public void messageReceived(TACMessage msg);
 }

@@ -32,6 +32,6 @@ package se.sics.tac.aw;
 
 public interface Task {
 
-  public void performWork(long time, Object key, Object value);
+	public void performWork(long time, Object key, Object value);
 
 } // Task

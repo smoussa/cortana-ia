@@ -95,8 +95,7 @@ public class TACAgent implements Task, TACMessageReceiver {
 	public final static int CAT_HOTEL = 1;
 	public final static int CAT_ENTERTAINMENT = 2;
 
-	private final static String[] categoryName = { "flight", "hotel",
-			"entertainment" };
+	private final static String[] categoryName = { "flight", "hotel", "entertainment" };
 
 	/** TAC Types */
 	public final static int TYPE_INFLIGHT = 1;

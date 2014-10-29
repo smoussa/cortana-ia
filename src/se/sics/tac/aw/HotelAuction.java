@@ -16,7 +16,15 @@ public class HotelAuction extends Auction {
 		double price = 0.0;
 		
 		for(Client client:peopleWhoWantMe) {
-			price += client.getHotelPrice();
+
+			double hotelPrice = client.getHotelPrice();
+			
+			if(hotelPrice < 0) {
+				System.out.println("Client " + client.CLIENT_ID + " is too expensive to get a hotel for!!!");
+				continue;
+			}
+			
+			price += hotelPrice;
 		}
 		
 		price /= peopleWhoWantMe.size();

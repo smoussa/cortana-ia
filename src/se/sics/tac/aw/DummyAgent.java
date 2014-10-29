@@ -142,16 +142,12 @@ public class DummyAgent extends AgentImpl {
 
 	private static final boolean DEBUG = false;
 
-	private float[] prices;
-	
 	private Map<Integer, FlightAuction> flightAuctions = new HashMap<Integer, FlightAuction>();
 	private Map<Integer, HotelAuction> hotelAuctions = new HashMap<Integer, HotelAuction>();
 	private Map<Integer, Client> clients = new HashMap<Integer, Client>();
 	
 
-	protected void init(ArgEnumerator args) {
-		prices = new float[TACAgent.getAuctionNo()];
-	}
+	protected void init(ArgEnumerator args) {}
 
 	public void quoteUpdated(Quote quote) {}
 
@@ -160,10 +156,9 @@ public class DummyAgent extends AgentImpl {
 	boolean bidsNotSent = true;
 	
 	public void quoteUpdated(int auctionCategory) {
-		log.fine("All quotes for "
-				+ TACAgent.auctionCategoryToString(auctionCategory)
-				+ " has been updated");
+		log.fine("All quotes for " + TACAgent.auctionCategoryToString(auctionCategory) + " has been updated");
 		
+		// Used to make sure code only runs once prices have been updated
 		if(auctionCategory == TACAgent.CAT_FLIGHT)
 			flightUpdated = true;
 		if(auctionCategory == TACAgent.CAT_HOTEL)
@@ -198,6 +193,14 @@ public class DummyAgent extends AgentImpl {
 
 	public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
+	}
+	
+	public void gameStopped() {
+		log.fine("Game Stopped!");
+	}
+
+	public void auctionClosed(int auction) {
+		log.fine("*** Auction " + auction + " closed!");
 	}
 	
 	private void initialiseAuctions() {
@@ -269,14 +272,6 @@ public class DummyAgent extends AgentImpl {
 			}
 			
 		}
-	}
-
-	public void gameStopped() {
-		log.fine("Game Stopped!");
-	}
-
-	public void auctionClosed(int auction) {
-		log.fine("*** Auction " + auction + " closed!");
 	}
 
 	private void sendBids() {

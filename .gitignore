@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 
+games/
 *.pydevproject
 .project
 .metadata

@@ -131,7 +131,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import se.sics.tac.util.ArgEnumerator;
@@ -142,33 +141,22 @@ public class DummyAgent extends AgentImpl {
 
 	private static final boolean DEBUG = false;
 
-	private Map<Integer, FlightAuction> flightAuctions = new HashMap<Integer, FlightAuction>();
-	private Map<Integer, HotelAuction> hotelAuctions = new HashMap<Integer, HotelAuction>();
-	private Map<Integer, Client> clients = new HashMap<Integer, Client>();
-	
 	protected void init(ArgEnumerator args) {}
 
 	public void quoteUpdated(Quote quote) {}
 
-	boolean flightUpdated = false;
-	boolean hotelUpdated = false;
-	boolean bidsNotSent = true;
+	private AuctionMaster auctionMaster;
+	
+	private Map<Integer, Client> clients;
+	
+	public DummyAgent() {
+		this.auctionMaster = new AuctionMaster();
+		this.clients = new HashMap<Integer, Client>();
+	}
 	
 	public void quoteUpdated(int auctionCategory) {
 		log.fine("All quotes for " + TACAgent.auctionCategoryToString(auctionCategory) + " has been updated");
-		
-		// Used to make sure code only runs once prices have been updated
-		if(auctionCategory == TACAgent.CAT_FLIGHT)
-			flightUpdated = true;
-		if(auctionCategory == TACAgent.CAT_HOTEL)
-			hotelUpdated = true;
-		
-		if(flightUpdated && hotelUpdated && bidsNotSent) {
-			initialiseAuctions();
-			calculateAllocation();
-			sendBids();
-			bidsNotSent = false;
-		}
+		auctionMaster.quoteUpdated(this, TacCategory.getCategory(auctionCategory));
 	}
 
 	public void bidUpdated(Bid bid) {
@@ -202,40 +190,7 @@ public class DummyAgent extends AgentImpl {
 		log.fine("*** Auction " + auction + " closed!");
 	}
 	
-	private void initialiseAuctions() {
-		
-		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
-
-			TacCategory category = DummyAgent.getAuctionCategory(i);
-			Day auctionDay = DummyAgent.getAuctionDay(i);
-			TacType auctionType = DummyAgent.getAuctionType(category, i);
-			double price = agent.getQuote(i).getAskPrice();
-			
-			switch (TACAgent.getAuctionCategory(i)) {
-				case TACAgent.CAT_FLIGHT:
-					FlightAuction flightAuction = new FlightAuction(auctionType, auctionDay, price, i);
-					flightAuctions.put(i, flightAuction);
-					
-					System.out.println("Flight Price: " + price);
-				break;
-				case TACAgent.CAT_HOTEL:
-					HotelAuction hotelAuction = new HotelAuction(auctionType, auctionDay, price, i);
-					hotelAuctions.put(i, hotelAuction);
-					
-					System.out.println("Hotel Price: " + price);
-				break;
-				case TACAgent.CAT_ENTERTAINMENT:
-					// Later
-				break;
-				default:
-				break;
-			}
-			
-		}
-		
-	}
-	
-	private void calculateAllocation() {
+	protected void calculateAllocation() {
 		for (int i = 0; i < 8; i++) {
 			
 			int inFlightDay = this.getClientPreference(i, ClientPreference.ARRIVAL);
@@ -244,11 +199,11 @@ public class DummyAgent extends AgentImpl {
 
 			int auction = DummyAgent.getAuctionFor(TacCategory.CAT_FLIGHT, TacType.INFLIGHT, Day.getDay(inFlightDay));
 			
-			FlightAuction inflight = flightAuctions.get(auction);
+			FlightAuction inflight = auctionMaster.getFlightAuction(auction);
 			
 			auction = DummyAgent.getAuctionFor(TacCategory.CAT_FLIGHT, TacType.OUTFLIGHT, Day.getDay(outFlightDay));
 			
-			FlightAuction outflight = flightAuctions.get(auction);
+			FlightAuction outflight = auctionMaster.getFlightAuction(auction);
 			
 			hotelType = TacType.GOOD_HOTEL;
 			
@@ -256,7 +211,7 @@ public class DummyAgent extends AgentImpl {
 			
 			for (int d = inFlightDay; d < outFlightDay; d++) {
 				auction = DummyAgent.getAuctionFor(TacCategory.CAT_HOTEL, hotelType, Day.getDay(d));
-				HotelAuction hotelAuction = hotelAuctions.get(auction);
+				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
 				
 				hotelList.add(hotelAuction);
 			}
@@ -274,41 +229,27 @@ public class DummyAgent extends AgentImpl {
 		}
 	}
 
-	private void sendBids() {
-		
-		for(Entry<Integer, HotelAuction> entry:this.hotelAuctions.entrySet()) {
-			HotelAuction hotelAuction = entry.getValue();
-			hotelAuction.bidMe(agent, hotelAuction.getBidPrice());
-		}
-		
-		for(Entry<Integer, FlightAuction> entry:this.flightAuctions.entrySet()) {
-			FlightAuction flightAuction = entry.getValue();
-			flightAuction.bidMe(agent, flightAuction.price);
-		}
-		
-	}
-	
 	/*
 	 * Helper methods to convert ints to enums
 	 */
 	
-	private static Day getAuctionDay(int auctionId) {
+	protected static Day getAuctionDay(int auctionId) {
 		return Day.getDay(TACAgent.getAuctionDay(auctionId));
 	}
 	
-	private int getClientPreference(int clientId, ClientPreference preference) {
+	protected int getClientPreference(int clientId, ClientPreference preference) {
 		return agent.getClientPreference(clientId, ClientPreference.getCode(preference));
 	}
 	
-	private static TacType getAuctionType(TacCategory category, int auction) {
+	protected static TacType getAuctionType(TacCategory category, int auction) {
 		return TacType.getType(category, TACAgent.getAuctionType(auction));
 	}
 	
-	private static TacCategory getAuctionCategory(int i) {
+	protected static TacCategory getAuctionCategory(int i) {
 		return TacCategory.getCategory(TACAgent.getAuctionCategory(i));
 	}
 	
-	private static int getAuctionFor(TacCategory category, TacType type, Day day) {
+	protected static int getAuctionFor(TacCategory category, TacType type, Day day) {
 		return TACAgent.getAuctionFor(category.getCode(), type.getCode(), day.getDayNumber());
 	}
 

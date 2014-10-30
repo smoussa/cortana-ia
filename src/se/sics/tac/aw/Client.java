@@ -19,12 +19,12 @@ public class Client {
 		this.hotels = new HashMap<>();
 		
 		for(HotelAuction hotel:hotels) {
-			this.hotels.put(hotel.DAY, hotel);
+			this.hotels.put(hotel.AUCTION_DAY, hotel);
 		}
 	}
 
 	public double getHotelPrice() {
-		return (CortanaHeuristics.CLIENT_UTILITY - inFlight.price - outFlight.price - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / hotels.values().size();
+		return (CortanaHeuristics.CLIENT_UTILITY - inFlight.getAskingPrice() - outFlight.getAskingPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / hotels.values().size();
 	}
 	
 }

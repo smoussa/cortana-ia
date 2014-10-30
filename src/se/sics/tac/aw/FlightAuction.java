@@ -1,24 +1,10 @@
 package se.sics.tac.aw;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class FlightAuction {
+public class FlightAuction extends Auction {
 
-	public final TacType FLIGHT_TYPE;
-	public final Day day;
-	public final int auctionId;
-	
-	public double price;
-	
-	public List<Client> peopleWhoWantMe;
-	
 	public FlightAuction(TacType flightType, Day day, double price, int auctionId) {
-		this.FLIGHT_TYPE = flightType;
-		this.day = day;
-		this.price = price;
-		this.auctionId = auctionId;
-		this.peopleWhoWantMe = new ArrayList<Client>();
+		super(flightType, day, auctionId, price);
 	}
 	
 	public void addClient(Client client) {
@@ -27,12 +13,12 @@ public class FlightAuction {
 
 	public void bidMe(TACAgent agent, double price) {
 
-		System.out.println("Flight " + FLIGHT_TYPE + " on day: " + day + " is being bid on for " + price);
+		System.out.println("Flight " + AUCTION_TYPE + " on day: " + AUCTION_DAY + " is being bid on for " + price);
 		
-		Bid bid = new Bid(auctionId);
+		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(peopleWhoWantMe.size(), (float)price);
 		agent.submitBid(bid);
 		
 	}
-	
+
 }

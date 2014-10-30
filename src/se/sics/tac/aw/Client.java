@@ -7,7 +7,9 @@ import java.util.Map;
 public class Client {
 
 	public final int CLIENT_ID;
+	
 	public FlightAuction inFlight, outFlight;
+	
 	public Map<Day, HotelAuction> hotels;
 	
 	public Client(int clientId, FlightAuction inFlight, FlightAuction outFlight, List<HotelAuction> hotels) {
@@ -17,7 +19,7 @@ public class Client {
 		this.hotels = new HashMap<>();
 		
 		for(HotelAuction hotel:hotels) {
-			this.hotels.put(hotel.day, hotel);
+			this.hotels.put(hotel.DAY, hotel);
 		}
 	}
 

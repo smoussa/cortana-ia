@@ -5,14 +5,15 @@ import java.util.List;
 
 public class FlightAuction {
 
-	public final int FLIGHT_TYPE;
+	public final TacType FLIGHT_TYPE;
 	public final Day day;
+	public final int auctionId;
+	
 	public double price;
 	
-	public final int auctionId;
 	public List<Client> peopleWhoWantMe;
 	
-	public FlightAuction(int flightType, Day day, double price, int auctionId) {
+	public FlightAuction(TacType flightType, Day day, double price, int auctionId) {
 		this.FLIGHT_TYPE = flightType;
 		this.day = day;
 		this.price = price;

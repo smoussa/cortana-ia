@@ -146,7 +146,6 @@ public class DummyAgent extends AgentImpl {
 	private Map<Integer, HotelAuction> hotelAuctions = new HashMap<Integer, HotelAuction>();
 	private Map<Integer, Client> clients = new HashMap<Integer, Client>();
 	
-
 	protected void init(ArgEnumerator args) {}
 
 	public void quoteUpdated(Quote quote) {}
@@ -184,7 +183,7 @@ public class DummyAgent extends AgentImpl {
 	}
 
 	private String getAuctionInfo(int auctionId) {
-		return "Category: " + TACAgent.getAuctionCategory(auctionId) + "   Type: " + TACAgent.getAuctionTypeAsString(auctionId) + " Day: " + Day.getDay(TACAgent.getAuctionDay(auctionId));
+		return "Category: " + TACAgent.getAuctionCategory(auctionId) + "   Type: " + TACAgent.getAuctionTypeAsString(auctionId) + " Day: " + DummyAgent.getAuctionDay(auctionId);
 	}
 
 	public void bidError(Bid bid, int status) {
@@ -207,19 +206,20 @@ public class DummyAgent extends AgentImpl {
 		
 		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
 
-			int auctionDay = TACAgent.getAuctionDay(i);
-			int auctionType = TACAgent.getAuctionType(i);
+			TacCategory category = DummyAgent.getAuctionCategory(i);
+			Day auctionDay = DummyAgent.getAuctionDay(i);
+			TacType auctionType = DummyAgent.getAuctionType(category, i);
 			double price = agent.getQuote(i).getAskPrice();
 			
 			switch (TACAgent.getAuctionCategory(i)) {
 				case TACAgent.CAT_FLIGHT:
-					FlightAuction flightAuction = new FlightAuction(auctionType, Day.getDay(auctionDay), price, i);
+					FlightAuction flightAuction = new FlightAuction(auctionType, auctionDay, price, i);
 					flightAuctions.put(i, flightAuction);
 					
 					System.out.println("Flight Price: " + price);
 				break;
 				case TACAgent.CAT_HOTEL:
-					HotelAuction hotelAuction = new HotelAuction(Day.getDay(auctionDay), price, i, auctionType);
+					HotelAuction hotelAuction = new HotelAuction(auctionType, auctionDay, price, i);
 					hotelAuctions.put(i, hotelAuction);
 					
 					System.out.println("Hotel Price: " + price);
@@ -238,24 +238,24 @@ public class DummyAgent extends AgentImpl {
 	private void calculateAllocation() {
 		for (int i = 0; i < 8; i++) {
 			
-			int inFlightDay = agent.getClientPreference(i, TACAgent.ARRIVAL);
-			int outFlightDay = agent.getClientPreference(i, TACAgent.DEPARTURE);
-			int hotelType;
+			int inFlightDay = this.getClientPreference(i, ClientPreference.ARRIVAL);
+			int outFlightDay = this.getClientPreference(i, ClientPreference.DEPARTURE);
+			TacType hotelType;
 
-			int auction = TACAgent.getAuctionFor(TACAgent.CAT_FLIGHT, TACAgent.TYPE_INFLIGHT, inFlightDay);
+			int auction = DummyAgent.getAuctionFor(TacCategory.CAT_FLIGHT, TacType.INFLIGHT, Day.getDay(inFlightDay));
 			
 			FlightAuction inflight = flightAuctions.get(auction);
 			
-			auction = TACAgent.getAuctionFor(TACAgent.CAT_FLIGHT, TACAgent.TYPE_OUTFLIGHT, outFlightDay);
+			auction = DummyAgent.getAuctionFor(TacCategory.CAT_FLIGHT, TacType.OUTFLIGHT, Day.getDay(outFlightDay));
 			
 			FlightAuction outflight = flightAuctions.get(auction);
 			
-			hotelType = TACAgent.TYPE_GOOD_HOTEL;
+			hotelType = TacType.GOOD_HOTEL;
 			
 			List<HotelAuction> hotelList = new ArrayList<>();
 			
 			for (int d = inFlightDay; d < outFlightDay; d++) {
-				auction = TACAgent.getAuctionFor(TACAgent.CAT_HOTEL, hotelType, d);
+				auction = DummyAgent.getAuctionFor(TacCategory.CAT_HOTEL, hotelType, Day.getDay(d));
 				HotelAuction hotelAuction = hotelAuctions.get(auction);
 				
 				hotelList.add(hotelAuction);
@@ -287,6 +287,30 @@ public class DummyAgent extends AgentImpl {
 		}
 		
 	}
+	
+	/*
+	 * Helper methods to convert ints to enums
+	 */
+	
+	private static Day getAuctionDay(int auctionId) {
+		return Day.getDay(TACAgent.getAuctionDay(auctionId));
+	}
+	
+	private int getClientPreference(int clientId, ClientPreference preference) {
+		return agent.getClientPreference(clientId, ClientPreference.getCode(preference));
+	}
+	
+	private static TacType getAuctionType(TacCategory category, int auction) {
+		return TacType.getType(category, TACAgent.getAuctionType(auction));
+	}
+	
+	private static TacCategory getAuctionCategory(int i) {
+		return TacCategory.getCategory(TACAgent.getAuctionCategory(i));
+	}
+	
+	private static int getAuctionFor(TacCategory category, TacType type, Day day) {
+		return TACAgent.getAuctionFor(category.getCode(), type.getCode(), day.getDayNumber());
+	}
 
 	// -------------------------------------------------------------------
 	// Only for backward compability
@@ -296,4 +320,4 @@ public class DummyAgent extends AgentImpl {
 		TACAgent.main(args);
 	}
 
-} // DummyAgent
+} 

@@ -24,14 +24,10 @@ public class HotelAuction extends Auction {
 		return price;
 	}
 	
+	@Override
 	public void bidMe(TACAgent agent, double price) {
-		
 		System.out.println("Hotel on day: " + AUCTION_DAY + " is being bid on for " + price + " for this many people: " + peopleWhoWantMe.size());
-		
-		Bid bid = new Bid(AUCTION_ID);
-		bid.addBidPoint(peopleWhoWantMe.size(), (float)price);
-		agent.submitBid(bid);
-		
+		super.bidMe(agent, price);
 	}
 	
 }

@@ -30,4 +30,10 @@ public abstract class Auction {
 		return this.askingPrice;
 	}
 	
+	public void bidMe(TACAgent agent, double price) {
+		Bid bid = new Bid(AUCTION_ID);
+		bid.addBidPoint(peopleWhoWantMe.size(), (float)price);
+		agent.submitBid(bid);
+	}
+	
 }

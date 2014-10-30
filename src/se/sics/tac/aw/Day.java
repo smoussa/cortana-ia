@@ -2,9 +2,14 @@ package se.sics.tac.aw;
 
 public enum Day {
 	
-	MONDAY (1), TUESDAY (2), WEDNESDAY (3), THURSDAY (4), FRIDAY (5);
+	MONDAY (1),
+	TUESDAY (2),
+	WEDNESDAY (3),
+	THURSDAY (4),
+	FRIDAY (5);
 	
 	private final int day;
+	
 	Day (int day) {
 		this.day = day;
 	}

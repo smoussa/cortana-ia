@@ -8,6 +8,7 @@ public class AuctionMaster {
 
 	private Map<Integer, FlightAuction> flightAuctions;
 	private Map<Integer, HotelAuction> hotelAuctions;
+	private Map<Integer, EntertainmentAuction> entertainmentAuctions;
 	
 	boolean flightUpdated = false;
 	boolean hotelUpdated = false;
@@ -16,6 +17,7 @@ public class AuctionMaster {
 	public AuctionMaster() {
 		flightAuctions = new HashMap<Integer, FlightAuction>();
 		hotelAuctions = new HashMap<Integer, HotelAuction>();
+		entertainmentAuctions = new HashMap<Integer, EntertainmentAuction>();
 	}
 	
 	public Auction getAuction(int auctionId) {
@@ -25,6 +27,9 @@ public class AuctionMaster {
 		}
 		else if(hotelAuctions.containsKey(auctionId)) {
 			return hotelAuctions.get(auctionId);
+		}
+		else if(entertainmentAuctions.containsKey(auctionId)) {
+			return entertainmentAuctions.get(auctionId);
 		}
 		
 		System.err.println("Could not find auction with id " + auctionId);
@@ -42,6 +47,13 @@ public class AuctionMaster {
 	public HotelAuction getHotelAuction(int auctionId) {
 		if(hotelAuctions.containsKey(auctionId)) {
 			return hotelAuctions.get(auctionId);
+		}
+		return null;
+	}
+	
+	public EntertainmentAuction getEntertainmentAuction(int auctionId) {
+		if(entertainmentAuctions.containsKey(auctionId)) {
+			return entertainmentAuctions.get(auctionId);
 		}
 		return null;
 	}
@@ -69,7 +81,10 @@ public class AuctionMaster {
 					System.out.println("Hotel Price: " + price);
 				break;
 				case TACAgent.CAT_ENTERTAINMENT:
-					// Later
+					EntertainmentAuction entertainmentAuction = new EntertainmentAuction(auctionType, auctionDay, price, i);
+					entertainmentAuctions.put(i, entertainmentAuction);
+					
+					System.out.println("Entertainment Price: " + price);
 				break;
 				default:
 				break;
@@ -86,6 +101,11 @@ public class AuctionMaster {
 		for(Entry<Integer, FlightAuction> entry:this.flightAuctions.entrySet()) {
 			FlightAuction flightAuction = entry.getValue();
 			flightAuction.bidMe(agent, flightAuction.getAskingPrice());
+		}
+		
+		for(Entry<Integer, EntertainmentAuction> entry:this.entertainmentAuctions.entrySet()) {
+			EntertainmentAuction entertainmentAuction = entry.getValue();
+			entertainmentAuction.bidMe(agent, entertainmentAuction.getAskingPrice());
 		}
 	}
 	

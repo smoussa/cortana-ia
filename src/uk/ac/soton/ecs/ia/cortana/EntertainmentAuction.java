@@ -11,9 +11,9 @@ public class EntertainmentAuction extends Auction {
 	}
 	
 	@Override
-	public void bidMe(TACAgent agent, double price) {
-		System.out.println("Entertainment " + AUCTION_TYPE + " on day: " + AUCTION_DAY + " is being bid on for " + price);
-		super.bidMe(agent, price);
+	public void bidMe(TACAgent agent) {
+		System.out.println("Entertainment " + AUCTION_TYPE + " on day: " + AUCTION_DAY + " is being bid on");
+		super.bidMe(agent);
 	}
 
 }

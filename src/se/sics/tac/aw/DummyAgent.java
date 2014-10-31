@@ -223,11 +223,11 @@ public class DummyAgent extends AgentImpl {
 			Client client = new Client(i, inflight, outflight, hotelList);
 			clients.put(i, client);
 			
-			inflight.peopleWhoWantMe.add(client);
-			outflight.peopleWhoWantMe.add(client);
+			inflight.addClient(client);
+			outflight.addClient(client);
 			
 			for(HotelAuction hotel:hotelList) {
-				hotel.peopleWhoWantMe.add(client);
+				hotel.addClient(client);
 			}
 			
 		}

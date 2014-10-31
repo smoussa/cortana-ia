@@ -1,16 +1,12 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.Day;
 import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacType;
 
 public abstract class Auction {
 
-	public List<Client> peopleWhoWantMe;
+	private final Position position;
 	
 	public final TacType AUCTION_TYPE;
 	public final Day AUCTION_DAY;
@@ -22,7 +18,12 @@ public abstract class Auction {
 	
 	public Auction(TacType auctionType, Day auctionDay, int auctionId, double askingPrice, double bidPrice) {
 		
-		this.peopleWhoWantMe = new ArrayList<>();
+		if(auctionType == TacType.ALLIGATOR_WRESTLING || auctionType == TacType.AMUSEMENT || auctionType == TacType.MUSEUM)
+			this.position = new EntertainmentPosition(auctionId);
+		else if(auctionType == TacType.ALLIGATOR_WRESTLING || auctionType == TacType.AMUSEMENT || auctionType == TacType.MUSEUM)
+			this.position = new FlightPosition(auctionId);
+		else
+			this.position = new HotelPosition(auctionId);
 		
 		this.AUCTION_TYPE = auctionType;
 		this.AUCTION_DAY = auctionDay;
@@ -41,15 +42,17 @@ public abstract class Auction {
 		return bidPrice;
 	}
 
-	public void bidMe(TACAgent agent, double price) {
-		Bid bid = new Bid(AUCTION_ID);
-		bid.addBidPoint(peopleWhoWantMe.size(), (float)price);
-		agent.submitBid(bid);
+	public void bidMe(TACAgent agent) {
+		this.position.bidMe(agent);
 	}
 
 	public void updatePrice(double askPrice, double bidPrice) {
 		this.askingPrice = askPrice;
 		this.bidPrice = bidPrice;
+	}
+	
+	public void addClient(Client client) {
+		this.position.peopleWhoWantMe.add(client);
 	}
 	
 }

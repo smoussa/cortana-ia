@@ -11,14 +11,10 @@ public class FlightAuction extends Auction {
 		super(flightType, day, auctionId, askPrice, bidPrice);
 	}
 	
-	public void addClient(Client client) {
-		this.peopleWhoWantMe.add(client);
-	}
-
 	@Override
-	public void bidMe(TACAgent agent, double price) {
-		System.out.println("Flight " + AUCTION_TYPE + " on day: " + AUCTION_DAY + " is being bid on for " + price);
-		super.bidMe(agent, price);
+	public void bidMe(TACAgent agent) {
+		System.out.println("Flight " + AUCTION_TYPE + " on day: " + AUCTION_DAY + " is being bid on");
+		super.bidMe(agent);
 	}
 
 }

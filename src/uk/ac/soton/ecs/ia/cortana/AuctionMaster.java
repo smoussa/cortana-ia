@@ -114,17 +114,17 @@ public class AuctionMaster {
 	public void sendBids(TACAgent agent) {
 		for(Entry<Integer, HotelAuction> entry:this.hotelAuctions.entrySet()) {
 			HotelAuction hotelAuction = entry.getValue();
-			hotelAuction.bidMe(agent, hotelAuction.getBidPrice());
+			hotelAuction.bidMe(agent);
 		}
 		
 		for(Entry<Integer, FlightAuction> entry:this.flightAuctions.entrySet()) {
 			FlightAuction flightAuction = entry.getValue();
-			flightAuction.bidMe(agent, flightAuction.getAskingPrice());
+			flightAuction.bidMe(agent);
 		}
 		
 		for(Entry<Integer, EntertainmentAuction> entry:this.entertainmentAuctions.entrySet()) {
 			EntertainmentAuction entertainmentAuction = entry.getValue();
-			entertainmentAuction.bidMe(agent, entertainmentAuction.getAskingPrice());
+			entertainmentAuction.bidMe(agent);
 		}
 	}
 	

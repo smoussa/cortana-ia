@@ -2,8 +2,8 @@ package uk.ac.soton.ecs.ia.cortana;
 
 public class HotelPosition extends Position {
 
-	public HotelPosition(int AUCTION_ID) {
-		super(AUCTION_ID);
+	public HotelPosition(Auction auction) {
+		super(auction);
 	}
 
 	@Override

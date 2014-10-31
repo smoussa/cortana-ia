@@ -12,9 +12,9 @@ public class HotelAuction extends Auction {
 	}
 	
 	@Override
-	public void bidMe(TACAgent agent) {
+	public void bidMe(TACAgent agent, int quantity, float price) {
 		System.out.println("Hotel on day: " + AUCTION_DAY + " is being bid on");
-		super.bidMe(agent);
+		super.bidMe(agent, quantity, price);
 	}
 	
 }

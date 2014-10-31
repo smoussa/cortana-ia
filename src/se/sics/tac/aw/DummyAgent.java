@@ -195,6 +195,7 @@ public class DummyAgent extends AgentImpl {
 	}
 	
 	public void calculateAllocation() {
+		
 		for (int i = 0; i < 8; i++) {
 			
 			int inFlightDay = this.getClientPreference(i, ClientPreference.ARRIVAL);
@@ -223,14 +224,9 @@ public class DummyAgent extends AgentImpl {
 			Client client = new Client(i, inflight, outflight, hotelList);
 			clients.put(i, client);
 			
-			inflight.addClient(client);
-			outflight.addClient(client);
-			
-			for(HotelAuction hotel:hotelList) {
-				hotel.addClient(client);
-			}
-			
 		}
+		
+		auctionMaster.createInitialStrategy(clients);
 	}
 
 	/*

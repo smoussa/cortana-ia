@@ -1,6 +1,8 @@
 package uk.ac.soton.ecs.ia.cortana;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -19,6 +21,8 @@ public class AuctionMaster {
 	boolean flightUpdated = false;
 	boolean hotelUpdated = false;
 	boolean bidsNotSent = true;
+	
+	private Strategy strategy;
 	
 	public AuctionMaster() {
 		flightAuctions = new HashMap<Integer, FlightAuction>();
@@ -112,20 +116,7 @@ public class AuctionMaster {
 	}
 	
 	public void sendBids(TACAgent agent) {
-		for(Entry<Integer, HotelAuction> entry:this.hotelAuctions.entrySet()) {
-			HotelAuction hotelAuction = entry.getValue();
-			hotelAuction.bidMe(agent);
-		}
-		
-		for(Entry<Integer, FlightAuction> entry:this.flightAuctions.entrySet()) {
-			FlightAuction flightAuction = entry.getValue();
-			flightAuction.bidMe(agent);
-		}
-		
-		for(Entry<Integer, EntertainmentAuction> entry:this.entertainmentAuctions.entrySet()) {
-			EntertainmentAuction entertainmentAuction = entry.getValue();
-			entertainmentAuction.bidMe(agent);
-		}
+		this.strategy.sendBids(agent);
 	}
 	
 	public void quoteUpdated(DummyAgent cortana, TacCategory category) {
@@ -144,6 +135,15 @@ public class AuctionMaster {
 		
 		updatePrice(cortana.agent);
 	
+	}
+
+	public void createInitialStrategy(Map<Integer, Client> clients) {
+		
+		this.strategy = new Strategy();
+		
+		for(Entry<Integer, Client> entry:clients.entrySet()) {
+			this.strategy.createPositions(entry.getValue());
+		}
 	}
 	
 }

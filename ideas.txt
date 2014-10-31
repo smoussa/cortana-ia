@@ -1,5 +1,6 @@
 Make potential future strategies in down time (ie first minute)
-
+--this "potential position cache" could be done in a different thread all the time
+Multiple positions that solve the same problem dominate based not just on potential final score, but also probability of achievement (i.e how is there left to buy)
 
 ===MonteCarlo===
 plot a ROC point style
@@ -7,3 +8,8 @@ plot box plot over time (y-axis is form -infinity to infinity, difference betwee
 plot box plot over time (y-axis is form -infinity to infinity, difference between expected min to bought min) for a range of buying strategies
 plot box plot over time (y-axis is Bought/ExpectedMin) to determine const for expectedBoughtPrice
 Do the flight start analysis time on the fly based on data
+
+===Entertainment trolling===
+Try adding bids with quantity 0, what happens? high ask? high bid?
+Add ask >200 as fine for not having it is only 200. Pure profit
+Some sort of cartel with others?

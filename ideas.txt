@@ -1,0 +1,9 @@
+Make potential future strategies in down time (ie first minute)
+
+
+===MonteCarlo===
+plot a ROC point style
+plot box plot over time (y-axis is form -infinity to infinity, difference between expected min to actual min)
+plot box plot over time (y-axis is form -infinity to infinity, difference between expected min to bought min) for a range of buying strategies
+plot box plot over time (y-axis is Bought/ExpectedMin) to determine const for expectedBoughtPrice
+Do the flight start analysis time on the fly based on data

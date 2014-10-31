@@ -1,0 +1,79 @@
+STRATEGY (1)
+
+- At the beginning, we don't know how much flights or hotels cost.
+- We are given 12 entertainment packages.
+- We set how much profit we would like to make ($3500).
+- The game starts and client preferences come in.
+* We sell the entertainment packages to the clients and see how much profit required is leftover (EP).
+* We need to buy hotel rooms as soon as possible before the prices begin to rise.
+- But we need to know how much to buy them for and this is based on how much flights cost.
+- Get the clients' flight preferences (FI, FO, NN)
+- Get the arrive and departure flight quotes based on the preferences.
+- Calculate the utility we have left over based on this formula for each client:
+	HC = 1000 - FI - FO - EP / NN
+- We then get a maximum amount we need to spend on buying a hotel per night per client
+* Buy hotel rooms for the nights the client is staying.
+* Buy flights for the time the client is staying.
+- Allocate all (with entertainment package if profitable)
+
+
+
+
+TIPS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Initial Knowledge
+
+- We don't know how much flights or hotels cost.
+- We are given entertainment packages.
+- We know what the client wants.
+- Hotel bonuses are given to clients whether or not they stay for a longer period of time.
+- ^Prioritising entertainment packages for short-stay clients with the highest bonus.
+- More likey to stay in the middle of the week. There isn't enough rooms available.
+- HTN Planner
+
+
+Game starts, allocate entertainment tickets, ^ we then know our best clients. We then allocate flights and hotels to these clients.
+We get the initial flight prices but need to buy hotels quickly based on the flight prices. Split per day.
+
+If we can make more money selling an entertainment package on the market than the bonus amount we will get selling it to a client,
+sell to market.
+
+We get 12 entertainment packages at on av. 100 each.
+
+3500 profit needed
+12 x 100 entertainment
+/ 8 (per client)
+
+= 287.5 profit needed per client if we want to make a profit of 3500.
+
+for each client
+(1000 - flight in - flight out - 287.5 profit) / number of nights needed = amount to spend on buying a hotel per night
+
+
+Flight Agent
+============
+
+Waiting for a first price for flights at the start.
+Game starts, 
+
+
+
+Hotel Agent
+
+
+
+Entertainment Agent

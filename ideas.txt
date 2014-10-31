@@ -1,0 +1,7 @@
+Make potential future stategies in down time (ie first minute)
+
+
+===MonteCarlo===
+plot a ROC point style
+plot box plot over time (y-axis is form -infinity to infinity)
+Do the flight start time analysis on the fly based on data

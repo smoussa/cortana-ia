@@ -13,6 +13,7 @@ public class HotelPosition extends Position {
 		
 		for(Client client:peopleWhoWantMe) {
 
+			// TODO do that calculation here!!!
 			double hotelPrice = client.getHotelPrice();
 			
 			if(hotelPrice < 0) {

@@ -147,8 +147,6 @@ public class DummyAgent extends AgentImpl {
 
 	protected void init(ArgEnumerator args) {}
 
-	public void quoteUpdated(Quote quote) {}
-
 	private AuctionMaster auctionMaster;
 	
 	private Map<Integer, Client> clients;
@@ -156,6 +154,10 @@ public class DummyAgent extends AgentImpl {
 	public DummyAgent() {
 		this.auctionMaster = new AuctionMaster();
 		this.clients = new HashMap<Integer, Client>();
+	}
+	
+	public void quoteUpdated(Quote quote) {
+		auctionMaster.quoteUpdated(this);
 	}
 	
 	public void quoteUpdated(int auctionCategory) {

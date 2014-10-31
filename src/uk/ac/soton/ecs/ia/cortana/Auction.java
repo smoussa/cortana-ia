@@ -17,6 +17,8 @@ public abstract class Auction {
 	private double askingPrice;
 	private double bidPrice;
 	
+	private boolean closed;
+	
 	public Auction(TacType auctionType, Day auctionDay, int auctionId, double askingPrice, double bidPrice) {
 		this.AUCTION_TYPE = auctionType;
 		this.AUCTION_DAY = auctionDay;
@@ -25,6 +27,8 @@ public abstract class Auction {
 		
 		this.askingPrice = askingPrice;
 		this.bidPrice = bidPrice;
+		
+		this.closed = false;
 	}
 	
 	public Position getPosition() {
@@ -52,6 +56,14 @@ public abstract class Auction {
 	public void updatePrice(double askPrice, double bidPrice) {
 		this.askingPrice = askPrice;
 		this.bidPrice = bidPrice;
+	}
+
+	public boolean isClosed() {
+		return closed;
+	}
+
+	public void close() {
+		this.closed = true;
 	}
 	
 }

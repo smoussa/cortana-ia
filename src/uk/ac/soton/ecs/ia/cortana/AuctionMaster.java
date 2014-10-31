@@ -1,8 +1,6 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -103,7 +101,7 @@ public class AuctionMaster {
 		}
 	}
 	
-	private void updatePrice(TACAgent agent) {
+	private void updateAuctions(TACAgent agent) {
 
 		System.out.println("Auction prices updated");
 		
@@ -111,12 +109,22 @@ public class AuctionMaster {
 			double askPrice = agent.getQuote(i).getAskPrice();
 			double bidPrice = agent.getQuote(i).getBidPrice();
 			getAuction(i).updatePrice(askPrice, bidPrice);
+			
+			if(agent.getQuote(i).isAuctionClosed())
+				getAuction(i).close();
+			
+			if(agent.getOwn(i) > 0)
+				getAuction(i).getPosition().setNumberOwned(agent.getOwn(i));
 		}
 		
 	}
 	
 	public void sendBids(TACAgent agent) {
 		this.strategy.sendBids(agent);
+	}
+	
+	public void quoteUpdated(DummyAgent cortana) {
+		updateAuctions(cortana.agent);
 	}
 	
 	public void quoteUpdated(DummyAgent cortana, TacCategory category) {
@@ -133,7 +141,7 @@ public class AuctionMaster {
 			bidsNotSent = false;
 		}
 		
-		updatePrice(cortana.agent);
+		updateAuctions(cortana.agent);
 	
 	}
 

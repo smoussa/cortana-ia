@@ -29,7 +29,7 @@ import se.sics.tac.util.ArgEnumerator;
 
 public abstract class AgentImpl {
 
-	protected TACAgent agent;
+	public TACAgent agent;
 
 	final void init(TACAgent agent, ArgEnumerator args) {
 		this.agent = agent;

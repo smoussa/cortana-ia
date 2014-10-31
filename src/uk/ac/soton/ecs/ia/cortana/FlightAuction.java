@@ -1,4 +1,8 @@
-package se.sics.tac.aw;
+package uk.ac.soton.ecs.ia.cortana;
+
+import se.sics.tac.aw.Day;
+import se.sics.tac.aw.TACAgent;
+import se.sics.tac.aw.TacType;
 
 
 public class FlightAuction extends Auction {

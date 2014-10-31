@@ -1,8 +1,10 @@
-package se.sics.tac.aw;
+package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import se.sics.tac.aw.Day;
 
 public class Client {
 

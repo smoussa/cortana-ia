@@ -1,7 +1,12 @@
-package se.sics.tac.aw;
+package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import se.sics.tac.aw.Bid;
+import se.sics.tac.aw.Day;
+import se.sics.tac.aw.TACAgent;
+import se.sics.tac.aw.TacType;
 
 public abstract class Auction {
 

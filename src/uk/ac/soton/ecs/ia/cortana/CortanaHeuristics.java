@@ -1,4 +1,4 @@
-package se.sics.tac.aw;
+package uk.ac.soton.ecs.ia.cortana;
 
 public class CortanaHeuristics {
 

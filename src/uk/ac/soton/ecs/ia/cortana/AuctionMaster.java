@@ -1,8 +1,13 @@
-package se.sics.tac.aw;
+package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import se.sics.tac.aw.Day;
+import se.sics.tac.aw.TACAgent;
+import se.sics.tac.aw.TacCategory;
+import se.sics.tac.aw.TacType;
 
 public class AuctionMaster {
 

@@ -125,7 +125,7 @@
  *
  */
 
-package se.sics.tac.aw;
+package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,6 +133,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import se.sics.tac.aw.AgentImpl;
+import se.sics.tac.aw.Bid;
+import se.sics.tac.aw.ClientPreference;
+import se.sics.tac.aw.Day;
+import se.sics.tac.aw.Quote;
+import se.sics.tac.aw.TACAgent;
+import se.sics.tac.aw.TacCategory;
+import se.sics.tac.aw.TacType;
 import se.sics.tac.util.ArgEnumerator;
 
 public class DummyAgent extends AgentImpl {

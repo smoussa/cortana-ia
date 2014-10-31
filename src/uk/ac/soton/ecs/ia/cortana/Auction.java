@@ -18,8 +18,9 @@ public abstract class Auction {
 	public final int AUCTION_ID;
 	
 	private double askingPrice;
+	private double bidPrice;
 	
-	public Auction(TacType auctionType, Day auctionDay, int auctionId, double askingPrice) {
+	public Auction(TacType auctionType, Day auctionDay, int auctionId, double askingPrice, double bidPrice) {
 		
 		this.peopleWhoWantMe = new ArrayList<>();
 		
@@ -29,16 +30,26 @@ public abstract class Auction {
 		this.AUCTION_ID = auctionId;
 		
 		this.askingPrice = askingPrice;
+		this.bidPrice = bidPrice;
 	}
 	
 	public double getAskingPrice() {
 		return this.askingPrice;
 	}
 	
+	public double getBidPrice() {
+		return bidPrice;
+	}
+
 	public void bidMe(TACAgent agent, double price) {
 		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(peopleWhoWantMe.size(), (float)price);
 		agent.submitBid(bid);
+	}
+
+	public void updatePrice(double askPrice, double bidPrice) {
+		this.askingPrice = askPrice;
+		this.bidPrice = bidPrice;
 	}
 	
 }

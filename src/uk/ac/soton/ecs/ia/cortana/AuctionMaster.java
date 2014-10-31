@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import se.sics.tac.aw.Day;
+import se.sics.tac.aw.DummyAgent;
 import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacCategory;
 import se.sics.tac.aw.TacType;
@@ -70,31 +71,44 @@ public class AuctionMaster {
 			TacCategory category = DummyAgent.getAuctionCategory(i);
 			Day auctionDay = DummyAgent.getAuctionDay(i);
 			TacType auctionType = DummyAgent.getAuctionType(category, i);
-			double price = agent.getQuote(i).getAskPrice();
+			double askPrice = agent.getQuote(i).getAskPrice();
+			double bidPrice = agent.getQuote(i).getBidPrice();
 			
 			switch (TACAgent.getAuctionCategory(i)) {
 				case TACAgent.CAT_FLIGHT:
-					FlightAuction flightAuction = new FlightAuction(auctionType, auctionDay, price, i);
+					FlightAuction flightAuction = new FlightAuction(auctionType, auctionDay, askPrice, bidPrice, i);
 					flightAuctions.put(i, flightAuction);
 					
-					System.out.println("Flight Price: " + price);
+					System.out.println("Flight Price: " + askPrice);
 				break;
 				case TACAgent.CAT_HOTEL:
-					HotelAuction hotelAuction = new HotelAuction(auctionType, auctionDay, price, i);
+					HotelAuction hotelAuction = new HotelAuction(auctionType, auctionDay, askPrice, bidPrice, i);
 					hotelAuctions.put(i, hotelAuction);
 					
-					System.out.println("Hotel Price: " + price);
+					System.out.println("Hotel Price: " + askPrice);
 				break;
 				case TACAgent.CAT_ENTERTAINMENT:
-					EntertainmentAuction entertainmentAuction = new EntertainmentAuction(auctionType, auctionDay, price, i);
+					EntertainmentAuction entertainmentAuction = new EntertainmentAuction(auctionType, auctionDay, askPrice, bidPrice, i);
 					entertainmentAuctions.put(i, entertainmentAuction);
 					
-					System.out.println("Entertainment Price: " + price);
+					System.out.println("Entertainment Price: " + askPrice);
 				break;
 				default:
 				break;
 			}
 		}
+	}
+	
+	private void updatePrice(TACAgent agent) {
+
+		System.out.println("Auction prices updated");
+		
+		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
+			double askPrice = agent.getQuote(i).getAskPrice();
+			double bidPrice = agent.getQuote(i).getBidPrice();
+			getAuction(i).updatePrice(askPrice, bidPrice);
+		}
+		
 	}
 	
 	public void sendBids(TACAgent agent) {
@@ -127,6 +141,9 @@ public class AuctionMaster {
 			sendBids(cortana.agent);
 			bidsNotSent = false;
 		}
+		
+		updatePrice(cortana.agent);
+	
 	}
 	
 }

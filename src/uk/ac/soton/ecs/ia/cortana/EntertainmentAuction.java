@@ -6,8 +6,8 @@ import se.sics.tac.aw.TacType;
 
 public class EntertainmentAuction extends Auction {
 
-	public EntertainmentAuction(TacType entertainmentType, Day day, double askingPrice, int auctionId) {
-		super(entertainmentType, day, auctionId, askingPrice);
+	public EntertainmentAuction(TacType entertainmentType, Day day, double askingPrice, double bidPrice, int auctionId) {
+		super(entertainmentType, day, auctionId, askingPrice, bidPrice);
 	}
 	
 	@Override

@@ -125,7 +125,7 @@
  *
  */
 
-package uk.ac.soton.ecs.ia.cortana;
+package se.sics.tac.aw;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,15 +133,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import se.sics.tac.aw.AgentImpl;
-import se.sics.tac.aw.Bid;
-import se.sics.tac.aw.ClientPreference;
-import se.sics.tac.aw.Day;
-import se.sics.tac.aw.Quote;
-import se.sics.tac.aw.TACAgent;
-import se.sics.tac.aw.TacCategory;
-import se.sics.tac.aw.TacType;
 import se.sics.tac.util.ArgEnumerator;
+import uk.ac.soton.ecs.ia.cortana.AuctionMaster;
+import uk.ac.soton.ecs.ia.cortana.Client;
+import uk.ac.soton.ecs.ia.cortana.FlightAuction;
+import uk.ac.soton.ecs.ia.cortana.HotelAuction;
 
 public class DummyAgent extends AgentImpl {
 
@@ -198,7 +194,7 @@ public class DummyAgent extends AgentImpl {
 		log.fine("*** Auction " + auction + " closed!");
 	}
 	
-	protected void calculateAllocation() {
+	public void calculateAllocation() {
 		for (int i = 0; i < 8; i++) {
 			
 			int inFlightDay = this.getClientPreference(i, ClientPreference.ARRIVAL);
@@ -241,23 +237,23 @@ public class DummyAgent extends AgentImpl {
 	 * Helper methods to convert ints to enums
 	 */
 	
-	protected static Day getAuctionDay(int auctionId) {
+	public static Day getAuctionDay(int auctionId) {
 		return Day.getDay(TACAgent.getAuctionDay(auctionId));
 	}
 	
-	protected int getClientPreference(int clientId, ClientPreference preference) {
+	public int getClientPreference(int clientId, ClientPreference preference) {
 		return agent.getClientPreference(clientId, ClientPreference.getCode(preference));
 	}
 	
-	protected static TacType getAuctionType(TacCategory category, int auction) {
+	public static TacType getAuctionType(TacCategory category, int auction) {
 		return TacType.getType(category, TACAgent.getAuctionType(auction));
 	}
 	
-	protected static TacCategory getAuctionCategory(int i) {
+	public static TacCategory getAuctionCategory(int i) {
 		return TacCategory.getCategory(TACAgent.getAuctionCategory(i));
 	}
 	
-	protected static int getAuctionFor(TacCategory category, TacType type, Day day) {
+	public static int getAuctionFor(TacCategory category, TacType type, Day day) {
 		return TACAgent.getAuctionFor(category.getCode(), type.getCode(), day.getDayNumber());
 	}
 

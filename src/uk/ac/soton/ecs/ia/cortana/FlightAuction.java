@@ -7,8 +7,8 @@ import se.sics.tac.aw.TacType;
 
 public class FlightAuction extends Auction {
 
-	public FlightAuction(TacType flightType, Day day, double price, int auctionId) {
-		super(flightType, day, auctionId, price);
+	public FlightAuction(TacType flightType, Day day, double askPrice, double bidPrice, int auctionId) {
+		super(flightType, day, auctionId, askPrice, bidPrice);
 	}
 	
 	public void addClient(Client client) {

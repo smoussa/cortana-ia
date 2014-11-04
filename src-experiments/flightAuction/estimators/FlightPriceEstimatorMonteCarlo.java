@@ -11,11 +11,15 @@ public class FlightPriceEstimatorMonteCarlo implements FlightAuctionEstimator {
 	FlightAuctionChangeStore facs;
 	int currentTime;
 	double currentPrice;
+	double historicMinPrice;
+	int historicMinPriceTime;
 	
-	public FlightPriceEstimatorMonteCarlo(FlightAuctionChangeStore facs, int currentTime, double currentPrice){
+	public FlightPriceEstimatorMonteCarlo(FlightAuctionChangeStore facs, int currentTime, double currentPrice, double historicMinPrice, int historicMinPriceTime){
 		this.facs = facs;
 		this.currentTime = currentTime;
 		this.currentPrice = currentPrice;
+		this.historicMinPrice = historicMinPrice;
+		this.historicMinPriceTime = historicMinPriceTime;
 	}
 	
 	//returns a tuple of MinPrice and time of MinPrice
@@ -59,6 +63,11 @@ public class FlightPriceEstimatorMonteCarlo implements FlightAuctionEstimator {
 			minPriceSum += minPrice;
 			minPriceTimeSum += minPriceTime;
 		}
+		
+		if(historicMinPrice<minPriceSum/TRIES){
+			double[] r = {historicMinPrice,historicMinPriceTime};
+			return r;
+		}
 	
 		double[] r = {minPriceSum/TRIES,minPriceTimeSum/TRIES};
 		return r;
@@ -66,9 +75,9 @@ public class FlightPriceEstimatorMonteCarlo implements FlightAuctionEstimator {
 	
 	//better (more efficient) to repeat x times for each UB, find min and mean each, and then scale mean based on UB's distrib
 	public double[] getMinPriceMethod2(){	
-		int TRIES = 1000;
+		int TRIES = 1000/41;
 		HashMap<Integer,Double> probDist = facs.getScaledProbabilities();
-		System.out.println(probDist);
+		//System.out.println(probDist);
 		double minPriceSumSum = 0.0;
 		int minPriceTimeSumSum = 0;
 		for(int UB = -10; UB<=30; UB++){

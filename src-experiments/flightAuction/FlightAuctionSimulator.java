@@ -13,6 +13,8 @@ public class FlightAuctionSimulator {
 	private double startPrice = 250.0 + random.nextInt(151);
 	private double price = startPrice;
 	private double lastChange = 0;
+	private double minPrice = 800;
+	private int minPriceTime;
 	
 	public FlightAuctionSimulator() {
 		this.upperBound = -10 + random.nextInt(41);
@@ -60,6 +62,11 @@ public class FlightAuctionSimulator {
 		
 		lastChange = change;
 		price += change;
+		
+		if(price<minPrice){
+			minPrice = price;
+			minPriceTime = this.getTime();
+		}
 	}
 	
 	public int getTime(){
@@ -88,6 +95,14 @@ public class FlightAuctionSimulator {
 	
 	public double getUpperBound(){
 		return this.upperBound;
+	}
+	
+	public double getMinPrice(){
+		return this.minPrice;
+	}
+	
+	public int getMinPriceTime(){
+		return this.minPriceTime;
 	}
 	
 	

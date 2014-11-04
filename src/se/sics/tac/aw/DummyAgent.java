@@ -135,7 +135,7 @@ import java.util.logging.Logger;
 
 import se.sics.tac.util.ArgEnumerator;
 import uk.ac.soton.ecs.ia.cortana.AuctionMaster;
-import uk.ac.soton.ecs.ia.cortana.Client;
+import uk.ac.soton.ecs.ia.cortana.ClientPreference;
 import uk.ac.soton.ecs.ia.cortana.FlightAuction;
 import uk.ac.soton.ecs.ia.cortana.HotelAuction;
 
@@ -149,20 +149,16 @@ public class DummyAgent extends AgentImpl {
 
 	private AuctionMaster auctionMaster;
 	
-	private Map<Integer, Client> clients;
-	
 	public DummyAgent() {
-		this.auctionMaster = new AuctionMaster();
-		this.clients = new HashMap<Integer, Client>();
 	}
 	
 	public void quoteUpdated(Quote quote) {
-		auctionMaster.quoteUpdated(this);
+		auctionMaster.quoteUpdated();
 	}
 	
 	public void quoteUpdated(int auctionCategory) {
 		log.fine("All quotes for " + TACAgent.auctionCategoryToString(auctionCategory) + " has been updated");
-		auctionMaster.quoteUpdated(this, TacCategory.getCategory(auctionCategory));
+		auctionMaster.quoteUpdated(TacCategoryEnum.getCategory(auctionCategory));
 	}
 
 	public void bidUpdated(Bid bid) {
@@ -186,6 +182,7 @@ public class DummyAgent extends AgentImpl {
 
 	public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
+		this.auctionMaster = new AuctionMaster(this);
 	}
 	
 	public void gameStopped() {
@@ -195,63 +192,24 @@ public class DummyAgent extends AgentImpl {
 	public void auctionClosed(int auction) {
 		log.fine("*** Auction " + auction + " closed!");
 	}
-	
-	public void calculateAllocation() {
-		
-		for (int i = 0; i < 8; i++) {
-			
-			int inFlightDay = this.getClientPreference(i, ClientPreference.ARRIVAL);
-			int outFlightDay = this.getClientPreference(i, ClientPreference.DEPARTURE);
-			TacType hotelType;
-
-			int auction = DummyAgent.getAuctionFor(TacCategory.CAT_FLIGHT, TacType.INFLIGHT, Day.getDay(inFlightDay));
-			
-			FlightAuction inflight = auctionMaster.getFlightAuction(auction);
-			
-			auction = DummyAgent.getAuctionFor(TacCategory.CAT_FLIGHT, TacType.OUTFLIGHT, Day.getDay(outFlightDay));
-			
-			FlightAuction outflight = auctionMaster.getFlightAuction(auction);
-			
-			hotelType = TacType.GOOD_HOTEL;
-			
-			List<HotelAuction> hotelList = new ArrayList<>();
-			
-			for (int d = inFlightDay; d < outFlightDay; d++) {
-				auction = DummyAgent.getAuctionFor(TacCategory.CAT_HOTEL, hotelType, Day.getDay(d));
-				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
-				
-				hotelList.add(hotelAuction);
-			}
-			
-			Client client = new Client(i, inflight, outflight, hotelList);
-			clients.put(i, client);
-			
-		}
-		
-		auctionMaster.createInitialStrategy(clients);
-	}
 
 	/*
 	 * Helper methods to convert ints to enums
 	 */
 	
-	public static Day getAuctionDay(int auctionId) {
-		return Day.getDay(TACAgent.getAuctionDay(auctionId));
+	public static DayEnum getAuctionDay(int auctionId) {
+		return DayEnum.getDay(TACAgent.getAuctionDay(auctionId));
 	}
 	
-	public int getClientPreference(int clientId, ClientPreference preference) {
-		return agent.getClientPreference(clientId, ClientPreference.getCode(preference));
+	public static TacTypeEnum getAuctionType(TacCategoryEnum category, int auction) {
+		return TacTypeEnum.getType(category, TACAgent.getAuctionType(auction));
 	}
 	
-	public static TacType getAuctionType(TacCategory category, int auction) {
-		return TacType.getType(category, TACAgent.getAuctionType(auction));
+	public static TacCategoryEnum getAuctionCategory(int i) {
+		return TacCategoryEnum.getCategory(TACAgent.getAuctionCategory(i));
 	}
 	
-	public static TacCategory getAuctionCategory(int i) {
-		return TacCategory.getCategory(TACAgent.getAuctionCategory(i));
-	}
-	
-	public static int getAuctionFor(TacCategory category, TacType type, Day day) {
+	public static int getAuctionFor(TacCategoryEnum category, TacTypeEnum type, DayEnum day) {
 		return TACAgent.getAuctionFor(category.getCode(), type.getCode(), day.getDayNumber());
 	}
 

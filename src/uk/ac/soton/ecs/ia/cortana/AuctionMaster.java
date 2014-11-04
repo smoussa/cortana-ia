@@ -2,19 +2,22 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import se.sics.tac.aw.Day;
+import se.sics.tac.aw.ClientPreferenceEnum;
+import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
 import se.sics.tac.aw.TACAgent;
-import se.sics.tac.aw.TacCategory;
-import se.sics.tac.aw.TacType;
+import se.sics.tac.aw.TacCategoryEnum;
+import se.sics.tac.aw.TacTypeEnum;
 
 public class AuctionMaster {
 
 	private Map<Integer, FlightAuction> flightAuctions;
 	private Map<Integer, HotelAuction> hotelAuctions;
 	private Map<Integer, EntertainmentAuction> entertainmentAuctions;
+	public Map<Integer, ClientPreference> clientPreferences;
+	
+	private DummyAgent cortana;
 	
 	boolean flightUpdated = false;
 	boolean hotelUpdated = false;
@@ -22,10 +25,20 @@ public class AuctionMaster {
 	
 	private Strategy strategy;
 	
-	public AuctionMaster() {
+	public AuctionMaster(DummyAgent cortana) {
+		this.cortana = cortana;
 		flightAuctions = new HashMap<Integer, FlightAuction>();
 		hotelAuctions = new HashMap<Integer, HotelAuction>();
 		entertainmentAuctions = new HashMap<Integer, EntertainmentAuction>();
+		clientPreferences = new HashMap<Integer, ClientPreference>();
+		createClientPreferences();
+	}
+	
+	//call when actually have some initial prices
+	public void gameStart(){
+		initialiseAuctions(cortana.agent);
+		strategy = new InitialStrategy(this);
+		sendBids(cortana.agent);
 	}
 	
 	public Auction getAuction(int auctionId) {
@@ -52,6 +65,10 @@ public class AuctionMaster {
 		return null;
 	}
 	
+	public FlightAuction getFlightAuction(TacTypeEnum type, DayEnum auctionDay) {
+		return getFlightAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, type, auctionDay));
+	}
+	
 	public HotelAuction getHotelAuction(int auctionId) {
 		if(hotelAuctions.containsKey(auctionId)) {
 			return hotelAuctions.get(auctionId);
@@ -66,13 +83,26 @@ public class AuctionMaster {
 		return null;
 	}
 	
+	public void createClientPreferences() {
+		
+		for (int i = 0; i < 8; i++) {
+			
+			DayEnum inFlightDay = DayEnum.getDay(this.getClientPreference(i, ClientPreferenceEnum.ARRIVAL));
+			DayEnum outFlightDay = DayEnum.getDay(this.getClientPreference(i, ClientPreferenceEnum.DEPARTURE));
+			
+			ClientPreference client = new ClientPreference(i, inFlightDay, outFlightDay);
+			clientPreferences.put(i, client);
+		}
+		
+	}
+	
 	private void initialiseAuctions(TACAgent agent) {
 		
 		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
 
-			TacCategory category = DummyAgent.getAuctionCategory(i);
-			Day auctionDay = DummyAgent.getAuctionDay(i);
-			TacType auctionType = DummyAgent.getAuctionType(category, i);
+			TacCategoryEnum category = DummyAgent.getAuctionCategory(i);
+			DayEnum auctionDay = DummyAgent.getAuctionDay(i);
+			TacTypeEnum auctionType = DummyAgent.getAuctionType(category, i);
 			double askPrice = agent.getQuote(i).getAskPrice();
 			double bidPrice = agent.getQuote(i).getBidPrice();
 			
@@ -114,7 +144,7 @@ public class AuctionMaster {
 				getAuction(i).close();
 			
 			if(agent.getOwn(i) > 0)
-				getAuction(i).getPosition().setNumberOwned(agent.getOwn(i));
+				getAuction(i).setNumberOwned(agent.getOwn(i));
 		}
 		
 	}
@@ -123,35 +153,33 @@ public class AuctionMaster {
 		this.strategy.sendBids(agent);
 	}
 	
-	public void quoteUpdated(DummyAgent cortana) {
-		updateAuctions(cortana.agent);
+	public void quoteUpdated() {
+		if (!bidsNotSent){
+			updateAuctions(cortana.agent);
+		}
 	}
 	
-	public void quoteUpdated(DummyAgent cortana, TacCategory category) {
+	public void quoteUpdated(TacCategoryEnum category) {
 		// Used to make sure code only runs once prices have been updated
-		if(category == TacCategory.CAT_FLIGHT)
+		if(category == TacCategoryEnum.CAT_FLIGHT)
 			flightUpdated = true;
-		if(category == TacCategory.CAT_HOTEL)
+		if(category == TacCategoryEnum.CAT_HOTEL)
 			hotelUpdated = true;
 		
 		if(flightUpdated && hotelUpdated && bidsNotSent) {
-			initialiseAuctions(cortana.agent);
-			cortana.calculateAllocation();
-			sendBids(cortana.agent);
+			this.gameStart();
+			updateAuctions(cortana.agent);
 			bidsNotSent = false;
 		}
 		
-		updateAuctions(cortana.agent);
+		if (!bidsNotSent){
+			updateAuctions(cortana.agent);
+		}
 	
 	}
-
-	public void createInitialStrategy(Map<Integer, Client> clients) {
-		
-		this.strategy = new Strategy();
-		
-		for(Entry<Integer, Client> entry:clients.entrySet()) {
-			this.strategy.createPositions(entry.getValue());
-		}
+	
+	public int getClientPreference(int clientId, ClientPreferenceEnum preference) {
+		return cortana.agent.getClientPreference(clientId, ClientPreferenceEnum.getCode(preference));
 	}
 	
 }

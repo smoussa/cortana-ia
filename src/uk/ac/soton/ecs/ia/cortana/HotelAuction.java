@@ -1,13 +1,13 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-import se.sics.tac.aw.Day;
+import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.TACAgent;
-import se.sics.tac.aw.TacType;
+import se.sics.tac.aw.TacTypeEnum;
 
 
 public class HotelAuction extends Auction {
 	
-	public HotelAuction(TacType hotelType, Day day, double askPrice, double bidPrice, int auctionId) {
+	public HotelAuction(TacTypeEnum hotelType, DayEnum day, double askPrice, double bidPrice, int auctionId) {
 		super(hotelType, day, auctionId, askPrice, bidPrice);
 	}
 	

@@ -1,16 +1,14 @@
 package uk.ac.soton.ecs.ia.cortana;
 
 import se.sics.tac.aw.Bid;
-import se.sics.tac.aw.Day;
+import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.TACAgent;
-import se.sics.tac.aw.TacType;
+import se.sics.tac.aw.TacTypeEnum;
 
 public abstract class Auction {
-
-	private Position position;
 	
-	public final TacType AUCTION_TYPE;
-	public final Day AUCTION_DAY;
+	public final TacTypeEnum AUCTION_TYPE;
+	public final DayEnum AUCTION_DAY;
 	
 	public final int AUCTION_ID;
 	
@@ -19,7 +17,9 @@ public abstract class Auction {
 	
 	private boolean closed;
 	
-	public Auction(TacType auctionType, Day auctionDay, int auctionId, double askingPrice, double bidPrice) {
+	private int owned;
+	
+	public Auction(TacTypeEnum auctionType, DayEnum auctionDay, int auctionId, double askingPrice, double bidPrice) {
 		this.AUCTION_TYPE = auctionType;
 		this.AUCTION_DAY = auctionDay;
 		
@@ -29,14 +29,8 @@ public abstract class Auction {
 		this.bidPrice = bidPrice;
 		
 		this.closed = false;
-	}
-	
-	public Position getPosition() {
-		return position;
-	}
-
-	public void setPosition(Position position) {
-		this.position = position;
+		
+		this.owned = 0;
 	}
 
 	public double getAskingPrice() {
@@ -64,6 +58,14 @@ public abstract class Auction {
 
 	public void close() {
 		this.closed = true;
+	}
+
+	public void setNumberOwned(int own) {
+		this.owned = own;
+	}
+	
+	public int getNumberOwned(){
+		return owned;
 	}
 	
 }

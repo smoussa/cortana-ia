@@ -1,6 +1,6 @@
 package se.sics.tac.aw;
 
-public enum TacType {
+public enum TacTypeEnum {
 
 	MYSTERY(-1),
 	INFLIGHT(1),
@@ -13,7 +13,7 @@ public enum TacType {
 	
 	private final int CODE;
 	
-	private TacType(int CODE) {
+	private TacTypeEnum(int CODE) {
 		this.CODE = CODE;
 	}
 	
@@ -21,30 +21,30 @@ public enum TacType {
 		return this.CODE;
 	}
 	
-	public static TacType getType(TacCategory category, int code) {
+	public static TacTypeEnum getType(TacCategoryEnum category, int code) {
 		switch(category) {
 			case CAT_ENTERTAINMENT:
 				if(code == 1)
-					return TacType.ALLIGATOR_WRESTLING;
+					return TacTypeEnum.ALLIGATOR_WRESTLING;
 				else if(code == 2)
-					return TacType.AMUSEMENT;
+					return TacTypeEnum.AMUSEMENT;
 				else if(code == 3)
-					return TacType.MUSEUM;
+					return TacTypeEnum.MUSEUM;
 			break;
 			case CAT_FLIGHT:
 				if(code == 1)
-					return TacType.INFLIGHT;
+					return TacTypeEnum.INFLIGHT;
 				else if(code == 0)
-					return TacType.OUTFLIGHT;
+					return TacTypeEnum.OUTFLIGHT;
 			break;
 			case CAT_HOTEL:
 				if(code == 1)
-					return TacType.GOOD_HOTEL;
+					return TacTypeEnum.GOOD_HOTEL;
 				else if(code == 0)
-					return TacType.CHEAP_HOTEL;
+					return TacTypeEnum.CHEAP_HOTEL;
 			break;
 		}
 		
-		return TacType.MYSTERY;
+		return TacTypeEnum.MYSTERY;
 	}
 }

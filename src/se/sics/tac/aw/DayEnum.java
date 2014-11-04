@@ -1,6 +1,6 @@
 package se.sics.tac.aw;
 
-public enum Day {
+public enum DayEnum {
 	
 	MONDAY (1),
 	TUESDAY (2),
@@ -10,7 +10,7 @@ public enum Day {
 	
 	private final int day;
 	
-	Day (int day) {
+	DayEnum (int day) {
 		this.day = day;
 	}
 	
@@ -18,8 +18,8 @@ public enum Day {
 		return this.day;
 	}
 	
-	public static Day getDay(int dayNumber) {
-		for(Day day:Day.values()) {
+	public static DayEnum getDay(int dayNumber) {
+		for(DayEnum day:DayEnum.values()) {
 			if(day.getDayNumber() == dayNumber)
 				return day;
 		}

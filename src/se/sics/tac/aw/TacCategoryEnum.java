@@ -1,6 +1,6 @@
 package se.sics.tac.aw;
 
-public enum TacCategory {
+public enum TacCategoryEnum {
 	
 	CAT_FLIGHT(0),
 	CAT_HOTEL(1),
@@ -8,7 +8,7 @@ public enum TacCategory {
 	
 	private final int CODE;
 	
-	private TacCategory(int code) {
+	private TacCategoryEnum(int code) {
 		this.CODE = code;
 	}
 	
@@ -16,8 +16,8 @@ public enum TacCategory {
 		return this.CODE;
 	}
 	
-	public static TacCategory getCategory(int code) {
-		for(TacCategory category:TacCategory.values()) {
+	public static TacCategoryEnum getCategory(int code) {
+		for(TacCategoryEnum category:TacCategoryEnum.values()) {
 			if(category.getCode() == code)
 				return category;
 		}

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.stat.StatUtils;
 
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.Series;
@@ -22,9 +23,7 @@ public class ROCPointMonte {
 
 	public static void main(String[] args) {	
 		
-		Chart chart = new Chart(500, 500);
-		//chart.getStyleManager().setChartType(ChartType.Scatter);
-		int TRIES = 10;
+		int TRIES = 100;
 		
 		//time to a list of pairs
 		HashMap<Integer, ArrayList<Pair<Double,Double>>> totalPoints = new HashMap<Integer, ArrayList<Pair<Double,Double>>>();
@@ -47,33 +46,29 @@ public class ROCPointMonte {
 					points.put(t, l);
 				}
 				
-				double minPrice = fas.getPrice();
-				int minPriceTime = fas.getTime();
-				
 				while(fas.canTick()){
 					fas.tick();
 					facs.addChange(fas.getPriceChangeFromLastTick(), fas.getTime(), fas.getPriceBeforeLastTick());
 					
-					FlightPriceEstimatorMonteCarlo fpemc = new FlightPriceEstimatorMonteCarlo(facs, fas.getTime(), fas.getPrice());
+					FlightPriceEstimatorMonteCarlo fpemc = new FlightPriceEstimatorMonteCarlo(facs, fas.getTime(), fas.getPrice(), fas.getMinPrice(), fas.getMinPriceTime());
 					double[] a = fpemc.getMinPrice();
 					
 					points.get(fas.getTime()).add(a[0]);
-					
-					if (fas.getPrice()<minPrice){
-						minPrice = fas.getPrice();
-						minPriceTime = fas.getTime();
-					}
 				}
 				
 				for(Map.Entry<Integer, ArrayList<Double>> e: points.entrySet()){
 					for(Double estimate: e.getValue()){
-						totalPoints.get(e.getKey()).add(Pair.of(minPrice, estimate));
+						totalPoints.get(e.getKey()).add(Pair.of(fas.getMinPrice(), estimate));
 					}
 				}
 				
 			}
 			
 		}
+		
+		//First pointy plot
+		Chart chart = new Chart(500, 500);
+		//chart.getStyleManager().setChartType(ChartType.Scatter);
 		
 		for(Map.Entry<Integer,ArrayList<Pair<Double,Double>>> e: totalPoints.entrySet()){
 			double[] x = new double[TRIES*41];
@@ -104,6 +99,51 @@ public class ROCPointMonte {
 		series.setLineColor(Color.BLACK);
 		
 		new SwingWrapper(chart).displayChart();
+		
+		//point difference plot
+		Chart chart2 = new Chart(500, 500);
+		
+		for(Map.Entry<Integer,ArrayList<Pair<Double,Double>>> e: totalPoints.entrySet()){
+			double[] x1 = new double[TRIES*41];
+			double[] y1 = new double[TRIES*41];
+			int i = 0;
+			ArrayList<Pair<Double,Double>> listOfPoint = e.getValue();
+			for(Pair<Double, Double> p: listOfPoint){
+				x1[i] = e.getKey();
+				y1[i] = p.getRight() - p.getLeft();
+				i++;
+			}
+			
+			Series series1 = chart2.addSeries(Integer.toString(e.getKey()), x1, y1);
+			series1.setLineStyle(SeriesLineStyle.NONE);
+		}
+		
+		new SwingWrapper(chart2).displayChart();
+		
+		//point difference plot average
+		Chart chart3 = new Chart(500, 500);
+		double[] x1 = new double[54];
+		double[] y1 = new double[54];
+		double[] std1 = new double[54];
+		int k = 0;
+		for(Map.Entry<Integer,ArrayList<Pair<Double,Double>>> e: totalPoints.entrySet()){
+			ArrayList<Pair<Double,Double>> listOfPoint = e.getValue();
+			double[] diff = new double[listOfPoint.size()];
+			int i = 0;
+			for(Pair<Double, Double> p: listOfPoint){
+				diff[i] = p.getRight() - p.getLeft();
+				i++;
+			}
+			x1[k] = e.getKey();
+			y1[k] = StatUtils.mean(diff);
+			std1[k] = Math.sqrt(StatUtils.variance(diff));
+			k++;
+		}
+
+		Series series1 = chart3.addSeries("Mean", x1, y1, std1);
+		series1.setLineStyle(SeriesLineStyle.NONE);
+		
+		new SwingWrapper(chart3).displayChart();
 		
 	}
 

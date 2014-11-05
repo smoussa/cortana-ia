@@ -43,7 +43,7 @@ public class Planner {
 			}
 			
 			// For testing we take the highest hotel price and bid that
-			double nightPrice = highestHotelPrice + 1; //getHotelPricePerNight(inflight, outflight, hotelList.size());
+			double nightPrice = highestHotelPrice + 100; //getHotelPricePerNight(inflight, outflight, hotelList.size());
 			ClientPositionFixedHotelPrice cp = new ClientPositionFixedHotelPrice(c, inflight, outflight, hotelList, nightPrice);
 			cpList.add(cp);
 		}

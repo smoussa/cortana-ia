@@ -43,7 +43,7 @@ public class Planner {
 			}
 			
 			// For testing we take the highest hotel price and bid that
-			double nightPrice = highestHotelPrice; //getHotelPricePerNight(inflight, outflight, hotelList.size());
+			double nightPrice = highestHotelPrice + 1; //getHotelPricePerNight(inflight, outflight, hotelList.size());
 			ClientPositionFixedHotelPrice cp = new ClientPositionFixedHotelPrice(c, inflight, outflight, hotelList, nightPrice);
 			cpList.add(cp);
 		}
@@ -77,7 +77,7 @@ public class Planner {
 			
 			for(HotelAuction hotelAuction:hotelList) {
 				if (!strategy.auctionPositions.containsKey(hotelAuction)){
-					Position hotelPosition = new HotelPositionInitial(hotelAuction);
+					Position hotelPosition = new HotelPositionInitial(hotelAuction, cp.pricePerNight);
 					strategy.auctionPositions.put(hotelAuction, hotelPosition);
 				}
 				strategy.auctionPositions.get(hotelAuction).peopleWhoWantMe.add(cp);

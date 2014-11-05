@@ -43,7 +43,6 @@ public class AuctionMaster {
 	public void gameStart(){
 		initialiseAuctions(cortana.agent);
 		createStrategy();
-		sendBids(cortana.agent);
 	}
 	
 	public Auction getAuction(int auctionId) {
@@ -145,9 +144,12 @@ public class AuctionMaster {
 	private synchronized void createStrategy() {
 		System.out.println("MAKING A STRATEGY");
 		strategy = Planner.makeStrategy(this);
+		sendBids(cortana.agent);
 	}
 	
 	private synchronized void updateAuctions(TACAgent agent) {
+		
+		System.out.println("UPDATING AUCTIONS");
 		
 		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
 			double askPrice = agent.getQuote(i).getAskPrice();

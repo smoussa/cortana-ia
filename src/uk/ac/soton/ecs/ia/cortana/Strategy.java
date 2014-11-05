@@ -1,9 +1,13 @@
 package uk.ac.soton.ecs.ia.cortana;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
 
 import se.sics.tac.aw.TACAgent;
 
@@ -22,7 +26,7 @@ public class Strategy {
 	public Strategy(AuctionMaster auctionMaster) {
 		this.auctionMaster = auctionMaster;
 		this.auctionPositions = new HashMap<Auction, Position>();
-		this.validity = 2;
+		this.validity = MAX_VALIDITY;
 	}
 	
 	public void sendBids(TACAgent agent) {
@@ -34,9 +38,14 @@ public class Strategy {
 	public boolean isStrategyValid() {
 		boolean flag = true;
 		
+		List<Integer> invalidPositions = new ArrayList<>();
+		
 		for(Position position:this.auctionPositions.values()) {
-			if(!position.isValid())
+			System.out.println("Aucion " + position.auction.AUCTION_TYPE + " " + position.auction.AUCTION_DAY.getDayNumber());
+			if(!position.isValid()) {
 				flag = false;
+				invalidPositions.add(position.auction.AUCTION_ID);
+			}
 		}
 		
 		if(!flag) {
@@ -59,7 +68,10 @@ public class Strategy {
 		if(flag && validity < MAX_VALIDITY)
 			validity = MAX_VALIDITY;
 		
-		return validity <= 0;
+		if(validity <= 0)
+			System.out.println("REPLAN BECAUSE OF " + invalidPositions);
+		
+		return validity > 0;
 		
 	}
 	

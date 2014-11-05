@@ -2,6 +2,8 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import se.sics.tac.aw.ClientPreferenceEnum;
 import se.sics.tac.aw.DayEnum;
@@ -12,6 +14,8 @@ import se.sics.tac.aw.TacTypeEnum;
 
 public class AuctionMaster {
 
+	private static final long UPDATE_TIMER_MILLISECONDS = 5000;
+	
 	private Map<Integer, FlightAuction> flightAuctions;
 	private Map<Integer, HotelAuction> hotelAuctions;
 	private Map<Integer, EntertainmentAuction> entertainmentAuctions;
@@ -23,6 +27,7 @@ public class AuctionMaster {
 	boolean hotelUpdated = false;
 	boolean bidsNotSent = true;
 	
+	private Timer updTimer;
 	private Strategy strategy;
 	
 	public AuctionMaster(DummyAgent cortana) {
@@ -37,7 +42,7 @@ public class AuctionMaster {
 	//call when actually have some initial prices
 	public void gameStart(){
 		initialiseAuctions(cortana.agent);
-		strategy = new InitialStrategy(this);
+		createStrategy();
 		sendBids(cortana.agent);
 	}
 	
@@ -133,9 +138,16 @@ public class AuctionMaster {
 				break;
 			}
 		}
+		
+		createAuctionUpdater(agent);
 	}
 	
-	private void updateAuctions(TACAgent agent) {
+	private synchronized void createStrategy() {
+		System.out.println("MAKING A STRATEGY");
+		strategy = Planner.makeStrategy(this);
+	}
+	
+	private synchronized void updateAuctions(TACAgent agent) {
 		
 		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
 			double askPrice = agent.getQuote(i).getAskPrice();
@@ -149,6 +161,10 @@ public class AuctionMaster {
 				getAuction(i).setNumberOwned(agent.getOwn(i));
 			
 			getAuction(i).setNumberProbablyOwned(agent.getProbablyOwn(i));
+		}
+		
+		if(!strategy.isStrategyValid()) {
+			createStrategy();
 		}
 		
 	}
@@ -184,6 +200,22 @@ public class AuctionMaster {
 	
 	public int getClientPreference(int clientId, ClientPreferenceEnum preference) {
 		return cortana.agent.getClientPreference(clientId, ClientPreferenceEnum.getCode(preference));
+	}
+	
+	private void createAuctionUpdater(final TACAgent agent) {
+		updTimer = new Timer();
+		updTimer.scheduleAtFixedRate(new TimerTask() {
+			
+			@Override
+			public void run() {
+				updateAuctions(agent);
+			}
+		}, 0, UPDATE_TIMER_MILLISECONDS);
+	}
+	
+	public void kill() {
+		if(this.updTimer != null)
+			updTimer.cancel();
 	}
 	
 }

@@ -9,11 +9,18 @@ import se.sics.tac.aw.DummyAgent;
 import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 
-public class InitialStrategy extends Strategy {
+public class Planner {
 
-	public InitialStrategy(AuctionMaster auctionMaster) {
-		super(auctionMaster);
+	public static Strategy makeStrategy(AuctionMaster auctionMaster) {
 		
+		Strategy strategy = new Strategy(auctionMaster);
+		
+		createClientPositions(strategy, auctionMaster);
+		
+		return strategy;
+	}
+	
+	private static void createClientPositions(Strategy strategy, AuctionMaster auctionMaster) {
 		List<ClientPositionFixedHotelPrice> cpList = new ArrayList<ClientPositionFixedHotelPrice>();
 		
 		for (ClientPreference c: auctionMaster.clientPreferences.values()){		
@@ -22,55 +29,62 @@ public class InitialStrategy extends Strategy {
 			
 			TacTypeEnum hotelType = TacTypeEnum.GOOD_HOTEL;
 			
+			double highestHotelPrice = 0;
+			
 			List<HotelAuction> hotelList = new ArrayList<HotelAuction>();
 			
 			for (int d = c.inFlight.getDayNumber(); d < c.outFlight.getDayNumber(); d++) {
 				int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, hotelType, DayEnum.getDay(d));
 				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
 				hotelList.add(hotelAuction);
+				
+				if(hotelAuction.getAskPrice() > highestHotelPrice)
+					highestHotelPrice = hotelAuction.getAskPrice();
 			}
 			
-			double nightPrice = getHotelPricePerNight(inflight, outflight, hotelList.size());
+			// For testing we take the highest hotel price and bid that
+			double nightPrice = highestHotelPrice; //getHotelPricePerNight(inflight, outflight, hotelList.size());
 			ClientPositionFixedHotelPrice cp = new ClientPositionFixedHotelPrice(c, inflight, outflight, hotelList, nightPrice);
 			cpList.add(cp);
 		}
 		
-		createPositions(cpList);
+		createPositions(strategy, cpList);
 	}
 	
-	private void createPositions(List<ClientPositionFixedHotelPrice> cpList) {
+	/*
+	private static double getHotelPricePerNight(FlightAuction inFlight, FlightAuction outFlight, int numberOfNights) {
+		return (CortanaHeuristics.CLIENT_UTILITY - inFlight.getAskPrice() - outFlight.getAskPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / numberOfNights;
+	}*/
+
+	private static void createPositions(Strategy strategy, List<ClientPositionFixedHotelPrice> cpList) {
 		
 		for(ClientPositionFixedHotelPrice cp: cpList){
 			FlightAuction inflightAuction = cp.inFlight;
 			FlightAuction outflightAuction = cp.outFlight;
 			Collection<HotelAuction> hotelList = cp.hotels;
 
-			if (!auctionPositions.containsKey(inflightAuction)){
+			if (!strategy.auctionPositions.containsKey(inflightAuction)){
 				Position flightPosition = new FlightPositionInitial(inflightAuction);
-				auctionPositions.put(inflightAuction, flightPosition);
+				strategy.auctionPositions.put(inflightAuction, flightPosition);
 			}
-			auctionPositions.get(inflightAuction).peopleWhoWantMe.add(cp);
+			strategy.auctionPositions.get(inflightAuction).peopleWhoWantMe.add(cp);
 			
-			if (!auctionPositions.containsKey(outflightAuction)){
+			if (!strategy.auctionPositions.containsKey(outflightAuction)){
 				Position flightPosition = new FlightPositionInitial(outflightAuction);
-				auctionPositions.put(outflightAuction, flightPosition);
+				strategy.auctionPositions.put(outflightAuction, flightPosition);
 			}
-			auctionPositions.get(outflightAuction).peopleWhoWantMe.add(cp);
+			strategy.auctionPositions.get(outflightAuction).peopleWhoWantMe.add(cp);
 			
 			for(HotelAuction hotelAuction:hotelList) {
-				if (!auctionPositions.containsKey(hotelAuction)){
+				if (!strategy.auctionPositions.containsKey(hotelAuction)){
 					Position hotelPosition = new HotelPositionInitial(hotelAuction);
-					auctionPositions.put(hotelAuction, hotelPosition);
+					strategy.auctionPositions.put(hotelAuction, hotelPosition);
 				}
-				auctionPositions.get(hotelAuction).peopleWhoWantMe.add(cp);
+				strategy.auctionPositions.get(hotelAuction).peopleWhoWantMe.add(cp);
 			}
 		}
 		
 		
-	}
-	
-	public double getHotelPricePerNight(FlightAuction inFlight, FlightAuction outFlight, int numberOfNights) {
-		return (CortanaHeuristics.CLIENT_UTILITY - inFlight.getAskPrice() - outFlight.getAskPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / numberOfNights;
 	}
 	
 }

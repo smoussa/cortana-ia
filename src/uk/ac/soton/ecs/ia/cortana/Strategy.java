@@ -20,7 +20,7 @@ public class Strategy {
 	
 	protected AuctionMaster auctionMaster;
 	
-	Date lastValidityFailure;
+	Date lastTimeFailed;
 	private int validity;
 	
 	public Strategy(AuctionMaster auctionMaster) {
@@ -36,36 +36,23 @@ public class Strategy {
 	}
 
 	public boolean isStrategyValid() {
-		boolean flag = true;
+		boolean isStrategyValid = true;
 		
 		List<Integer> invalidPositions = new ArrayList<>();
 		
 		for(Position position:this.auctionPositions.values()) {
 			System.out.println("Aucion " + position.auction.AUCTION_TYPE + " " + position.auction.AUCTION_DAY.getDayNumber());
 			if(!position.isValid()) {
-				flag = false;
+				isStrategyValid = false;
 				invalidPositions.add(position.auction.AUCTION_ID);
 			}
 		}
 		
-		if(!flag) {
-			
-			Date time = Calendar.getInstance().getTime();
-			
-			// Only accept a validity failure if the last one was over X seconds ago
-			if(lastValidityFailure != null) {
-				long diff = time.getTime() - lastValidityFailure.getTime();
-		        long diffSeconds = diff / 1000 % 60;
-		        
-		        if(diffSeconds < VALIDITY_WAIT_TIME)
-		        	return flag;
-			}
-			
-			validity--;
-			lastValidityFailure = time;
+		if(!isStrategyValid) {
+			decreaseValidity();
 		}
 		
-		if(flag && validity < MAX_VALIDITY)
+		if(isStrategyValid)
 			validity = MAX_VALIDITY;
 		
 		if(validity <= 0)
@@ -75,6 +62,25 @@ public class Strategy {
 		
 	}
 	
+	private void decreaseValidity() {
+		Date currentTime = Calendar.getInstance().getTime();
+		
+		// Only accept a validity failure if the last one was over X seconds ago
+		if(lastTimeFailed != null) {
+			long diff = currentTime.getTime() - lastTimeFailed.getTime();
+	        long diffSeconds = diff / 1000 % 60;
+	        
+	        if(diffSeconds <= VALIDITY_WAIT_TIME) {
+	        	validity--;
+				lastTimeFailed = currentTime;
+	        }
+		}
+		else {
+			validity--;
+			lastTimeFailed = currentTime;
+		}
+	}
+
 	public boolean isStrategySatisfied() {
 			
 		boolean flag = true;

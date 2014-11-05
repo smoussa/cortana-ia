@@ -12,9 +12,14 @@ public class FlightAuction extends Auction {
 	}
 	
 	@Override
-	public void bidMe(TACAgent agent, int quantity, float price) {
+	public void bid(TACAgent agent, int quantity, float price) {
 		System.out.println("Flight " + AUCTION_TYPE + " on day: " + AUCTION_DAY + " is being bid on");
-		super.bidMe(agent, quantity, price);
+		super.bid(agent, quantity, price);
+	}
+	
+	@Override
+	public void ask(TACAgent agent, int quantity, float price){
+		System.err.println("Flight selling is not allowed");
 	}
 
 }

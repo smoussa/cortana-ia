@@ -70,7 +70,7 @@ public class InitialStrategy extends Strategy {
 	}
 	
 	public double getHotelPricePerNight(FlightAuction inFlight, FlightAuction outFlight, int numberOfNights) {
-		return (CortanaHeuristics.CLIENT_UTILITY - inFlight.getAskingPrice() - outFlight.getAskingPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / numberOfNights;
+		return (CortanaHeuristics.CLIENT_UTILITY - inFlight.getAskPrice() - outFlight.getAskPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / numberOfNights;
 	}
 	
 }

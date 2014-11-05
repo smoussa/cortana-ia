@@ -17,16 +17,19 @@ public abstract class Position {
 	}
 	
 	public void bidMe(TACAgent agent) {
-		auction.bidMe(agent, peopleWhoWantMe.size(), this.getPrice());
+		auction.bid(agent, peopleWhoWantMe.size(), this.getPrice());
 	}
 	
 	public boolean isFullySatisfied(){
 		return peopleWhoWantMe.size() == auction.getNumberOwned();
 	}
 	
-//	public boolean isValid() {
-//		return isFullySatisfied && !auction.isClosed();
-//	}
+	public boolean isValid() {
+		return !( 
+				auction.isClosed() && !isFullySatisfied() ||
+				!auction.isClosed() && getPrice()<auction.getBidPrice()
+				);
+	}
 
 	public abstract float getPrice();
 	

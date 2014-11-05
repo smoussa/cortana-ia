@@ -12,9 +12,14 @@ public class HotelAuction extends Auction {
 	}
 	
 	@Override
-	public void bidMe(TACAgent agent, int quantity, float price) {
+	public void bid(TACAgent agent, int quantity, float price) {
 		System.out.println("Hotel on day: " + AUCTION_DAY + " is being bid on");
-		super.bidMe(agent, quantity, price);
+		super.bid(agent, quantity, price);
+	}
+	
+	@Override
+	public void ask(TACAgent agent, int quantity, float price){
+		System.err.println("Hotel selling is not allowed");
 	}
 	
 }

@@ -8,7 +8,7 @@ public class FlightPositionInitial extends Position {
 
 	@Override
 	public float getPrice() {
-		return (float) this.auction.getAskingPrice();
+		return (float) this.auction.getAskPrice();
 	}
 
 }

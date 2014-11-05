@@ -89,8 +89,12 @@ public class AuctionMaster {
 			
 			DayEnum inFlightDay = DayEnum.getDay(this.getClientPreference(i, ClientPreferenceEnum.ARRIVAL));
 			DayEnum outFlightDay = DayEnum.getDay(this.getClientPreference(i, ClientPreferenceEnum.DEPARTURE));
+			int hotelBonus = this.getClientPreference(i, ClientPreferenceEnum.HOTEL_VALUE);
+			int e1Bonus = this.getClientPreference(i, ClientPreferenceEnum.E1);
+			int e2Bonus = this.getClientPreference(i, ClientPreferenceEnum.E2);
+			int e3Bonus = this.getClientPreference(i, ClientPreferenceEnum.E3);
 			
-			ClientPreference client = new ClientPreference(i, inFlightDay, outFlightDay);
+			ClientPreference client = new ClientPreference(i, inFlightDay, outFlightDay, hotelBonus, e1Bonus, e2Bonus, e3Bonus);
 			clientPreferences.put(i, client);
 		}
 		

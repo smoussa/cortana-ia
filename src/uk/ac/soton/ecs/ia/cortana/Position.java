@@ -32,8 +32,8 @@ public abstract class Position {
 		
 		int validCount = 0;
 		
-		if(auction.isClosed() && isFullySatisfied()) {
-			System.out.println("Auction closed and fully satisfied :)");
+		if(isFullySatisfied()) {
+//			System.out.println("Auction closed and fully satisfied :)");
 			validCount++;
 		}
 		// Make sure the auction is actually closed
@@ -42,18 +42,18 @@ public abstract class Position {
 		}
 		
 		if(!auction.isClosed() && isTheoretical && getPrice() >= auction.getAskPrice()) {
-			System.out.println("Auction open and we are bidding enough :)");
+//			System.out.println("Auction open and we are bidding enough :)");
 			validCount++;
 		}
-		else if(validCount == 0) {
+		else if(isTheoretical && validCount == 0) {
 			System.out.println("Auction ask " + auction.getAskPrice() + " Our Bid " + getPrice() + " :(");
 		}
 		
 		if(!auction.isClosed() && !isTheoretical && peopleWhoWantMe.size() <= auction.getNumberProbablyOwned() + auction.getNumberOwned()) {
-			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
+//			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
 			validCount++;
 		}
-		else if(validCount == 0) {
+		else if(!auction.isClosed() && validCount == 0) {
 			System.out.println("We only have " + (auction.getNumberProbablyOwned()+auction.getNumberOwned()) + " of " + peopleWhoWantMe.size() + " :(");
 		}
 		

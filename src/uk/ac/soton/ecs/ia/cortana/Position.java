@@ -8,6 +8,7 @@ import se.sics.tac.aw.TACAgent;
 public abstract class Position {
 
 	protected final Auction auction;
+	protected boolean isTheoretical = true;
 	
 	public List<ClientPosition> peopleWhoWantMe;
 	
@@ -17,6 +18,7 @@ public abstract class Position {
 	}
 	
 	public void bidMe(TACAgent agent) {
+		this.isTheoretical=false;
 		auction.bid(agent, peopleWhoWantMe.size(), this.getPrice());
 	}
 	
@@ -27,7 +29,8 @@ public abstract class Position {
 	public boolean isValid() {
 		return !( 
 				auction.isClosed() && !isFullySatisfied() ||
-				!auction.isClosed() && getPrice()<auction.getBidPrice()
+				!auction.isClosed() && isTheoretical && getPrice() < auction.getAskPrice() ||
+				!auction.isClosed() && !isTheoretical && peopleWhoWantMe.size() > auction.getNumberProbablyOwned()+auction.getNumberOwned()
 				);
 	}
 

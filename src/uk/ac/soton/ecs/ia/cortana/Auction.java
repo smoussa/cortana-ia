@@ -17,7 +17,7 @@ public abstract class Auction {
 	
 	private boolean closed;
 	
-	private int owned;
+	private int owned, probabalyOwned;
 	
 	private double ourAskPrice;
 	private double ourBidPrice;
@@ -41,6 +41,7 @@ public abstract class Auction {
 		this.closed = false;
 		
 		this.owned = 0;
+		this.probabalyOwned = 0;
 	}
 
 	public double getAskPrice() {
@@ -100,6 +101,14 @@ public abstract class Auction {
 	
 	public int getNumberOwned(){
 		return owned;
+	}
+
+	public void setNumberProbablyOwned(int probablyOwn) {
+		this.probabalyOwned = probablyOwn;
+	}
+	
+	public int getNumberProbablyOwned(){
+		return probabalyOwned;
 	}
 	
 }

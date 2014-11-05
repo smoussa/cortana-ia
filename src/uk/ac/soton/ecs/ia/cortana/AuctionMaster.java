@@ -136,8 +136,6 @@ public class AuctionMaster {
 	}
 	
 	private void updateAuctions(TACAgent agent) {
-
-		System.out.println("Auction prices updated");
 		
 		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
 			double askPrice = agent.getQuote(i).getAskPrice();
@@ -149,6 +147,8 @@ public class AuctionMaster {
 			
 			if(agent.getOwn(i) > 0)
 				getAuction(i).setNumberOwned(agent.getOwn(i));
+			
+			getAuction(i).setNumberProbablyOwned(agent.getProbablyOwn(i));
 		}
 		
 	}

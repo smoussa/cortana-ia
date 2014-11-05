@@ -23,24 +23,25 @@ public class Strategy {
 	}
 
 	public boolean isStrategyValid() {
-		
+		boolean flag = true;
 		for(Position position:this.auctionPositions.values()) {
 			if(!position.isValid())
-				return false;
+				flag = false;
 		}
 		
-		return true;
+		return flag;
 		
 	}
 	
 	public boolean isStrategySatisfied() {
-				
+			
+		boolean flag = true;
 		for(Position position:this.auctionPositions.values()) {
 			if(!position.isFullySatisfied())
-				return false;
+				flag = false;
 		}
 		
-		return true;
+		return flag;
 	}
 	
 }

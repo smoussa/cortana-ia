@@ -53,7 +53,7 @@ public abstract class Position {
 //			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
 			validCount++;
 		}
-		else if(!auction.isClosed() && validCount == 0) {
+		else if(!auction.isClosed() && !isTheoretical && validCount == 0) {
 			System.out.println("We only have " + (auction.getNumberProbablyOwned()+auction.getNumberOwned()) + " of " + peopleWhoWantMe.size() + " :(");
 		}
 		

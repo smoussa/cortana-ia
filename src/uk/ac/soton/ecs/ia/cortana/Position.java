@@ -65,4 +65,9 @@ public abstract class Position {
 
 	public abstract float getPrice();
 	
+	public float getCost(){
+		//TODO this stuff here is a lie
+		return this.getPrice()*peopleWhoWantMe.size();
+	}
+	
 }

@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
-
 import se.sics.tac.aw.TACAgent;
 
 public class Strategy {
@@ -17,6 +15,7 @@ public class Strategy {
 	private static final int MAX_VALIDITY = 2;
 
 	protected Map<Auction, Position> auctionPositions;
+	protected List<ClientPosition> clientPositions;
 	
 	protected AuctionMaster auctionMaster;
 	
@@ -90,6 +89,18 @@ public class Strategy {
 		}
 		
 		return flag;
+	}
+	
+	public float getScore(){
+		float ut = 0;
+		for(ClientPosition cp: clientPositions){
+			ut += cp.getUtility();
+		}
+		float cost = 0;
+		for(Position p: auctionPositions.values()){
+			cost += p.getCost();
+		}
+		return ut - cost;	
 	}
 	
 }

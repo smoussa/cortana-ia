@@ -21,7 +21,7 @@ public class Planner {
 	}
 	
 	private static void createClientPositions(Strategy strategy, AuctionMaster auctionMaster) {
-		List<ClientPositionFixedHotelPrice> cpList = new ArrayList<ClientPositionFixedHotelPrice>();
+		List<ClientPosition> cpList = new ArrayList<ClientPosition>();
 		
 		for (ClientPreference c: auctionMaster.clientPreferences.values()){		
 			FlightAuction inflight = auctionMaster.getFlightAuction(TacTypeEnum.INFLIGHT, c.inFlight);
@@ -48,6 +48,8 @@ public class Planner {
 			cpList.add(cp);
 		}
 		
+		strategy.clientPositions = cpList;
+		
 		createPositions(strategy, cpList);
 	}
 	
@@ -56,9 +58,10 @@ public class Planner {
 		return (CortanaHeuristics.CLIENT_UTILITY - inFlight.getAskPrice() - outFlight.getAskPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / numberOfNights;
 	}*/
 
-	private static void createPositions(Strategy strategy, List<ClientPositionFixedHotelPrice> cpList) {
+	private static void createPositions(Strategy strategy, List<ClientPosition> cpList) {
 		
-		for(ClientPositionFixedHotelPrice cp: cpList){
+		for(ClientPosition cpSuper: cpList){
+			ClientPositionFixedHotelPrice cp = (ClientPositionFixedHotelPrice)cpSuper;
 			FlightAuction inflightAuction = cp.inFlight;
 			FlightAuction outflightAuction = cp.outFlight;
 			Collection<HotelAuction> hotelList = cp.hotels;

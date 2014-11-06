@@ -2,20 +2,17 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import se.sics.tac.aw.ClientPreferenceEnum;
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
+import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 
 public class AuctionMaster {
 
-	private static final long UPDATE_TIMER_MILLISECONDS = 5000;
-	
 	private Map<Integer, FlightAuction> flightAuctions;
 	private Map<Integer, HotelAuction> hotelAuctions;
 	private Map<Integer, EntertainmentAuction> entertainmentAuctions;
@@ -27,9 +24,8 @@ public class AuctionMaster {
 	boolean hotelUpdated = false;
 	boolean bidsNotSent = true;
 	
-	private Timer updTimer;
 	private Strategy strategy;
-	
+
 	public AuctionMaster(DummyAgent cortana) {
 		this.cortana = cortana;
 		flightAuctions = new HashMap<Integer, FlightAuction>();
@@ -37,12 +33,6 @@ public class AuctionMaster {
 		entertainmentAuctions = new HashMap<Integer, EntertainmentAuction>();
 		clientPreferences = new HashMap<Integer, ClientPreference>();
 		createClientPreferences();
-	}
-	
-	//call when actually have some initial prices
-	public void gameStart(){
-		initialiseAuctions(cortana.agent);
-		createStrategy();
 	}
 	
 	public Auction getAuction(int auctionId) {
@@ -57,9 +47,12 @@ public class AuctionMaster {
 			return entertainmentAuctions.get(auctionId);
 		}
 		
-		System.err.println("Could not find auction with id " + auctionId);
 		return null;
 		
+	}
+	
+	public Auction getAuction(Quote quote) {
+		return getAuction(quote.getAuction());
 	}
 	
 	public FlightAuction getFlightAuction(int auctionId) {
@@ -104,120 +97,55 @@ public class AuctionMaster {
 		
 	}
 	
-	private void initialiseAuctions(TACAgent agent) {
-		
-		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
-
-			TacCategoryEnum category = DummyAgent.getAuctionCategory(i);
-			DayEnum auctionDay = DummyAgent.getAuctionDay(i);
-			TacTypeEnum auctionType = DummyAgent.getAuctionType(category, i);
-			double askPrice = agent.getQuote(i).getAskPrice();
-			double bidPrice = agent.getQuote(i).getBidPrice();
-			
-			switch (TACAgent.getAuctionCategory(i)) {
-				case TACAgent.CAT_FLIGHT:
-					FlightAuction flightAuction = new FlightAuction(auctionType, auctionDay, askPrice, bidPrice, i);
-					flightAuctions.put(i, flightAuction);
-					
-					System.out.println("Flight Price: " + askPrice);
-				break;
-				case TACAgent.CAT_HOTEL:
-					HotelAuction hotelAuction = new HotelAuction(auctionType, auctionDay, askPrice, bidPrice, i);
-					hotelAuctions.put(i, hotelAuction);
-					
-					System.out.println("Hotel Price: " + askPrice);
-				break;
-				case TACAgent.CAT_ENTERTAINMENT:
-					EntertainmentAuction entertainmentAuction = new EntertainmentAuction(auctionType, auctionDay, askPrice, bidPrice, i);
-					entertainmentAuctions.put(i, entertainmentAuction);
-					
-					System.out.println("Entertainment Price: " + askPrice);
-				break;
-				default:
-				break;
-			}
-		}
-		
-		createAuctionUpdater(agent);
-	}
-	
 	private synchronized void createStrategy() {
 		System.out.println("MAKING A STRATEGY");
 		strategy = Planner.makeStrategy(this);
 		sendBids(cortana.agent);
 	}
 	
-	private synchronized void updateAuctions(TACAgent agent) {
-		
-		System.out.println("UPDATING AUCTIONS");
-		
-		for (int i = 0; i < TACAgent.getAuctionNo(); i++) {
-			double askPrice = agent.getQuote(i).getAskPrice();
-			double bidPrice = agent.getQuote(i).getBidPrice();
-			getAuction(i).updatePrice(askPrice, bidPrice);
-			
-			if(agent.getQuote(i).isAuctionClosed())
-				getAuction(i).close();
-			
-			if(agent.getOwn(i) > 0)
-				getAuction(i).setNumberOwned(agent.getOwn(i));
-			
-			getAuction(i).setNumberProbablyOwned(agent.getProbablyOwn(i));
-		}
-		
-		if(!strategy.isStrategyValid()) {
-			createStrategy();
-		}
-		
-	}
-	
 	public void sendBids(TACAgent agent) {
 		this.strategy.sendBids(agent);
 	}
 	
-	public void quoteUpdated() {
-		if (!bidsNotSent){
-			updateAuctions(cortana.agent);
+	private void createAuction(TACAgent agent, Quote quote) {
+		
+		int auctionId = quote.getAuction();
+		
+		switch (TACAgent.getAuctionCategory(auctionId)) {
+			case TACAgent.CAT_FLIGHT:
+				FlightAuction flightAuction = new FlightAuction(agent, quote);
+				flightAuctions.put(auctionId, flightAuction);
+			break;
+			case TACAgent.CAT_HOTEL:
+				HotelAuction hotelAuction = new HotelAuction(agent, quote);
+				hotelAuctions.put(auctionId, hotelAuction);
+			break;
+			case TACAgent.CAT_ENTERTAINMENT:
+				EntertainmentAuction entertainmentAuction = new EntertainmentAuction(agent, quote);
+				entertainmentAuctions.put(auctionId, entertainmentAuction);
+			break;
+			default:
+			break;
 		}
+		
 	}
 	
-	public void quoteUpdated(TacCategoryEnum category) {
-		// Used to make sure code only runs once prices have been updated
-		if(category == TacCategoryEnum.CAT_FLIGHT)
-			flightUpdated = true;
-		if(category == TacCategoryEnum.CAT_HOTEL)
-			hotelUpdated = true;
+	public synchronized void quoteUpdated(TACAgent agent, Quote quote) {
 		
-		if(flightUpdated && hotelUpdated && bidsNotSent) {
-			this.gameStart();
-			updateAuctions(cortana.agent);
-			bidsNotSent = false;
-		}
+		Auction auction = this.getAuction(quote);
 		
-		if (!bidsNotSent){
-			updateAuctions(cortana.agent);
+		if(auction == null)
+			this.createAuction(agent, quote);
+		else
+			auction.update(quote);
+			
+		if((strategy == null || !strategy.isStrategyValid()) && this.entertainmentAuctions.size()+this.flightAuctions.size()+this.hotelAuctions.size() == 28) {
+			createStrategy();
 		}
-	
 	}
 	
 	public int getClientPreference(int clientId, ClientPreferenceEnum preference) {
 		return cortana.agent.getClientPreference(clientId, ClientPreferenceEnum.getCode(preference));
-	}
-	
-	private void createAuctionUpdater(final TACAgent agent) {
-		updTimer = new Timer();
-		updTimer.scheduleAtFixedRate(new TimerTask() {
-			
-			@Override
-			public void run() {
-				updateAuctions(agent);
-			}
-		}, 0, UPDATE_TIMER_MILLISECONDS);
-	}
-	
-	public void kill() {
-		if(this.updTimer != null)
-			updTimer.cancel();
 	}
 	
 }

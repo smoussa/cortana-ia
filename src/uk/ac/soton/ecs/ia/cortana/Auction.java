@@ -2,7 +2,9 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.DayEnum;
+import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
+import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 
 public abstract class Auction {
@@ -11,104 +13,72 @@ public abstract class Auction {
 	public final DayEnum AUCTION_DAY;
 	
 	public final int AUCTION_ID;
+
+	public Quote quote;
 	
-	private double askPrice;
-	private double bidPrice;
+	private TACAgent agent;
 	
-	private boolean closed;
-	
-	private int owned, probabalyOwned;
-	
-	private double ourAskPrice;
-	private double ourBidPrice;
-	private int ourAskQuantity;
-	private int ourBidQuantity;
-	
-	public Auction(TacTypeEnum auctionType, DayEnum auctionDay, int auctionId, double askingPrice, double bidPrice) {
-		this.AUCTION_TYPE = auctionType;
-		this.AUCTION_DAY = auctionDay;
+	public Auction(TACAgent agent, Quote quote) {
+
+		this.AUCTION_ID = quote.getAuction();
+		this.AUCTION_TYPE = TacTypeEnum.getType(TacCategoryEnum.getCategory(TACAgent.getAuctionType(AUCTION_ID)), TACAgent.getAuctionCategory(AUCTION_ID));
+		this.AUCTION_DAY = DayEnum.getDay(TACAgent.getAuctionDay(AUCTION_ID));
 		
-		this.AUCTION_ID = auctionId;
+		this.quote = quote;
 		
-		this.askPrice = askingPrice;
-		this.bidPrice = bidPrice;
+		this.agent = agent;
 		
-		this.ourAskPrice = 0;
-		this.ourBidPrice = 0;
-		this.ourAskQuantity = 0;
-		this.ourBidQuantity = 0;
-		
-		this.closed = false;
-		
-		this.owned = 0;
-		this.probabalyOwned = 0;
 	}
 
 	public double getAskPrice() {
-		return this.askPrice;
+		return this.quote.getAskPrice();
 	}
 	
 	public double getBidPrice() {
-		return this.bidPrice;
+		return this.quote.getBidPrice();
 	}
 
-	public void bid(TACAgent agent, int quantity, float price) {
-		if(price<ourBidPrice){
+	public void bid(int quantity, float price) {
+		
+		if(price<this.quote.getBidPrice()){
 			System.err.println("Invalid bid price. Must be higher than our current bid.");
 			return;
 		}
-		if(quantity<ourBidQuantity){
+		if(quote.getBid() != null && quantity<this.quote.getBid().getQuantity()){
 			System.err.println("Invalid bid quantity. Must be higher than our current bid.");
 			return;
 		}
-		if(price<askPrice){
+		if(price<this.quote.getAskPrice()){
 			System.err.println("Invalid bid price. The market is selling at a higher price than that.");
 			return;
 		}
 				
-		this.ourBidPrice = price;
-		this.ourBidQuantity = quantity;
 		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(quantity, price);
 		agent.submitBid(bid);
 	}
 	
-	public void ask(TACAgent agent, int quantity, float price) {
+	public void ask(int quantity, float price) {
 		//TODO some error catching logic in here
-		this.ourAskPrice = price;
-		this.ourAskQuantity = quantity;
 		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(-1 * quantity, price);
 		agent.submitBid(bid);
 	}
 
-	public void updatePrice(double askPrice, double bidPrice) {
-		this.askPrice = askPrice;
-		this.bidPrice = bidPrice;
-	}
-
 	public boolean isClosed() {
-		return closed;
+		return this.quote.isAuctionClosed();
 	}
 
-	public void close() {
-		this.closed = true;
-	}
-
-	public void setNumberOwned(int own) {
-		this.owned = own;
-	}
-	
 	public int getNumberOwned(){
-		return owned;
+		return this.agent.getOwn(this.AUCTION_ID);
 	}
 
-	public void setNumberProbablyOwned(int probablyOwn) {
-		this.probabalyOwned = probablyOwn;
-	}
-	
 	public int getNumberProbablyOwned(){
-		return probabalyOwned;
+		return this.agent.getProbablyOwn(this.AUCTION_ID);
+	}
+
+	public void update(Quote quote) {
+		this.quote = quote;
 	}
 	
 }

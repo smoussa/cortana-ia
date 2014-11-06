@@ -127,17 +127,10 @@
 
 package se.sics.tac.aw;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import se.sics.tac.util.ArgEnumerator;
 import uk.ac.soton.ecs.ia.cortana.AuctionMaster;
-import uk.ac.soton.ecs.ia.cortana.ClientPreference;
-import uk.ac.soton.ecs.ia.cortana.FlightAuction;
-import uk.ac.soton.ecs.ia.cortana.HotelAuction;
 
 public class DummyAgent extends AgentImpl {
 
@@ -153,12 +146,13 @@ public class DummyAgent extends AgentImpl {
 	}
 	
 	public void quoteUpdated(Quote quote) {
-		auctionMaster.quoteUpdated();
+		System.out.println("@@@@@@ Single quote updated");
+		auctionMaster.quoteUpdated(agent, quote);
 	}
 	
 	public void quoteUpdated(int auctionCategory) {
+		System.out.println("@@@@@@ Category quote updated");
 		log.fine("All quotes for " + TACAgent.auctionCategoryToString(auctionCategory) + " has been updated");
-		auctionMaster.quoteUpdated(TacCategoryEnum.getCategory(auctionCategory));
 	}
 
 	public void bidUpdated(Bid bid) {

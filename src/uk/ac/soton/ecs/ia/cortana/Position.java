@@ -20,7 +20,7 @@ public abstract class Position {
 	public void bidMe(TACAgent agent) {
 		if(!this.isFullySatisfied()) {
 			this.isTheoretical=false;
-			auction.bid(agent, peopleWhoWantMe.size(), this.getPrice());
+			auction.bid(peopleWhoWantMe.size(), this.getPrice());
 		}
 	}
 	

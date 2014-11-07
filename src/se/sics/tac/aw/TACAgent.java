@@ -627,6 +627,11 @@ public class TACAgent implements Task, TACMessageReceiver {
 		// The id that the agent gets for auctions is always 0 - 27
 		return owns[auctionID];
 	}
+	
+	public float getCost(int auctionID) {
+		// The id that the agent gets for auctions is always 0 - 27
+		return costs[auctionID];
+	}
 
 	// What might be owned in addition to "getOwn"
 	public int getProbablyOwn(int auctionID) {

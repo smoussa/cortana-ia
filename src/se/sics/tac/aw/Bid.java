@@ -260,6 +260,16 @@ public class Bid {
 		}
 		return price[index];
 	}
+	
+	public float getTotalPotentialCost(){
+		int t = 0;
+		if (quantity != null) {
+			for (int i = 0; i < this.len; i++) {
+				t += quantity[i]*price[i];
+			}
+		}
+		return t;
+	}
 
 	public String getBidString() {
 		String bidString = this.bidString;

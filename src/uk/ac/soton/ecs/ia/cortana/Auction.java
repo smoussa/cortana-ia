@@ -16,7 +16,7 @@ public abstract class Auction {
 
 	public Quote quote;
 	
-	private TACAgent agent;
+	public TACAgent agent;
 	
 	public Auction(TACAgent agent, Quote quote) {
 

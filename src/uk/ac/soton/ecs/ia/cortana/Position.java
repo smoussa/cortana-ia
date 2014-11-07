@@ -3,6 +3,7 @@ package uk.ac.soton.ecs.ia.cortana;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.TACAgent;
 
 public abstract class Position {
@@ -20,6 +21,10 @@ public abstract class Position {
 	public void bidMe(TACAgent agent) {
 		if(!this.isFullySatisfied()) {
 			this.isTheoretical=false;
+			//TODO take into account stuff we already own for that auction
+			//e.g we already own 2 but we need 5, therefore bid for 3
+			
+			//ALSO what if there is already a bid on the auction?
 			auction.bid(peopleWhoWantMe.size(), this.getPrice());
 		}
 	}
@@ -29,6 +34,13 @@ public abstract class Position {
 	}
 	
 	public boolean isValid() {
+		
+		//TODO remove before final competition
+		if(auction.quote.getBid() != auction.agent.getBid(auction.AUCTION_ID)){
+			System.out.println("The auction's quote's bid and the tacagent's bid have become different!!!");
+			System.out.println("This should never happen");
+			System.exit(-1);
+		}
 		
 		int validCount = 0;
 		
@@ -66,8 +78,14 @@ public abstract class Position {
 	public abstract float getPrice();
 	
 	public float getCost(){
-		//TODO this stuff here is a lie
-		return this.getPrice()*peopleWhoWantMe.size();
+		if(this.isTheoretical){
+			//TODO what if there is not only stuff already bought, but also a current bid on the auction
+			return auction.agent.getCost(auction.AUCTION_ID) + this.getPrice()*(peopleWhoWantMe.size()-auction.agent.getOwn(auction.AUCTION_ID));
+		}
+		else{
+			Bid b = auction.quote.getBid();
+			return auction.agent.getCost(auction.AUCTION_ID) + b.getTotalPotentialCost();
+		}
 	}
 	
 }

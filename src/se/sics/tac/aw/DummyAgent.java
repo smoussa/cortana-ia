@@ -153,11 +153,13 @@ public class DummyAgent extends AgentImpl {
 	public void quoteUpdated(int auctionCategory) {
 		System.out.println("@@@@@@ Category quote updated");
 		log.fine("All quotes for " + TACAgent.auctionCategoryToString(auctionCategory) + " has been updated");
+		auctionMaster.check();
 	}
 
 	public void bidUpdated(Bid bid) {
 		log.fine("Bid Updated: id=" + bid.getID() + " auction=" + bid.getAuction() + " state=" + bid.getProcessingStateAsString());
 		log.fine("       Hash: " + bid.getBidHash());
+		auctionMaster.bidUpdated(bid);
 	}
 
 	public void bidRejected(Bid bid) {

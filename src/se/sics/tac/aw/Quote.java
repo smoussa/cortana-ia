@@ -124,7 +124,7 @@ public class Quote {
 		this.lastQuoteTime = lastQuoteTime;
 	}
 
-	void setBid(Bid bid) {
+	public void setBid(Bid bid) {
 		this.bid = bid;
 	}
 

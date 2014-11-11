@@ -12,7 +12,7 @@ import se.sics.tac.aw.TACAgent;
 public class Strategy {
 
 	private static final int VALIDITY_WAIT_TIME = 1;
-	private static final int MAX_VALIDITY = 2;
+	private static final int MAX_VALIDITY = 10;
 
 	protected Map<Auction, Position> auctionPositions;
 	protected List<ClientPosition> clientPositions;

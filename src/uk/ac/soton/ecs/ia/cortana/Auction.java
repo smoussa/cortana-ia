@@ -76,9 +76,10 @@ public abstract class Auction {
 	public int getNumberProbablyOwned(){
 		return this.agent.getProbablyOwn(this.AUCTION_ID);
 	}
-
-	public void update(Quote quote) {
-		this.quote = quote;
+	
+	public void update() {
+		this.quote = agent.getQuote(this.AUCTION_ID);
+		this.quote.setBid(agent.getBid(this.AUCTION_ID));
 	}
 	
 }

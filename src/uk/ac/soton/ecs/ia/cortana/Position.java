@@ -33,20 +33,27 @@ public abstract class Position {
 		return peopleWhoWantMe.size() <= auction.getNumberOwned();
 	}
 	
-	public boolean isValid() {
+public boolean isValid() {
 		
 		//TODO remove before final competition
-		if(auction.quote.getBid() != auction.agent.getBid(auction.AUCTION_ID)){
-			System.out.println("The auction's quote's bid and the tacagent's bid have become different!!!");
+		
+		if( auction.quote.getBid()==null && auction.agent.getBid(auction.AUCTION_ID)!=null
+			|| auction.quote.getBid()!=null && auction.agent.getBid(auction.AUCTION_ID)==null){
+				System.out.println("The auction's quote's bid and the tacagent's bid have become different!!! ONE");
+				System.out.println("This should never happen");
+				System.exit(-1);
+			}
+
+		if(	auction.quote.getBid()!=null && !auction.quote.getBid().same(auction.agent.getBid(auction.AUCTION_ID)))
+		{
+			System.out.println("The auction's quote's bid and the tacagent's bid have become different!!! TWO");
 			System.out.println("This should never happen");
 			System.exit(-1);
 		}
 		
-		int validCount = 0;
-		
 		if(isFullySatisfied()) {
 //			System.out.println("Auction closed and fully satisfied :)");
-			validCount++;
+			return true;
 		}
 		// Make sure the auction is actually closed
 		else if(auction.isClosed()) {
@@ -55,24 +62,23 @@ public abstract class Position {
 		
 		if(!auction.isClosed() && isTheoretical && getPrice() >= auction.getAskPrice()) {
 //			System.out.println("Auction open and we are bidding enough :)");
-			validCount++;
+			return true;
 		}
-		else if(isTheoretical && validCount == 0) {
+		else if(isTheoretical) {
 			System.out.print("Auction ask " + auction.getAskPrice() + " Our Bid " + getPrice() + " :(");
 		}
 		
 		if(!auction.isClosed() && !isTheoretical && peopleWhoWantMe.size() <= auction.getNumberProbablyOwned() + auction.getNumberOwned()) {
 //			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
-			validCount++;
+			return true;
 		}
-		else if(!auction.isClosed() && !isTheoretical && validCount == 0) {
+		else if(!auction.isClosed() && !isTheoretical) {
 			System.out.print("We only have " + (auction.getNumberProbablyOwned()+auction.getNumberOwned()) + " of " + peopleWhoWantMe.size() + " :(");
 		}
 		
-		if(validCount == 0)
-			System.out.println("   Not Valid");
+		System.out.println("   Not Valid");
 		
-		return validCount > 0;	
+		return false;	
 	}
 
 	public abstract float getPrice();

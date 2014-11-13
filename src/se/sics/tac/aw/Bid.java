@@ -27,6 +27,8 @@ package se.sics.tac.aw;
 
 import java.util.StringTokenizer;
 
+import org.apache.commons.math3.stat.StatUtils;
+
 public class Bid {
 
 	public final static String EMPTY_BID_STRING = "()";
@@ -367,5 +369,16 @@ public class Bid {
 		default:
 			return state;
 		}
+	}
+
+	public double getHighestPrice() {
+		
+		double[] dooble = new double[this.price.length]; 
+		
+		for(int i = 0; i < this.price.length; i++) {
+			dooble[i] = price[i];
+		}
+		
+		return StatUtils.max(dooble);
 	}
 }

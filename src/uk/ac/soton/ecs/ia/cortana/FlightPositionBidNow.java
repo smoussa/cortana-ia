@@ -1,8 +1,8 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-public class FlightPositionInitial extends Position {
+public class FlightPositionBidNow extends Position {
 
-	public FlightPositionInitial(Auction auction) {
+	public FlightPositionBidNow(Auction auction) {
 		super(auction);
 	}
 

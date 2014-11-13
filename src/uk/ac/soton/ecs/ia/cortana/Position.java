@@ -85,7 +85,7 @@ public abstract class Position {
 		if(finalised)
 			return this.actualBid;
 		
-		return (float) Math.max(getOptimalBidPrice(), auction.getAskPrice() + 1);
+		return (float) Math.max(Math.max(getOptimalBidPrice(), auction.getAskPrice()), auction.getBid().getHighestPrice());
 	}
 	
 	abstract float getOptimalBidPrice();

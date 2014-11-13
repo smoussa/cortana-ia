@@ -67,13 +67,13 @@ public class Planner {
 			Collection<HotelAuction> hotelList = cp.hotels;
 
 			if (!strategy.auctionPositions.containsKey(inflightAuction)){
-				Position flightPosition = new FlightPositionInitial(inflightAuction);
+				Position flightPosition = new FlightPositionBidNow(inflightAuction);
 				strategy.auctionPositions.put(inflightAuction, flightPosition);
 			}
 			strategy.auctionPositions.get(inflightAuction).peopleWhoWantMe.add(cp);
 			
 			if (!strategy.auctionPositions.containsKey(outflightAuction)){
-				Position flightPosition = new FlightPositionInitial(outflightAuction);
+				Position flightPosition = new FlightPositionBidNow(outflightAuction);
 				strategy.auctionPositions.put(outflightAuction, flightPosition);
 			}
 			strategy.auctionPositions.get(outflightAuction).peopleWhoWantMe.add(cp);

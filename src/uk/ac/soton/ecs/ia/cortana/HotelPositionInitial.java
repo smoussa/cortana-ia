@@ -10,7 +10,7 @@ public class HotelPositionInitial extends Position {
 	}
 
 	@Override
-	public float getPrice() {
+	public float getOptimalBidPrice() {
 		return (float) this.price;
 	}
 	

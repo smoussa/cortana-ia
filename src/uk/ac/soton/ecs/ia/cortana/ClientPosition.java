@@ -19,7 +19,7 @@ public class ClientPosition {
 	}
 	
 	public double getUtility(){
-		double ut = 1000;
+		double ut = CortanaHeuristics.CLIENT_UTILITY;
 		
 		if (hotels.get(0).AUCTION_TYPE==TacTypeEnum.GOOD_HOTEL)
 			ut =+ client.hotelBonus;

@@ -7,7 +7,7 @@ public class EntertainmentPositionInitial extends Position {
 	}
 
 	@Override
-	public float getPrice() {
+	public float getOptimalBidPrice() {
 		return 0;
 	}
 

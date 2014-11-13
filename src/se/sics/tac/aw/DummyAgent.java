@@ -159,7 +159,6 @@ public class DummyAgent extends AgentImpl {
 	public void bidUpdated(Bid bid) {
 		log.fine("Bid Updated: id=" + bid.getID() + " auction=" + bid.getAuction() + " state=" + bid.getProcessingStateAsString());
 		log.fine("       Hash: " + bid.getBidHash());
-		auctionMaster.bidUpdated(bid);
 	}
 
 	public void bidRejected(Bid bid) {

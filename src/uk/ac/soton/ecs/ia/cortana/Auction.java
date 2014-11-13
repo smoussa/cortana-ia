@@ -14,8 +14,6 @@ public abstract class Auction {
 	
 	public final int AUCTION_ID;
 
-	public Quote quote;
-	
 	public TACAgent agent;
 	
 	public Auction(TACAgent agent, Quote quote) {
@@ -24,31 +22,29 @@ public abstract class Auction {
 		this.AUCTION_TYPE = TacTypeEnum.getType(TacCategoryEnum.getCategory(TACAgent.getAuctionType(AUCTION_ID)), TACAgent.getAuctionCategory(AUCTION_ID));
 		this.AUCTION_DAY = DayEnum.getDay(TACAgent.getAuctionDay(AUCTION_ID));
 		
-		this.quote = quote;
-		
 		this.agent = agent;
 		
 	}
 
 	public double getAskPrice() {
-		return this.quote.getAskPrice();
+		return this.agent.getQuote(AUCTION_ID).getAskPrice();
 	}
 	
 	public double getBidPrice() {
-		return this.quote.getBidPrice();
+		return this.agent.getQuote(AUCTION_ID).getBidPrice();
 	}
 
 	public void bid(int quantity, float price) {
 		
-		if(price<this.quote.getBidPrice()){
+		if(price<this.agent.getQuote(AUCTION_ID).getBidPrice()){
 			System.err.println("Invalid bid price. Must be higher than our current bid.");
 			return;
 		}
-		if(quote.getBid() != null && quantity<this.quote.getBid().getQuantity()){
+		if(this.agent.getQuote(AUCTION_ID).getBid() != null && quantity<this.agent.getQuote(AUCTION_ID).getBid().getQuantity()){
 			System.err.println("Invalid bid quantity. Must be higher than our current bid.");
 			return;
 		}
-		if(price<this.quote.getAskPrice()){
+		if(price<this.agent.getQuote(AUCTION_ID).getAskPrice()){
 			System.err.println("Invalid bid price. The market is selling at a higher price than that.");
 			return;
 		}
@@ -66,7 +62,7 @@ public abstract class Auction {
 	}
 
 	public boolean isClosed() {
-		return this.quote.isAuctionClosed();
+		return this.agent.getQuote(AUCTION_ID).isAuctionClosed();
 	}
 
 	public int getNumberOwned(){
@@ -77,9 +73,8 @@ public abstract class Auction {
 		return this.agent.getProbablyOwn(this.AUCTION_ID);
 	}
 	
-	public void update() {
-		this.quote = agent.getQuote(this.AUCTION_ID);
-		this.quote.setBid(agent.getBid(this.AUCTION_ID));
+	public Bid getBid() {
+		return this.agent.getBid(this.AUCTION_ID);
 	}
 	
 }

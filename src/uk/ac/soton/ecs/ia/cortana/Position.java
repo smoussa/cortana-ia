@@ -37,19 +37,19 @@ public boolean isValid() {
 		
 		//TODO remove before final competition
 		
-		if( auction.quote.getBid()==null && auction.agent.getBid(auction.AUCTION_ID)!=null
-			|| auction.quote.getBid()!=null && auction.agent.getBid(auction.AUCTION_ID)==null){
-				System.out.println("The auction's quote's bid and the tacagent's bid have become different!!! ONE");
-				System.out.println("This should never happen");
-				System.exit(-1);
-			}
-
-		if(	auction.quote.getBid()!=null && !auction.quote.getBid().same(auction.agent.getBid(auction.AUCTION_ID)))
-		{
-			System.out.println("The auction's quote's bid and the tacagent's bid have become different!!! TWO");
-			System.out.println("This should never happen");
-			System.exit(-1);
-		}
+//		if( auction.quote.getBid()==null && auction.agent.getBid(auction.AUCTION_ID)!=null
+//			|| auction.quote.getBid()!=null && auction.agent.getBid(auction.AUCTION_ID)==null){
+//				System.out.println("The auction's quote's bid and the tacagent's bid have become different!!! ONE");
+//				System.out.println("This should never happen");
+//				System.exit(-1);
+//			}
+//
+//		if(	auction.quote.getBid()!=null && !auction.quote.getBid().same(auction.agent.getBid(auction.AUCTION_ID)))
+//		{
+//			System.out.println("The auction's quote's bid and the tacagent's bid have become different!!! TWO");
+//			System.out.println("This should never happen");
+//			System.exit(-1);
+//		}
 		
 		if(isFullySatisfied()) {
 //			System.out.println("Auction closed and fully satisfied :)");
@@ -89,7 +89,7 @@ public boolean isValid() {
 			return auction.agent.getCost(auction.AUCTION_ID) + this.getPrice()*(peopleWhoWantMe.size()-auction.agent.getOwn(auction.AUCTION_ID));
 		}
 		else{
-			Bid b = auction.quote.getBid();
+			Bid b = auction.getBid();
 			return auction.agent.getCost(auction.AUCTION_ID) + b.getTotalPotentialCost();
 		}
 	}

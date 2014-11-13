@@ -3,7 +3,6 @@ package uk.ac.soton.ecs.ia.cortana;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.ClientPreferenceEnum;
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
@@ -137,8 +136,6 @@ public class AuctionMaster {
 		
 		if(auction == null)
 			this.createAuction(agent, quote);
-		else
-			auction.update();
 	}
 	
 	public synchronized void check() {
@@ -151,9 +148,4 @@ public class AuctionMaster {
 		return cortana.agent.getClientPreference(clientId, ClientPreferenceEnum.getCode(preference));
 	}
 
-	public void bidUpdated(Bid bid) {
-		Auction auction = this.getAuction(bid.getAuction());
-		auction.update();
-	}
-	
 }

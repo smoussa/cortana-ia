@@ -100,11 +100,11 @@ public class AuctionMaster {
 	private synchronized void createStrategy() {
 		System.out.println("MAKING A STRATEGY");
 		strategy = Planner.makeStrategy(this);
-		sendBids(cortana.agent);
+		sendBids();
 	}
 	
-	public void sendBids(TACAgent agent) {
-		this.strategy.sendBids(agent);
+	public void sendBids() {
+		this.strategy.sendBids();
 	}
 	
 	private void createAuction(TACAgent agent, Quote quote) {
@@ -136,6 +136,10 @@ public class AuctionMaster {
 		
 		if(auction == null)
 			this.createAuction(agent, quote);
+		
+		if(auction.AUCTION_TYPE == TacTypeEnum.INFLIGHT || auction.AUCTION_TYPE == TacTypeEnum.OUTFLIGHT)
+			((FlightPosition) this.strategy.getPosition(auction)).tick();
+			
 	}
 	
 	public synchronized void check() {

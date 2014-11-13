@@ -16,9 +16,4 @@ public class FlightAuction extends Auction {
 		super.bid(quantity, price);
 	}
 	
-	@Override
-	public void ask(int quantity, float price){
-		System.err.println("Flight selling is not allowed");
-	}
-
 }

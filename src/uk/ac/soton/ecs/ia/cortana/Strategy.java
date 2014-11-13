@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.sics.tac.aw.TACAgent;
-
 public class Strategy {
 
 	private static final int VALIDITY_WAIT_TIME = 1;
@@ -28,9 +26,9 @@ public class Strategy {
 		this.validity = MAX_VALIDITY;
 	}
 	
-	public void sendBids(TACAgent agent) {
+	public void sendBids() {
 		for(Position position:this.auctionPositions.values()) {
-			position.bidMe(agent);
+			position.bidMe();
 		}
 	}
 
@@ -101,6 +99,10 @@ public class Strategy {
 			cost += p.getCost();
 		}
 		return ut - cost;	
+	}
+
+	public Position getPosition(Auction auction) {
+		return this.auctionPositions.get(auction);
 	}
 	
 }

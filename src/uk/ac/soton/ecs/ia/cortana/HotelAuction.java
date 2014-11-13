@@ -16,9 +16,4 @@ public class HotelAuction extends Auction {
 		super.bid(quantity, price);
 	}
 	
-	@Override
-	public void ask(int quantity, float price){
-		System.err.println("Hotel selling is not allowed");
-	}
-	
 }

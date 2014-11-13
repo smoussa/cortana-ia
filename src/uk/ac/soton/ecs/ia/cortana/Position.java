@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.sics.tac.aw.Bid;
-import se.sics.tac.aw.TACAgent;
 
 public abstract class Position {
 
@@ -16,21 +15,20 @@ public abstract class Position {
 	private boolean finalised;
 	private float actualBid;
 	private int quantityBid;
+	protected boolean shouldBid;
 	
 	public Position(Auction auction) {
 		this.auction = auction;
 		this.peopleWhoWantMe = new ArrayList<ClientPosition>();
 		this.finalised = false;
+		this.shouldBid = false;
 	}
 	
-	public void bidMe(TACAgent agent) {
-		if(!this.isFullySatisfied()) {
+	public void bidMe() {
+		if(shouldBid && isTheoretical && !isFullySatisfied()) {
 			this.isTheoretical=false;
-			//TODO take into account stuff we already own for that auction
-			//e.g we already own 2 but we need 5, therefore bid for 3
-			
-			//ALSO what if there is already a bid on the auction?
 			auction.bid(getQuantityToBid(), this.getAcutalBidPrice());
+			this.shouldBid = false;
 		}
 	}
 	

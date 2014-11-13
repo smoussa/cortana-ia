@@ -1,12 +1,13 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-public class HotelPositionInitial extends Position {
+public class HotelPositionBidNow extends Position {
 
 	private double price;
 
-	public HotelPositionInitial(Auction auction, double price) {
+	public HotelPositionBidNow(Auction auction, double price) {
 		super(auction);
 		this.price = price;
+		this.shouldBid = true;
 	}
 
 	@Override

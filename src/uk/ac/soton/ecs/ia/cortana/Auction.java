@@ -30,10 +30,6 @@ public abstract class Auction {
 		return this.agent.getQuote(AUCTION_ID).getAskPrice();
 	}
 	
-	public double getBidPrice() {
-		return this.agent.getQuote(AUCTION_ID).getBidPrice();
-	}
-
 	public void bid(int quantity, float price) {
 		
 		if(price<this.agent.getQuote(AUCTION_ID).getBidPrice()){
@@ -54,13 +50,6 @@ public abstract class Auction {
 		agent.submitBid(bid);
 	}
 	
-	public void ask(int quantity, float price) {
-		//TODO some error catching logic in here
-		Bid bid = new Bid(AUCTION_ID);
-		bid.addBidPoint(-1 * quantity, price);
-		agent.submitBid(bid);
-	}
-
 	public boolean isClosed() {
 		return this.agent.getQuote(AUCTION_ID).isAuctionClosed();
 	}
@@ -75,6 +64,11 @@ public abstract class Auction {
 	
 	public Bid getBid() {
 		return this.agent.getBid(this.AUCTION_ID);
+	}
+
+	public Estimator getEstimator() {
+		// TODO change store etc to make estimator
+		return null;
 	}
 	
 }

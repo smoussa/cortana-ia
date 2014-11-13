@@ -80,7 +80,7 @@ public class Planner {
 			
 			for(HotelAuction hotelAuction:hotelList) {
 				if (!strategy.auctionPositions.containsKey(hotelAuction)){
-					Position hotelPosition = new HotelPositionInitial(hotelAuction, cp.pricePerNight);
+					Position hotelPosition = new HotelPositionBidNow(hotelAuction, cp.pricePerNight);
 					strategy.auctionPositions.put(hotelAuction, hotelPosition);
 				}
 				strategy.auctionPositions.get(hotelAuction).peopleWhoWantMe.add(cp);

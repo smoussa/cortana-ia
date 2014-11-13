@@ -136,8 +136,10 @@ public class AuctionMaster {
 		
 		Auction auction = this.getAuction(quote);
 		
-		if(auction == null)
+		if(auction == null) {
 			this.createAuction(agent, quote);
+			auction = this.getAuction(quote);
+		}
 		
 		if(auction.AUCTION_TYPE == TacTypeEnum.INFLIGHT || auction.AUCTION_TYPE == TacTypeEnum.OUTFLIGHT)
 			((FlightPosition) this.strategy.getPosition(auction)).tick();

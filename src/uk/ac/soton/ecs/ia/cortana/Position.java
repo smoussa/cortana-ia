@@ -37,6 +37,9 @@ public abstract class Position {
 		if(finalised)
 			return this.quantityBid;
 		
+		if(auction.getBid() == null)
+			return this.peopleWhoWantMe.size() - auction.getNumberOwned();
+		
 		if(this.peopleWhoWantMe.size() - auction.getNumberOwned() < auction.getBid().getQuantity())
 			return auction.getBid().getQuantity();
 		
@@ -83,6 +86,9 @@ public abstract class Position {
 		if(finalised)
 			return this.actualBid;
 		
+		if(auction.getBid() == null)
+			return (float) Math.max(getOptimalBidPrice(), auction.getAskPrice());
+					
 		return (float) Math.max(Math.max(getOptimalBidPrice(), auction.getAskPrice()), auction.getBid().getHighestPrice());
 	}
 	

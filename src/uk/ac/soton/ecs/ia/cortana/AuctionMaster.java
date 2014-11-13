@@ -99,7 +99,9 @@ public class AuctionMaster {
 	
 	private synchronized void createStrategy() {
 		System.out.println("MAKING A STRATEGY");
-		strategy = Planner.makeStrategy(this);
+
+		this.strategy = Planner.makeStrategy(this, this.strategy);
+		
 		sendBids();
 	}
 	

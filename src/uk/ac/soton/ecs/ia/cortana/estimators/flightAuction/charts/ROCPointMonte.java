@@ -50,10 +50,9 @@ public class ROCPointMonte {
 					fas.tick();
 					facs.addChange(fas.getPriceChangeFromLastTick(), fas.getTime(), fas.getPriceBeforeLastTick());
 					
-					FlightPriceEstimatorMonteCarlo fpemc = new FlightPriceEstimatorMonteCarlo(facs, fas.getTime(), fas.getPrice(), fas.getMinPrice(), fas.getMinPriceTime());
-					double[] a = fpemc.getMinPrice();
+					FlightPriceEstimatorMonteCarlo fpemc = new FlightPriceEstimatorMonteCarlo(facs, fas.getTime(), fas.getPrice());
 					
-					points.get(fas.getTime()).add(a[0]);
+					points.get(fas.getTime()).add((double) fpemc.getFutureMinPrice());
 				}
 				
 				for(Map.Entry<Integer, ArrayList<Double>> e: points.entrySet()){

@@ -12,7 +12,7 @@ public class FlightPositionBidMin extends FlightPosition {
 	@Override
 	float getOptimalBidPrice() {
 		if(min == 0) {
-			min = findMin();
+			min = getFutureMinPrice();
 			return min;
 		}
 			
@@ -21,15 +21,14 @@ public class FlightPositionBidMin extends FlightPosition {
 
 	@Override
 	public void tick() {
-		this.min = findMin();
-		if(auction.getAskPrice() <= min)
-			this.shouldBid = true;
+		this.min = getFutureMinPrice();
+		this.shouldBid = this.shouldBuy(auction.getAskPrice(), this.min);
 		
 		this.bidMe();
 	}
 
-	private float findMin() {
-		return auction.getEstimator().getMin();
+	private float getFutureMinPrice() {
+		return auction.getEstimator().getFutureMinPrice();
 	}
 	
 	@Override
@@ -40,4 +39,11 @@ public class FlightPositionBidMin extends FlightPosition {
 	
 	//TODO I expect that getCost needs to be overridden to actually be relavent
 
+	private boolean shouldBuy(double currentPrice, double predictedFutureMinPrice){
+		if(currentPrice<=predictedFutureMinPrice){
+			return true;
+		}
+		double diff = currentPrice - predictedFutureMinPrice;
+		return diff/currentPrice < 0.1;
+	}
 }

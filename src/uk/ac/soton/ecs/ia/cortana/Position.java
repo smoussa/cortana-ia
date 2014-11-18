@@ -51,10 +51,7 @@ public abstract class Position {
 		return peopleWhoWantMe.size() <= auction.getNumberOwned();
 	}
 	
-	public boolean isValid() {
-		
-		//TODO this doesn't work because if we have a good enough bid, but our HQW is less than what we need it still passes
-		
+	public boolean isValid() {		
 		if(isFullySatisfied()) {
 //			System.out.println("Auction closed and fully satisfied :)");
 			return true;
@@ -64,25 +61,28 @@ public abstract class Position {
 			System.out.print("Haven't won auction :(");
 		}
 		
+		boolean isValid = true;
+		
 		if(!auction.isClosed() && finalised && getActualBidPrice() >= auction.getAskPrice()) {
 //			System.out.println("Auction open and we are bidding enough :)");
-			return true;
 		}
 		else if(finalised) {
 			System.out.print("Auction ask " + auction.getAskPrice() + " Our Bid " + getOptimalBidPrice() + " :(");
+			isValid = false;
 		}
 		
 		if(!auction.isClosed() && !isTheoretical && peopleWhoWantMe.size() <= auction.getNumberProbablyOwned() + auction.getNumberOwned()) {
 //			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
-			return true;
 		}
 		else if(!auction.isClosed() && !isTheoretical) {
 			System.out.print("We only have " + (auction.getNumberProbablyOwned()+auction.getNumberOwned()) + " of " + peopleWhoWantMe.size() + " :(");
+			isValid = false;
 		}
 		
-		System.out.println("   Not Valid");
+		if(!isValid)
+			System.out.println("   Not Valid");
 		
-		return false;	
+		return isValid;	
 	}
 
 	private float getActualBidPrice() {

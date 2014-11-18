@@ -8,11 +8,11 @@ import se.sics.tac.aw.Bid;
 public abstract class Position {
 
 	protected final Auction auction;
-	protected boolean isTheoretical = true;
+	protected boolean isTheoretical = true; //indicates position has been put into play. i.e has been bidded
 	
 	public List<ClientPosition> peopleWhoWantMe;
 	
-	private boolean finalised;
+	private boolean finalised; //indicates peopleWhoWantMe and the bid price and quantity wont be changes
 	private float actualBid;
 	private int quantityBid;
 	protected boolean shouldBid;
@@ -63,6 +63,7 @@ public abstract class Position {
 		
 		boolean isValid = true;
 		
+		//TODO Check this. Dont't think it the use of finalised is correct
 		if(!auction.isClosed() && finalised && getActualBidPrice() >= auction.getAskPrice()) {
 //			System.out.println("Auction open and we are bidding enough :)");
 		}
@@ -99,7 +100,6 @@ public abstract class Position {
 	
 	public float getCost(){
 		if(this.isTheoretical){
-			//TODO what if there is not only stuff already bought, but also a current bid on the auction
 			return auction.agent.getCost(auction.AUCTION_ID) + this.getActualBidPrice()*getQuantityToBid();
 		}
 		else{

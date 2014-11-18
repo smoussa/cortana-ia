@@ -31,5 +31,13 @@ public class FlightPositionBidMin extends FlightPosition {
 	private float findMin() {
 		return auction.getEstimator().getMin();
 	}
+	
+	@Override
+	//Must be prevented as price will change as time goes on
+	public void finalise() {		
+		System.out.println("Finalisation prevented");
+	}
+	
+	//TODO I expect that getCost needs to be overridden to actually be relavent
 
 }

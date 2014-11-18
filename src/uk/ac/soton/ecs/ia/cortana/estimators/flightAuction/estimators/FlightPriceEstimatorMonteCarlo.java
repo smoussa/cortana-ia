@@ -1,34 +1,29 @@
 package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators;
 
 import java.util.HashMap;
-import java.util.Random;
 
+import uk.ac.soton.ecs.ia.cortana.Estimator;
 import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStore;
-import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStoreResetable;
 import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionSimulator;
 
-public class FlightPriceEstimatorMonteCarlo implements FlightAuctionEstimator {
+public class FlightPriceEstimatorMonteCarlo implements Estimator {
 	FlightAuctionChangeStore facs;
 	int currentTime;
 	double currentPrice;
-	double historicMinPrice;
-	int historicMinPriceTime;
 	
-	public FlightPriceEstimatorMonteCarlo(FlightAuctionChangeStore facs, int currentTime, double currentPrice, double historicMinPrice, int historicMinPriceTime){
+	public FlightPriceEstimatorMonteCarlo(FlightAuctionChangeStore facs, int currentTime, double currentPrice){
 		this.facs = facs;
 		this.currentTime = currentTime;
 		this.currentPrice = currentPrice;
-		this.historicMinPrice = historicMinPrice;
-		this.historicMinPriceTime = historicMinPriceTime;
 	}
 	
-	//returns a tuple of MinPrice and time of MinPrice
+
 	@Override
-	public double[] getMinPrice(){
-		return this.getMinPrice(1);
+	public float getFutureMinPrice() {
+		return (float) this.getMinPrice(1);
 	}
 	
-	public double[] getMinPrice(int method){
+	public double getMinPrice(int method){
 		if (method==1){
 			return this.getMinPriceMethod1();
 		}
@@ -41,77 +36,58 @@ public class FlightPriceEstimatorMonteCarlo implements FlightAuctionEstimator {
 	}
 	
 	//could chose from the random distribution repeatedly and then do a straight mean on the mins
-	public double[] getMinPriceMethod1(){	
+	public double getMinPriceMethod1(){	
 		int TRIES = 1000;
 		HashMap<Integer,Double> probDist = facs.getScaledProbabilities();
 		double minPriceSum = 0.0;
-		int minPriceTimeSum = 0;
 		for(int tries = 0; tries<TRIES; tries++){
 			int upperBound = FlightAuctionEstimatorHelper.chooseRandomUpperBound(probDist);
 			FlightAuctionSimulator fas = new FlightAuctionSimulator(upperBound, currentTime, currentPrice);
 			
 			double minPrice = currentPrice;
-			int minPriceTime = currentTime;
 			while(fas.canTick()){
 				fas.tick();
 				if (fas.getPrice()<minPrice){
 					minPrice = fas.getPrice();
-					minPriceTime = fas.getTime();
 				}
 			}
 						
 			minPriceSum += minPrice;
-			minPriceTimeSum += minPriceTime;
-		}
-		
-		if(historicMinPrice<minPriceSum/TRIES){
-			double[] r = {historicMinPrice,historicMinPriceTime};
-			return r;
 		}
 	
-		double[] r = {minPriceSum/TRIES,minPriceTimeSum/TRIES};
-		return r;
+		return minPriceSum/TRIES;
 	}
 	
 	//better (more efficient) to repeat x times for each UB, find min and mean each, and then scale mean based on UB's distrib
-	public double[] getMinPriceMethod2(){	
+	public double getMinPriceMethod2(){	
 		int TRIES = 1000/41;
 		HashMap<Integer,Double> probDist = facs.getScaledProbabilities();
 		//System.out.println(probDist);
 		double minPriceSumSum = 0.0;
-		int minPriceTimeSumSum = 0;
 		for(int UB = -10; UB<=30; UB++){
 			double scale = probDist.get(UB);
 			double minPriceSum = 0.0;
-			int minPriceTimeSum = 0;
 			for(int tries = 0; tries<TRIES; tries++){
 				FlightAuctionSimulator fas = new FlightAuctionSimulator(UB, currentTime, currentPrice);
 				double minPrice = currentPrice;
-				int minPriceTime = currentTime;
 				while(fas.canTick()){
 					fas.tick();
 					if (fas.getPrice()<minPrice){
 						minPrice = fas.getPrice();
-						minPriceTime = fas.getTime();
 					}
 				}
 				minPriceSum += minPrice;
-				minPriceTimeSum += minPriceTime;
 			}
 			minPriceSumSum += minPriceSum/TRIES * scale;
-			minPriceTimeSumSum += minPriceTimeSum/TRIES * scale;
 		}
 		
-		double[] r = {minPriceSumSum,minPriceTimeSumSum};
-		return r;
+		return minPriceSumSum;
 	}
 	
 	//even better (more efficient) to scale the number of times we do each UB by its distrib and then mean
 	//	this means we spend CPU time proportionately to the UB distrib
-	public double[] getMinPriceMethod3(){	
-		double[] a = new double[2];
-		
-		return a;
+	public double getMinPriceMethod3(){	
+		return 0;
 	}
 
 

@@ -6,10 +6,13 @@ import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStore;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators.FlightPriceEstimatorMonteCarlo;
 
 public abstract class Auction {
 	
 	public final TacTypeEnum AUCTION_TYPE;
+	public final TacCategoryEnum AUCTION_CAT;
 	public final DayEnum AUCTION_DAY;
 	
 	public final int AUCTION_ID;
@@ -19,8 +22,9 @@ public abstract class Auction {
 	public Auction(TACAgent agent, Quote quote) {
 
 		this.AUCTION_ID = quote.getAuction();
-		this.AUCTION_TYPE = TacTypeEnum.getType(TacCategoryEnum.getCategory(TACAgent.getAuctionType(AUCTION_ID)), TACAgent.getAuctionCategory(AUCTION_ID));
+		this.AUCTION_TYPE = TacTypeEnum.getType(TacCategoryEnum.getCategory(TACAgent.getAuctionCategory(AUCTION_ID)), TACAgent.getAuctionType(AUCTION_ID));
 		this.AUCTION_DAY = DayEnum.getDay(TACAgent.getAuctionDay(AUCTION_ID));
+		this.AUCTION_CAT = TacCategoryEnum.getCategory(TACAgent.getAuctionCategory(AUCTION_ID));
 		
 		this.agent = agent;
 		
@@ -64,11 +68,6 @@ public abstract class Auction {
 	
 	public Bid getBid() {
 		return this.agent.getBid(this.AUCTION_ID);
-	}
-
-	public Estimator getEstimator() {
-		// TODO change store etc to make estimator
-		return null;
 	}
 	
 }

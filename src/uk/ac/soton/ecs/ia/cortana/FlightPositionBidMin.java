@@ -3,9 +3,11 @@ package uk.ac.soton.ecs.ia.cortana;
 public class FlightPositionBidMin extends FlightPosition {
 
 	private float min;
+	private AuctionMaster auctionMaster;
 	
-	public FlightPositionBidMin(Auction auction) {
+	public FlightPositionBidMin(Auction auction, AuctionMaster auctionMaster) {
 		super(auction);
+		this.auctionMaster = auctionMaster;
 		min = 0;
 	}
 
@@ -28,7 +30,8 @@ public class FlightPositionBidMin extends FlightPosition {
 	}
 
 	private float getFutureMinPrice() {
-		return auction.getEstimator().getFutureMinPrice();
+		Estimator e = auctionMaster.getEstimatorForAuction((FlightAuction) auction);
+		return e.getFutureMinPrice();
 	}
 	
 	@Override

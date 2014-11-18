@@ -171,13 +171,13 @@ public class Strategy {
 			Collection<HotelAuction> hotelList = cp.hotels;
 	
 			if (!auctionPositions.containsKey(inflightAuction)){
-				Position flightPosition = new FlightPositionBidNow(inflightAuction);
+				Position flightPosition = new FlightPositionBidMin(inflightAuction, auctionMaster);
 				auctionPositions.put(inflightAuction, flightPosition);
 			}
 			auctionPositions.get(inflightAuction).peopleWhoWantMe.add(cp);
 			
 			if (!auctionPositions.containsKey(outflightAuction)){
-				Position flightPosition = new FlightPositionBidNow(outflightAuction);
+				Position flightPosition = new FlightPositionBidMin(outflightAuction, auctionMaster);
 				auctionPositions.put(outflightAuction, flightPosition);
 			}
 			auctionPositions.get(outflightAuction).peopleWhoWantMe.add(cp);

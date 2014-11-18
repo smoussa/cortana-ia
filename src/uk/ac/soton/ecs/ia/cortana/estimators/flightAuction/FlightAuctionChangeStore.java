@@ -61,4 +61,9 @@ public class FlightAuctionChangeStore {
 		
 		return eUB;
 	}
+
+	@Override
+	public String toString() {
+		return "FlightAuctionChangeStore [changes=" + changes + "]";
+	}
 }

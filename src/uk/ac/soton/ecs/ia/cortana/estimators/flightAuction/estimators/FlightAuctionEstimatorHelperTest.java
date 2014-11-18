@@ -1,13 +1,14 @@
-package flightAuction.estimators;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators;
 
 import static org.junit.Assert.*;
-import helpers.Rand;
 
 import java.util.HashMap;
 import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import uk.ac.soton.ecs.ia.cortana.estimators.helpers.Rand;
 
 public class FlightAuctionEstimatorHelperTest {
 	

@@ -1,4 +1,4 @@
-package helpers;
+package uk.ac.soton.ecs.ia.cortana.estimators.helpers;
 import java.util.Random;
 
 

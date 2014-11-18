@@ -1,4 +1,4 @@
-package flightAuction.estimators;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators;
 
 public interface FlightAuctionEstimator {
 

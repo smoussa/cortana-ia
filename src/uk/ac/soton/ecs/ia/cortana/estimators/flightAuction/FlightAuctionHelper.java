@@ -1,4 +1,4 @@
-package flightAuction;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction;
 
 public class FlightAuctionHelper {
 	public static double probChangeGivenUBAndT(int UB, int time, double change, double priceBeforeChange){

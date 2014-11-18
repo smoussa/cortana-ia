@@ -1,11 +1,11 @@
-package flightAuction.estimators;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators;
 
 import java.util.HashMap;
 import java.util.Random;
 
-import flightAuction.FlightAuctionChangeStore;
-import flightAuction.FlightAuctionChangeStoreResetable;
-import flightAuction.FlightAuctionSimulator;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStore;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStoreResetable;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionSimulator;
 
 public class FlightPriceEstimatorMonteCarlo implements FlightAuctionEstimator {
 	FlightAuctionChangeStore facs;

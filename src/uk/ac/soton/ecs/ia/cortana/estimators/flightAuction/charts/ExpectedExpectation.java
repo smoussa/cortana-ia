@@ -1,13 +1,13 @@
-package flightAuction.charts;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.charts;
 import java.util.HashMap;
+
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStore;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionSimulator;
 
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.Series;
 import com.xeiam.xchart.SeriesMarker;
 import com.xeiam.xchart.SwingWrapper;
-
-import flightAuction.FlightAuctionChangeStore;
-import flightAuction.FlightAuctionSimulator;
 
 
 public class ExpectedExpectation {

@@ -1,7 +1,7 @@
-package flightAuction;
-import helpers.Rand;
-
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction;
 import java.util.Random;
+
+import uk.ac.soton.ecs.ia.cortana.estimators.helpers.Rand;
 
 
 public class FlightAuctionSimulator {

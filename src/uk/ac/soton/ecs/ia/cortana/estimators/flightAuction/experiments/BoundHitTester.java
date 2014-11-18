@@ -1,6 +1,6 @@
-package flightAuction.experiments;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.experiments;
 
-import flightAuction.FlightAuctionSimulator;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionSimulator;
 
 public class BoundHitTester {
 

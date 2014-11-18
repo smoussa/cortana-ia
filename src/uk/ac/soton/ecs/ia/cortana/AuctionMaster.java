@@ -153,9 +153,11 @@ public class AuctionMaster {
 		
 		if(auction.AUCTION_CAT == TacCategoryEnum.CAT_FLIGHT)
 		{
+			((FlightAuction) auction).addP((float) auction.getAskPrice());
+			
 			FlightAuctionChangeStore facs = flightAuctionChangeStores.get(auction);
 			
-			double tSecondsNearest10 = Math.floor(cortana.agent.getGameTime()/1000 / 10) * 10;
+			double tSecondsNearest10 = this.get10SecondChunkElapsed();
 			
 			if(tSecondsNearest10 == 0){
 				previousPrices.put(facs, auction.getAskPrice());
@@ -187,8 +189,7 @@ public class AuctionMaster {
 	
 	public Estimator getEstimatorForAuction(FlightAuction f) {
 		FlightAuctionChangeStore facs = getFlightAuctionChangeStore(f);
-		double tSecondsNearest10 = Math.floor(cortana.agent.getGameTime()/1000 / 10) * 10;
-		return new FlightPriceEstimatorMonteCarlo(facs, (int) tSecondsNearest10, f.getAskPrice());
+		return new FlightPriceEstimatorMonteCarlo(facs, this.get10SecondChunkElapsed(), f.getAskPrice());
 	}
 
 	public synchronized void check() {
@@ -199,6 +200,16 @@ public class AuctionMaster {
 	
 	public int getClientPreference(int clientId, ClientPreferenceEnum preference) {
 		return cortana.agent.getClientPreference(clientId, ClientPreferenceEnum.getCode(preference));
+	}
+	
+	public int get10SecondChunkElapsed(){
+		return (int) (Math.floor(cortana.agent.getGameTime()/1000 / 10) * 10);
+	}
+
+	public void gameEnd() {
+		for(FlightAuction f: flightAuctions.values()){
+			f.plot();
+		}
 	}
 
 }

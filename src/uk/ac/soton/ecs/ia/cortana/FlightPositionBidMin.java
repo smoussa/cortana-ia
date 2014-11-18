@@ -24,7 +24,7 @@ public class FlightPositionBidMin extends FlightPosition {
 	@Override
 	public void tick() {
 		this.min = getFutureMinPrice();
-		this.shouldBid = this.shouldBuy(auction.getAskPrice(), this.min);
+		this.shouldBid = this.shouldBuy(auction.getAskPrice(), this.min, this.auctionMaster.get10SecondChunkElapsed());
 		
 		this.bidMe();
 	}
@@ -42,11 +42,16 @@ public class FlightPositionBidMin extends FlightPosition {
 	
 	//TODO I expect that getCost needs to be overridden to actually be relavent
 
-	private boolean shouldBuy(double currentPrice, double predictedFutureMinPrice){
-		if(currentPrice<=predictedFutureMinPrice){
-			return true;
+	private boolean shouldBuy(double currentPrice, double predictedFutureMinPrice, int currentTime){
+		if(currentTime<200){
+			return false;
 		}
 		double diff = currentPrice - predictedFutureMinPrice;
-		return diff/currentPrice < 0.1;
+		
+		if(diff<=35){
+			return true;
+		}
+		
+		return false;
 	}
 }

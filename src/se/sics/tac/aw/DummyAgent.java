@@ -182,6 +182,7 @@ public class DummyAgent extends AgentImpl {
 	
 	public void gameStopped() {
 		log.fine("Game Stopped!");
+		auctionMaster.gameEnd();
 	}
 
 	public void auctionClosed(int auction) {

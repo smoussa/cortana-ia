@@ -142,7 +142,12 @@ public class AuctionMaster {
 		}
 		
 		if(auction.AUCTION_TYPE == TacTypeEnum.INFLIGHT || auction.AUCTION_TYPE == TacTypeEnum.OUTFLIGHT)
-			((FlightPosition) this.strategy.getPosition(auction)).tick();
+			if (this.strategy != null){
+				Position p = this.strategy.getPosition(auction);
+				if (p!=null){
+					((FlightPosition) this.strategy.getPosition(auction)).tick();
+				}
+			}
 			
 	}
 	

@@ -27,7 +27,8 @@ public abstract class Position {
 	public void bidMe() {
 		if(shouldBid && isTheoretical && !isFullySatisfied()) {
 			this.isTheoretical=false;
-			auction.bid(getQuantityToBid(), this.getAcutalBidPrice());
+			System.out.println("Bidding for " + getQuantityToBid() + " at " +  this.getActualBidPrice());
+			auction.bid(getQuantityToBid(), this.getActualBidPrice());
 			this.shouldBid = false;
 		}
 	}
@@ -43,7 +44,7 @@ public abstract class Position {
 		if(this.peopleWhoWantMe.size() - auction.getNumberOwned() < auction.getBid().getQuantity())
 			return auction.getBid().getQuantity();
 		
-		return (this.peopleWhoWantMe.size() - auction.getNumberOwned()) - auction.getBid().getQuantity();
+		return this.peopleWhoWantMe.size() - auction.getNumberOwned();
 	}
 	
 	public boolean isFullySatisfied(){
@@ -51,6 +52,8 @@ public abstract class Position {
 	}
 	
 	public boolean isValid() {
+		
+		//TODO this doesn't work because if we have a good enough bid, but our HQW is less than what we need it still passes
 		
 		if(isFullySatisfied()) {
 //			System.out.println("Auction closed and fully satisfied :)");
@@ -61,7 +64,7 @@ public abstract class Position {
 			System.out.print("Haven't won auction :(");
 		}
 		
-		if(!auction.isClosed() && finalised && getAcutalBidPrice() >= auction.getAskPrice()) {
+		if(!auction.isClosed() && finalised && getActualBidPrice() >= auction.getAskPrice()) {
 //			System.out.println("Auction open and we are bidding enough :)");
 			return true;
 		}
@@ -82,7 +85,7 @@ public abstract class Position {
 		return false;	
 	}
 
-	private float getAcutalBidPrice() {
+	private float getActualBidPrice() {
 		if(finalised)
 			return this.actualBid;
 		
@@ -97,7 +100,7 @@ public abstract class Position {
 	public float getCost(){
 		if(this.isTheoretical){
 			//TODO what if there is not only stuff already bought, but also a current bid on the auction
-			return auction.agent.getCost(auction.AUCTION_ID) + this.getAcutalBidPrice()*getQuantityToBid();
+			return auction.agent.getCost(auction.AUCTION_ID) + this.getActualBidPrice()*getQuantityToBid();
 		}
 		else{
 			Bid b = auction.getBid();
@@ -106,10 +109,12 @@ public abstract class Position {
 	}
 	
 	public void finalise() {
+		this.actualBid = getActualBidPrice();
+		this.quantityBid = getQuantityToBid();
+		
 		this.finalised = true;
 		
-		this.actualBid = getAcutalBidPrice();
-		this.quantityBid = getQuantityToBid();
+		System.out.println("Finalised to " + quantityBid + " at " + actualBid);
 	}
 	
 }

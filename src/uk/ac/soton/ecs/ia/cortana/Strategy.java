@@ -16,7 +16,7 @@ import se.sics.tac.aw.TacTypeEnum;
 public class Strategy {
 
 	private static final int VALIDITY_WAIT_TIME = 1;
-	private static final int MAX_VALIDITY = 10;
+	private static final int MAX_VALIDITY = 5;
 
 	protected Map<Auction, Position> auctionPositions;
 	protected List<ClientPosition> clientPositions;
@@ -37,8 +37,9 @@ public class Strategy {
 		this.validity = MAX_VALIDITY;
 		this.createClientPositions();
 		this.createPositions();
+		this.finalizePositions();
 	}
-	
+
 	// Initial Strategy
 	public Strategy(AuctionMaster auctionMaster) {
 		this.auctionMaster = auctionMaster;
@@ -47,6 +48,13 @@ public class Strategy {
 		this.validity = MAX_VALIDITY;
 		this.createClientPositions();
 		this.createPositions();
+		this.finalizePositions();
+	}
+	
+	private void finalizePositions() {
+		for (Position p:auctionPositions.values()){
+			p.finalise();
+		}
 	}
 	
 	public void sendBids() {
@@ -90,7 +98,7 @@ public class Strategy {
 			long diff = currentTime.getTime() - lastTimeFailed.getTime();
 	        long diffSeconds = diff / 1000 % 60;
 	        
-	        if(diffSeconds <= VALIDITY_WAIT_TIME) {
+	        if(diffSeconds >= VALIDITY_WAIT_TIME) {
 	        	validity--;
 				lastTimeFailed = currentTime;
 	        }

@@ -212,6 +212,7 @@ public class AuctionMaster {
 		for(FlightAuction f: flightAuctions.values()){
 			f.plot();
 		}
+		System.out.println("We predicted our score would be " + strategy.getScore());
 	}
 
 	public float getExpectedUpperBound(FlightAuction auction) {

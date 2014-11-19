@@ -104,7 +104,7 @@ public abstract class Position {
 		}
 		else{
 			Bid b = auction.getBid();
-			return auction.agent.getCost(auction.AUCTION_ID) + b.getTotalPotentialCost();
+			return auction.agent.getCost(auction.AUCTION_ID);// + b.getTotalPotentialCost();
 		}
 	}
 	

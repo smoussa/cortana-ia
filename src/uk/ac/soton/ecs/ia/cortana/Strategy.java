@@ -118,11 +118,15 @@ public abstract class Strategy {
 		float ut = 0;
 		for(ClientPosition cp: clientPositions){
 			ut += cp.getUtility();
+			System.out.println("Utility " + cp.getUtility());
 		}
+		System.out.println("Total Utility " + ut);
 		float cost = 0;
 		for(Position p: auctionPositions.values()){
 			cost += p.getCost();
+			System.out.println("Auction " + p.auction.AUCTION_TYPE + " day " + p.auction.AUCTION_DAY + " costs " + p.getCost());
 		}
+		System.out.println("Total Cost " + cost);
 		return ut - cost;	
 	}
 

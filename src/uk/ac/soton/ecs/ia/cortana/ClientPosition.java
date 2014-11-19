@@ -23,6 +23,8 @@ public class ClientPosition {
 	
 	public double getUtility(){
 		
+		// Under predicts because fun bonus is not considered!
+		
 		double ut = CortanaHeuristics.CLIENT_UTILITY;
 		
 		if (hotels.get(0).AUCTION_TYPE == TacTypeEnum.GOOD_HOTEL)

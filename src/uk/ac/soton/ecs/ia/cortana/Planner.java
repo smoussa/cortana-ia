@@ -33,7 +33,7 @@ public class Planner {
 			
 		});
 		
-		strategies.add(new StrategyBidMoreBadHotel(auctionMaster));
+//		strategies.add(new StrategyBidMoreBadHotel(auctionMaster));
 		strategies.add(new StrategyBidMoreGoodHotel(auctionMaster));
 		
 		return strategies.poll();

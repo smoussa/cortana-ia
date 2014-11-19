@@ -1,4 +1,4 @@
-package flightAuction.charts;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.charts;
 import java.awt.Dimension;
 import java.util.ArrayList;
 

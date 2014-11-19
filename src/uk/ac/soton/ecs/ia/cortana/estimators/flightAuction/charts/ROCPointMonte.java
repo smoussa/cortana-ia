@@ -1,4 +1,4 @@
-package flightAuction.charts;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.charts;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,16 +7,16 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.StatUtils;
 
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStore;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionSimulator;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators.FlightPriceEstimatorMonteCarlo;
+
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.Series;
 import com.xeiam.xchart.SeriesLineStyle;
 import com.xeiam.xchart.SeriesMarker;
 import com.xeiam.xchart.StyleManager.ChartType;
 import com.xeiam.xchart.SwingWrapper;
-
-import flightAuction.FlightAuctionChangeStore;
-import flightAuction.FlightAuctionSimulator;
-import flightAuction.estimators.FlightPriceEstimatorMonteCarlo;
 
 
 public class ROCPointMonte {
@@ -50,10 +50,9 @@ public class ROCPointMonte {
 					fas.tick();
 					facs.addChange(fas.getPriceChangeFromLastTick(), fas.getTime(), fas.getPriceBeforeLastTick());
 					
-					FlightPriceEstimatorMonteCarlo fpemc = new FlightPriceEstimatorMonteCarlo(facs, fas.getTime(), fas.getPrice(), fas.getMinPrice(), fas.getMinPriceTime());
-					double[] a = fpemc.getMinPrice();
+					FlightPriceEstimatorMonteCarlo fpemc = new FlightPriceEstimatorMonteCarlo(facs, fas.getTime(), fas.getPrice());
 					
-					points.get(fas.getTime()).add(a[0]);
+					points.get(fas.getTime()).add((double) fpemc.getFutureMinPrice());
 				}
 				
 				for(Map.Entry<Integer, ArrayList<Double>> e: points.entrySet()){

@@ -1,9 +1,9 @@
-package flightAuction.estimators;
-
-import helpers.Rand;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators;
 
 import java.util.HashMap;
 import java.util.Random;
+
+import uk.ac.soton.ecs.ia.cortana.estimators.helpers.Rand;
 
 public class FlightAuctionEstimatorHelper {
 	public static int chooseRandomUpperBound(HashMap<Integer,Double> probDist){

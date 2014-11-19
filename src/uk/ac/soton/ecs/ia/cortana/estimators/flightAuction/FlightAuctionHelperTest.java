@@ -1,4 +1,4 @@
-package flightAuction;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction;
 
 import static org.junit.Assert.*;
 

@@ -1,11 +1,11 @@
-package flightAuction.estimators;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import flightAuction.FlightAuctionChangeStore;
-import flightAuction.FlightAuctionSimulator;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStore;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionSimulator;
 
 public class FlightPriceEstimatorMonteCarloTest {
 

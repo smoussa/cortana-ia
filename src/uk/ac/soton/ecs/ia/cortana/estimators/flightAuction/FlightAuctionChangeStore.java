@@ -1,4 +1,4 @@
-package flightAuction;
+package uk.ac.soton.ecs.ia.cortana.estimators.flightAuction;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -60,5 +60,10 @@ public class FlightAuctionChangeStore {
 		}
 		
 		return eUB;
+	}
+
+	@Override
+	public String toString() {
+		return "FlightAuctionChangeStore [changes=" + changes + "]";
 	}
 }

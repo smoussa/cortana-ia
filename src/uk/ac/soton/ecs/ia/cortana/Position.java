@@ -8,11 +8,11 @@ import se.sics.tac.aw.Bid;
 public abstract class Position {
 
 	protected final Auction auction;
-	protected boolean isTheoretical = true;
+	protected boolean isTheoretical = true; //indicates position has been put into play. i.e has been bidded
 	
 	public List<ClientPosition> peopleWhoWantMe;
 	
-	private boolean finalised;
+	private boolean finalised; //indicates peopleWhoWantMe and the bid price and quantity wont be changes
 	private float actualBid;
 	private int quantityBid;
 	protected boolean shouldBid;
@@ -27,7 +27,8 @@ public abstract class Position {
 	public void bidMe() {
 		if(shouldBid && isTheoretical && !isFullySatisfied()) {
 			this.isTheoretical=false;
-			auction.bid(getQuantityToBid(), this.getAcutalBidPrice());
+			System.out.println("Bidding for " + getQuantityToBid() + " at " +  this.getActualBidPrice());
+			auction.bid(getQuantityToBid(), this.getActualBidPrice());
 			this.shouldBid = false;
 		}
 	}
@@ -43,15 +44,14 @@ public abstract class Position {
 		if(this.peopleWhoWantMe.size() - auction.getNumberOwned() < auction.getBid().getQuantity())
 			return auction.getBid().getQuantity();
 		
-		return (this.peopleWhoWantMe.size() - auction.getNumberOwned()) - auction.getBid().getQuantity();
+		return this.peopleWhoWantMe.size() - auction.getNumberOwned();
 	}
 	
 	public boolean isFullySatisfied(){
 		return peopleWhoWantMe.size() <= auction.getNumberOwned();
 	}
 	
-	public boolean isValid() {
-		
+	public boolean isValid() {		
 		if(isFullySatisfied()) {
 //			System.out.println("Auction closed and fully satisfied :)");
 			return true;
@@ -61,28 +61,32 @@ public abstract class Position {
 			System.out.print("Haven't won auction :(");
 		}
 		
-		if(!auction.isClosed() && finalised && getAcutalBidPrice() >= auction.getAskPrice()) {
+		boolean isValid = true;
+		
+		//TODO Check this. Dont't think it the use of finalised is correct
+		if(!auction.isClosed() && finalised && getActualBidPrice() >= auction.getAskPrice()) {
 //			System.out.println("Auction open and we are bidding enough :)");
-			return true;
 		}
 		else if(finalised) {
 			System.out.print("Auction ask " + auction.getAskPrice() + " Our Bid " + getOptimalBidPrice() + " :(");
+			isValid = false;
 		}
 		
 		if(!auction.isClosed() && !isTheoretical && peopleWhoWantMe.size() <= auction.getNumberProbablyOwned() + auction.getNumberOwned()) {
 //			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
-			return true;
 		}
 		else if(!auction.isClosed() && !isTheoretical) {
 			System.out.print("We only have " + (auction.getNumberProbablyOwned()+auction.getNumberOwned()) + " of " + peopleWhoWantMe.size() + " :(");
+			isValid = false;
 		}
 		
-		System.out.println("   Not Valid");
+		if(!isValid)
+			System.out.println("   Not Valid");
 		
-		return false;	
+		return isValid;	
 	}
 
-	private float getAcutalBidPrice() {
+	private float getActualBidPrice() {
 		if(finalised)
 			return this.actualBid;
 		
@@ -96,8 +100,7 @@ public abstract class Position {
 	
 	public float getCost(){
 		if(this.isTheoretical){
-			//TODO what if there is not only stuff already bought, but also a current bid on the auction
-			return auction.agent.getCost(auction.AUCTION_ID) + this.getAcutalBidPrice()*getQuantityToBid();
+			return auction.agent.getCost(auction.AUCTION_ID) + this.getActualBidPrice()*getQuantityToBid();
 		}
 		else{
 			Bid b = auction.getBid();
@@ -106,10 +109,12 @@ public abstract class Position {
 	}
 	
 	public void finalise() {
+		this.actualBid = getActualBidPrice();
+		this.quantityBid = getQuantityToBid();
+		
 		this.finalised = true;
 		
-		this.actualBid = getAcutalBidPrice();
-		this.quantityBid = getQuantityToBid();
+		System.out.println("Finalised to " + quantityBid + " at " + actualBid);
 	}
 	
 }

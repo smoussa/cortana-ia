@@ -8,7 +8,14 @@ public class ClientPreference {
 	public DayEnum inFlight, outFlight;
 	public int hotelBonus, e1Bonus, e2Bonus, e3Bonus;
 		
-	public ClientPreference(int clientId, DayEnum inFlight, DayEnum outFlight, int hotelBonus, int e1Bonus, int e2Bonus, int e3Bonus) {
+	public ClientPreference(
+			int clientId,
+			DayEnum inFlight,
+			DayEnum outFlight,
+			int hotelBonus,
+			int e1Bonus,
+			int e2Bonus,
+			int e3Bonus) {
 		this.CLIENT_ID = clientId;
 		this.inFlight = inFlight;
 		this.outFlight = outFlight;

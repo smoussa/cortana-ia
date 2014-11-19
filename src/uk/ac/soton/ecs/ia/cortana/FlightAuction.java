@@ -63,13 +63,12 @@ public class FlightAuction extends Auction {
 		bought.setMarker(SeriesMarker.DIAMOND);
 		bought.setLineStyle(SeriesLineStyle.NONE);
 		
-		x = new ArrayList<Integer>();
-		ArrayList<Double> y = new ArrayList<Double>();
-		
-		
 		if(futureAveragePricesFromEstimator!=null){
-			for(int t: futureAveragePricesFromEstimator.keySet()) {
-				x.add(t);
+			x = new ArrayList<Integer>(futureAveragePricesFromEstimator.keySet());
+			ArrayList<Double> y = new ArrayList<Double>();
+			Collections.sort(x);
+			
+			for(int t: x) {
 				y.add(futureAveragePricesFromEstimator.get(t));
 			}
 			Series future = chart.addSeries(("future"), x, y);

@@ -8,9 +8,7 @@ public class FlightPositionBidMin extends FlightPosition {
 
 	private float min;
 	private AuctionMaster auctionMaster;
-	
-	private Estimator e;
-	
+		
 	public FlightPositionBidMin(Auction auction, AuctionMaster auctionMaster) {
 		super(auction);
 		this.auctionMaster = auctionMaster;
@@ -20,8 +18,8 @@ public class FlightPositionBidMin extends FlightPosition {
 	@Override
 	float getOptimalBidPrice() {
 		if(min == 0) {
-			min = getFutureMinPrice();
-			return min;
+			//TODO work out when this happens and put something worthwhile in 
+			return (float) auction.getAskPrice();
 		}
 			
 		return min;
@@ -30,12 +28,14 @@ public class FlightPositionBidMin extends FlightPosition {
 	@Override
 	public void tick() {
 		if(!isFullySatisfied()){
+			
+			FlightPriceEstimatorMonteCarlo e = getEstimator();
 		
-			this.min = getFutureMinPrice();
+			this.min = e.getFutureMinPrice();
 			this.shouldBid = this.shouldBuy(auction.getAskPrice(), this.min, this.auctionMaster.get10SecondChunkElapsed(), this.getExpectedUpperBound());
 			
 			if(shouldBid){
-				((FlightAuction) auction).futureAveragePricesFromEstimator = getFutureAveragePricesFromEstimator();
+				((FlightAuction) auction).futureAveragePricesFromEstimator = e.priceAtTimeMean;
 			}
 			
 			this.bidMe();
@@ -46,21 +46,8 @@ public class FlightPositionBidMin extends FlightPosition {
 		return auctionMaster.getExpectedUpperBound((FlightAuction) auction);
 	}
 	
-	private HashMap<Integer, Double> getFutureAveragePricesFromEstimator() {
-		FlightPriceEstimatorMonteCarlo e = (FlightPriceEstimatorMonteCarlo) getEstimator();
-		return e.priceAtTimeMean;
-	}
-	
-	private float getFutureMinPrice() {
-		Estimator e = getEstimator();
-		return e.getFutureMinPrice();
-	}
-	
-	private Estimator getEstimator() {
-		if (e==null){
-			e = auctionMaster.getEstimatorForAuction((FlightAuction) auction);
-		}
-		return e;
+	private FlightPriceEstimatorMonteCarlo getEstimator() {
+		return (FlightPriceEstimatorMonteCarlo)auctionMaster.getEstimatorForAuction((FlightAuction) auction);
 	}
 	
 	@Override
@@ -72,17 +59,21 @@ public class FlightPositionBidMin extends FlightPosition {
 	//TODO I expect that getCost needs to be overridden to actually be relavent
 
 	private boolean shouldBuy(double currentPrice, double predictedFutureMinPrice, int currentTime, float expectation){
-		if(currentTime<=200){
+		if(currentTime>=510){
+			return true;
+		}
+		
+		if(currentTime<=150){
 			return false;
 		}
 		
-		if(currentTime>200 && currentTime<=250 && expectation<=10){
+		if(currentTime>150 && currentTime<=250 && expectation<=10){
 			return false;
 		}
 		
 		double diff = currentPrice - predictedFutureMinPrice;
 		
-		if(diff<=35){
+		if(diff<=10){
 			System.out.println("#############################");
 			System.out.println("***** Current price is " + currentPrice + " predictedFutureMinPrice is " + predictedFutureMinPrice);
 			System.out.println("#############################");

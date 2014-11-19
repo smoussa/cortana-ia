@@ -7,11 +7,14 @@ import se.sics.tac.aw.TacTypeEnum;
 public class ClientPosition {
 	
 	public ClientPreference client;
-	
 	public FlightAuction inFlight, outFlight;
 	public List<HotelAuction> hotels;
 
-	public ClientPosition(ClientPreference client, FlightAuction inFlight, FlightAuction outFlight, List<HotelAuction> hotels){
+	public ClientPosition(
+			ClientPreference client,
+			FlightAuction inFlight,
+			FlightAuction outFlight,
+			List<HotelAuction> hotels){
 		this.inFlight = inFlight;
 		this.outFlight = outFlight;
 		this.hotels = hotels;
@@ -19,13 +22,16 @@ public class ClientPosition {
 	}
 	
 	public double getUtility(){
+		
 		double ut = CortanaHeuristics.CLIENT_UTILITY;
 		
-		if (hotels.get(0).AUCTION_TYPE==TacTypeEnum.GOOD_HOTEL)
+		if (hotels.get(0).AUCTION_TYPE == TacTypeEnum.GOOD_HOTEL)
 			ut =+ client.hotelBonus;
 		
-		ut -= 100*(Math.abs(inFlight.AUCTION_DAY.getDayNumber()-client.inFlight.getDayNumber())+Math.abs(outFlight.AUCTION_DAY.getDayNumber()-client.outFlight.getDayNumber()));
+		int inFlightDayError = Math.abs(inFlight.AUCTION_DAY.getDayNumber() - client.inFlight.getDayNumber());
+		int outFlightDayError = Math.abs(outFlight.AUCTION_DAY.getDayNumber() - client.outFlight.getDayNumber());
 		
+		ut -= 100 * (inFlightDayError + outFlightDayError);
 		return ut;
 	}
 

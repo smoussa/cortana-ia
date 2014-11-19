@@ -110,6 +110,8 @@ public class AuctionMaster {
 
 		this.strategy = Planner.makeStrategy(this, this.strategy);
 		
+		System.out.println("We chose: " + this.strategy.toString());
+		
 		sendBids();
 	}
 	

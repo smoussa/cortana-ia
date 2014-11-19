@@ -2,6 +2,8 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.Series;
@@ -19,6 +21,8 @@ public class FlightAuction extends Auction {
 	ArrayList<Float> ps = new ArrayList<Float>();
 	float biddedPrice;
 	float biddedTime;
+	
+	public HashMap<Integer, Double> futureAveragePricesFromEstimator;
 	
 	public FlightAuction(TACAgent agent, Quote quote) {
 		super(agent, quote);
@@ -43,7 +47,9 @@ public class FlightAuction extends Auction {
 			x.add(i);
 			i+=10;
 		}
+		
 		Chart chart = new Chart(500, 500);
+		
 		Series series = chart.addSeries(("Price"), x, ps);
 		series.setMarker(SeriesMarker.NONE);
 		series.setLineStyle(SeriesLineStyle.SOLID);
@@ -56,6 +62,21 @@ public class FlightAuction extends Auction {
 		Series bought = chart.addSeries(("Bought"), x, b);
 		bought.setMarker(SeriesMarker.DIAMOND);
 		bought.setLineStyle(SeriesLineStyle.NONE);
+		
+		x = new ArrayList<Integer>();
+		ArrayList<Double> y = new ArrayList<Double>();
+		
+		
+		if(futureAveragePricesFromEstimator!=null){
+			for(int t: futureAveragePricesFromEstimator.keySet()) {
+				x.add(t);
+				y.add(futureAveragePricesFromEstimator.get(t));
+			}
+			Series future = chart.addSeries(("future"), x, y);
+			future.setMarker(SeriesMarker.NONE);
+			future.setLineStyle(SeriesLineStyle.SOLID);
+			series.setLineColor(Color.red);
+		}
 		
 		new SwingWrapper(chart).displayChart();
 	}

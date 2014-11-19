@@ -165,7 +165,7 @@ public class AuctionMaster {
 			else{
 	
 				double previousPrice = previousPrices.get(facs);
-				double priceChange = previousPrice - auction.getAskPrice();
+				double priceChange = auction.getAskPrice() - previousPrice;
 				previousPrices.put(facs, auction.getAskPrice());
 				
 				facs.addChange(priceChange, (int) tSecondsNearest10, previousPrice);
@@ -210,6 +210,11 @@ public class AuctionMaster {
 		for(FlightAuction f: flightAuctions.values()){
 			f.plot();
 		}
+	}
+
+	public float getExpectedUpperBound(FlightAuction auction) {
+		FlightAuctionChangeStore facs = getFlightAuctionChangeStore(auction);
+		return (float) facs.getExpectedUpperBound();
 	}
 
 }

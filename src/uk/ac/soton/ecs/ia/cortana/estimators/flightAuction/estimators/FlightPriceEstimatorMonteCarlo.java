@@ -11,6 +11,8 @@ public class FlightPriceEstimatorMonteCarlo implements Estimator {
 	int currentTime;
 	double currentPrice;
 	
+	public HashMap<Integer,Double> priceAtTimeMean;
+	
 	public FlightPriceEstimatorMonteCarlo(FlightAuctionChangeStore facs, int currentTime, double currentPrice){
 		this.facs = facs;
 		this.currentTime = currentTime;
@@ -37,9 +39,10 @@ public class FlightPriceEstimatorMonteCarlo implements Estimator {
 	
 	//could chose from the random distribution repeatedly and then do a straight mean on the mins
 	public double getMinPriceMethod1(){	
-		int TRIES = 1000;
+		int TRIES = 10000;
 		HashMap<Integer,Double> probDist = facs.getScaledProbabilities();
 		double minPriceSum = 0.0;
+		HashMap<Integer,Double> priceAtTimeSum = new HashMap<Integer,Double>();
 		for(int tries = 0; tries<TRIES; tries++){
 			int upperBound = FlightAuctionEstimatorHelper.chooseRandomUpperBound(probDist);
 			FlightAuctionSimulator fas = new FlightAuctionSimulator(upperBound, currentTime, currentPrice);
@@ -47,13 +50,31 @@ public class FlightPriceEstimatorMonteCarlo implements Estimator {
 			double minPrice = currentPrice;
 			while(fas.canTick()){
 				fas.tick();
-				if (fas.getPrice()<minPrice){
+				double price = fas.getPrice();
+				int t = fas.getTime();
+
+				if (price<minPrice){
 					minPrice = fas.getPrice();
+				}
+				
+				Double priceSum = priceAtTimeSum.get(t);
+				if (priceSum == null){
+					priceAtTimeSum.put(t, price);
+				}
+				else{
+					priceAtTimeSum.put(t, priceSum+price);
 				}
 			}
 						
 			minPriceSum += minPrice;
 		}
+		
+		for(int time: priceAtTimeSum.keySet()){
+			Double priceSum = priceAtTimeSum.get(time);
+			priceAtTimeSum.put(time, priceSum/TRIES);
+		}
+		
+		priceAtTimeMean = priceAtTimeSum;
 	
 		return minPriceSum/TRIES;
 	}

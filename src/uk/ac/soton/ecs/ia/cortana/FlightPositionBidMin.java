@@ -1,7 +1,5 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-import java.util.HashMap;
-
 import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators.FlightPriceEstimatorMonteCarlo;
 
 public class FlightPositionBidMin extends FlightPosition {
@@ -82,4 +80,5 @@ public class FlightPositionBidMin extends FlightPosition {
 		
 		return false;
 	}
+
 }

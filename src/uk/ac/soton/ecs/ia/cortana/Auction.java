@@ -68,4 +68,13 @@ public abstract class Auction {
 		return this.agent.getBid(this.AUCTION_ID);
 	}
 	
+	public double getMinimumBid() {
+		
+		if(this.getBid() == null)
+			return this.getAskPrice() + 1;
+		
+		return Math.max(this.getBid().getPrice(0) + 1, this.getAskPrice() + 1);
+		
+	}
+	
 }

@@ -3,6 +3,8 @@ package uk.ac.soton.ecs.ia.cortana;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+import uk.ac.soton.ecs.ia.cortana.strategies.PreferenceStrategy;
+
 public class Planner {
 
 	public static Strategy makeStrategy(AuctionMaster auctionMaster, Strategy oldStrategy) {
@@ -33,8 +35,11 @@ public class Planner {
 			
 		});
 		
-//		strategies.add(new StrategyBidMoreBadHotel(auctionMaster));
-		strategies.add(new StrategyBidMoreGoodHotel(auctionMaster));
+		strategies.add(new PreferenceStrategy(auctionMaster));
+		
+		while(!strategies.peek().isStrategyValid()) {
+			strategies.poll();
+		}
 		
 		return strategies.poll();
 	}

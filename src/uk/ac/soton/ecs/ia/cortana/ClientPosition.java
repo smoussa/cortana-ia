@@ -22,6 +22,10 @@ public class ClientPosition {
 	}
 	
 	public double getUtility(){
+
+
+		if(!isFeasible())
+			return -99999;
 		
 		// Under predicts because fun bonus is not considered!
 		
@@ -43,6 +47,22 @@ public class ClientPosition {
 //		System.out.println("Ut inflight error -" + (100 * (inFlightDayError + outFlightDayError)));
 		
 		return ut;
+	}
+	
+	public boolean isFeasible() {
+		
+		if(this.outFlight == null || this.inFlight == null)
+			return false;
+		
+		int stayLength = this.outFlight.AUCTION_DAY.getDayNumber() - this.inFlight.AUCTION_DAY.getDayNumber();
+		
+		if(stayLength == 0)
+			return false;
+		
+		if(hotels.size() != stayLength)
+			return false;
+		
+		return true;
 	}
 
 }

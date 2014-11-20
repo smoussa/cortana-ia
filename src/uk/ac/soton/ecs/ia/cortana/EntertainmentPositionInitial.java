@@ -11,4 +11,9 @@ public class EntertainmentPositionInitial extends Position {
 		return 0;
 	}
 
+	@Override
+	public float getCost() {
+		return 0;
+	}
+
 }

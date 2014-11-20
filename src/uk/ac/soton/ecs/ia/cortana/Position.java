@@ -33,7 +33,7 @@ public abstract class Position {
 		}
 	}
 	
-	private int getQuantityToBid() {
+	protected int getQuantityToBid() {
 		
 		if(finalised)
 			return this.quantityBid;
@@ -86,7 +86,7 @@ public abstract class Position {
 		return isValid;	
 	}
 
-	private float getActualBidPrice() {
+	protected float getActualBidPrice() {
 		if(finalised)
 			return this.actualBid;
 		
@@ -98,15 +98,7 @@ public abstract class Position {
 	
 	abstract float getOptimalBidPrice();
 	
-	public float getCost(){
-		if(this.isTheoretical){
-			return auction.agent.getCost(auction.AUCTION_ID) + this.getActualBidPrice()*getQuantityToBid();
-		}
-		else{
-			Bid b = auction.getBid();
-			return auction.agent.getCost(auction.AUCTION_ID);// + b.getTotalPotentialCost();
-		}
-	}
+	public abstract float getCost();
 	
 	public void finalise() {
 		this.actualBid = getActualBidPrice();

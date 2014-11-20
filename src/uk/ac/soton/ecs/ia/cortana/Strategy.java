@@ -124,9 +124,9 @@ public abstract class Strategy {
 		float cost = 0;
 		for(Position p: auctionPositions.values()){
 			cost += p.getCost();
-			System.out.println("Auction " + p.auction.AUCTION_TYPE + " day " + p.auction.AUCTION_DAY + " costs " + p.getCost());
+//			System.out.println("Auction " + p.auction.AUCTION_TYPE + " day " + p.auction.AUCTION_DAY + " costs " + p.getCost());
 		}
-		System.out.println("Total Cost " + cost);
+//		System.out.println("Total Cost " + cost);
 		return ut - cost;	
 	}
 

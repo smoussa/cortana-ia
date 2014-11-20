@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.Series;
@@ -18,7 +19,7 @@ import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators.FlightPric
 
 public class FlightAuction extends Auction {
 
-	ArrayList<Float> ps = new ArrayList<Float>();
+	List<Float> ps = new ArrayList<Float>();
 	float biddedPrice;
 	float biddedTime;
 	
@@ -36,16 +37,17 @@ public class FlightAuction extends Auction {
 		this.biddedTime = 10 * ps.size();
 	}
 	
-	public void addP(float p){
+	public void addP(float p) {
 		ps.add(p);
 	}
 	
-	public void plot(){
+	public void plot() {
+		
 		ArrayList<Integer> x = new ArrayList<Integer>();
-		int i=0;
+		int i = 0;
 		for (Float p : this.ps){
 			x.add(i);
-			i+=10;
+			i += 10;
 		}
 		
 		Chart chart = new Chart(500, 500);
@@ -57,13 +59,13 @@ public class FlightAuction extends Auction {
 		
 		x = new ArrayList<Integer>();
 		x.add((int) biddedTime);
-		ArrayList<Float> b = new ArrayList<Float>();
+		List<Float> b = new ArrayList<Float>();
 		b.add(biddedPrice);
 		Series bought = chart.addSeries(("Bought"), x, b);
 		bought.setMarker(SeriesMarker.DIAMOND);
 		bought.setLineStyle(SeriesLineStyle.NONE);
 		
-		if(futureAveragePricesFromEstimator!=null){
+		if (futureAveragePricesFromEstimator != null) {
 			x = new ArrayList<Integer>(futureAveragePricesFromEstimator.keySet());
 			ArrayList<Double> y = new ArrayList<Double>();
 			Collections.sort(x);

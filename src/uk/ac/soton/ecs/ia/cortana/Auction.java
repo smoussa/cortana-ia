@@ -20,13 +20,12 @@ public abstract class Auction {
 	public TACAgent agent;
 	
 	public Auction(TACAgent agent, Quote quote) {
-
+		
+		this.agent = agent;
 		this.AUCTION_ID = quote.getAuction();
 		this.AUCTION_TYPE = TacTypeEnum.getType(TacCategoryEnum.getCategory(TACAgent.getAuctionCategory(AUCTION_ID)), TACAgent.getAuctionType(AUCTION_ID));
 		this.AUCTION_DAY = DayEnum.getDay(TACAgent.getAuctionDay(AUCTION_ID));
 		this.AUCTION_CAT = TacCategoryEnum.getCategory(TACAgent.getAuctionCategory(AUCTION_ID));
-		
-		this.agent = agent;
 	}
 
 	public double getAskPrice() {
@@ -39,11 +38,11 @@ public abstract class Auction {
 			System.err.println("Invalid bid price. Must be higher than our current bid.");
 			return;
 		}
-		if (this.agent.getQuote(AUCTION_ID).getBid() != null && quantity<this.agent.getQuote(AUCTION_ID).getBid().getQuantity()){
+		if (this.agent.getQuote(AUCTION_ID).getBid() != null && quantity < this.agent.getQuote(AUCTION_ID).getBid().getQuantity()){
 			System.err.println("Invalid bid quantity. Must be higher than our current bid.");
 			return;
 		}
-		if (price<this.agent.getQuote(AUCTION_ID).getAskPrice()){
+		if (price < this.agent.getQuote(AUCTION_ID).getAskPrice()){
 			System.err.println("Invalid bid price. The market is selling at a higher price than that.");
 			return;
 		}

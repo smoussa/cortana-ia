@@ -8,11 +8,11 @@ import se.sics.tac.aw.Bid;
 public abstract class Position {
 
 	protected final Auction auction;
-	protected boolean isTheoretical = true; //indicates position has been put into play. i.e has been bidded
+	protected boolean isTheoretical = true; // indicates position has been put into play. i.e has been bidded
 	
 	public List<ClientPosition> peopleWhoWantMe;
 	
-	private boolean finalised; //indicates peopleWhoWantMe and the bid price and quantity wont be changes
+	private boolean finalised; // indicates peopleWhoWantMe, the bid price and quantity wont be changed
 	private float actualBid;
 	private int quantityBid;
 	protected boolean shouldBid;
@@ -25,26 +25,33 @@ public abstract class Position {
 	}
 	
 	public void bidMe() {
-		if(shouldBid && isTheoretical && !isFullySatisfied()) {
-			this.isTheoretical=false;
-			System.out.println("Bidding for " + getQuantityToBid() + " at " +  this.getActualBidPrice());
-			auction.bid(getQuantityToBid(), this.getActualBidPrice());
+		
+		if (shouldBid && isTheoretical && !isFullySatisfied()) {
+			int qtyToBid = getQuantityToBid();
+			float actualBidPrice = this.getActualBidPrice();
+			
+			System.out.println("Bidding for " + qtyToBid + " at " + actualBidPrice);
+			auction.bid(qtyToBid, actualBidPrice);
+			this.isTheoretical = false;
 			this.shouldBid = false;
 		}
 	}
 	
 	protected int getQuantityToBid() {
 		
-		if(finalised)
+		if (finalised)
 			return this.quantityBid;
 		
-		if(auction.getBid() == null)
-			return this.peopleWhoWantMe.size() - auction.getNumberOwned();
+		int numPeopleWhoWantMe = this.peopleWhoWantMe.size();
+		int numOwned = auction.getNumberOwned();
 		
-		if(this.peopleWhoWantMe.size() - auction.getNumberOwned() < auction.getBid().getQuantity())
+		if (auction.getBid() == null)
+			return numPeopleWhoWantMe - numOwned;
+		
+		if (numPeopleWhoWantMe - numOwned < auction.getBid().getQuantity())
 			return auction.getBid().getQuantity();
 		
-		return this.peopleWhoWantMe.size() - auction.getNumberOwned();
+		return numPeopleWhoWantMe - numOwned;
 	}
 	
 	public boolean isFullySatisfied(){
@@ -68,7 +75,7 @@ public abstract class Position {
 //			System.out.println("Auction open and we are bidding enough :)");
 		}
 		else if(finalised) {
-			System.out.print("Auction ask " + auction.getAskPrice() + " Our Bid " + getOptimalBidPrice() + " :(");
+			System.out.print("Auction ask price is " + auction.getAskPrice() + ". Our bid price is " + getOptimalBidPrice() + " :(");
 			isValid = false;
 		}
 		

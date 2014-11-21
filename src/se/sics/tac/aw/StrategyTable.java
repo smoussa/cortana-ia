@@ -20,11 +20,12 @@ import uk.ac.soton.ecs.ia.cortana.ClientPositionVariableHotelPrice;
 import uk.ac.soton.ecs.ia.cortana.HotelAuction;
 import uk.ac.soton.ecs.ia.cortana.Strategy;
 
-public class StrategyTable {
+public class StrategyTable implements ActionListener {
 
 	private StrategyDisplayModel strategyDisplayModel;
 	private ClientPreferenceDisplayModel clientPreferenceModel;
 	private ClientDisplay display;
+	Timer timer;
 	
 	public void showGUI(AuctionMaster auctionMaster) {
 		if (display == null) {
@@ -33,6 +34,17 @@ public class StrategyTable {
 			display = new ClientDisplay(strategyDisplayModel, clientPreferenceModel);
 		}
 		display.setVisible(true);
+		timer = new Timer(2000, this);
+		timer.start();
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		Object source = ae.getSource();
+		if (source == timer) {
+			strategyDisplayModel.fireTableDataChanged();
+			clientPreferenceModel.fireTableDataChanged();
+		}	
 	}
 	
 	private static class ClientDisplay implements ActionListener, WindowListener {
@@ -95,12 +107,7 @@ public class StrategyTable {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent ae) {
-			Object source = ae.getSource();
-			if (source == timer) {
-				preferenceTable.repaint();
-				strategyTable.repaint();
-			}
+		public void actionPerformed(ActionEvent arg0) {
 		}
 	}
 	

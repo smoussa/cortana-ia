@@ -104,7 +104,7 @@ CLIENT:	for (ClientPreference c: auctionMaster.clientPreferences.values()){
 			if(!cpSuper.isFeasible())
 				continue;
 			
-			ClientPositionFixedHotelPrice cp = (ClientPositionFixedHotelPrice)cpSuper;
+			ClientPositionVariableHotelPrice cp = (ClientPositionVariableHotelPrice)cpSuper;
 			FlightAuction inflightAuction = cp.inFlight;
 			FlightAuction outflightAuction = cp.outFlight;
 			Collection<HotelAuction> hotelList = cp.hotels;
@@ -123,7 +123,7 @@ CLIENT:	for (ClientPreference c: auctionMaster.clientPreferences.values()){
 			
 			for(HotelAuction hotelAuction:hotelList) {
 				if (!auctionPositions.containsKey(hotelAuction)){
-					Position hotelPosition = new HotelPositionBidNow(hotelAuction, cp.pricePerNight);
+					Position hotelPosition = new HotelPositionBidNow(hotelAuction, cp.getHotelPriceForAuction(hotelAuction));
 					auctionPositions.put(hotelAuction, hotelPosition);
 				}
 				auctionPositions.get(hotelAuction).peopleWhoWantMe.add(cp);

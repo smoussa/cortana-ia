@@ -13,5 +13,9 @@ public class ClientPositionVariableHotelPrice extends ClientPosition {
 		super(client, inFlight, outFlight, new ArrayList<>(clientHotelPrices.keySet()));
 		this.clientHotelPrices = clientHotelPrices;
 	}
+	
+	public Double getHotelPriceForAuction(HotelAuction hotelAuction) {
+		return clientHotelPrices.get(hotelAuction);
+	}
 
 }

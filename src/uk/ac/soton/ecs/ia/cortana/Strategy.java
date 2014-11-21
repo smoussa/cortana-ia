@@ -133,6 +133,10 @@ public abstract class Strategy {
 	public Position getPosition(Auction auction) {
 		return this.auctionPositions.get(auction);
 	}
+	
+	public ClientPosition getClientPosition(int index) {
+		return this.clientPositions.get(index);
+	}
 
 	protected abstract void createPositions();
 

@@ -146,13 +146,13 @@ public class DummyAgent extends AgentImpl {
 	}
 	
 	public void quoteUpdated(Quote quote) {
-		System.out.println("@@@@@@ Single quote updated");
+//		System.out.println("@@@@@@ Single quote updated");
 		auctionMaster.quoteUpdated(agent, quote);
 	}
 	
 	public void quoteUpdated(int auctionCategory) {
-		System.out.println("@@@@@@ Category quote updated");
-		log.fine("All quotes for " + TACAgent.auctionCategoryToString(auctionCategory) + " has been updated");
+//		System.out.println("@@@@@@ Category quote updated");
+//		log.fine("All quotes for " + TACAgent.auctionCategoryToString(auctionCategory) + " has been updated");
 		auctionMaster.check();
 	}
 
@@ -178,6 +178,8 @@ public class DummyAgent extends AgentImpl {
 	public void gameStarted() {
 		log.fine("Game " + agent.getGameID() + " started!");
 		this.auctionMaster = new AuctionMaster(this);
+		StrategyTable strategyTable = new StrategyTable();
+		strategyTable.showGUI(auctionMaster);
 	}
 	
 	public void gameStopped() {

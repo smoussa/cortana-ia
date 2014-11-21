@@ -173,7 +173,7 @@ public class AuctionMaster {
 				facs.addChange(priceChange, (int) tSecondsNearest10, previousPrice);
 			}
 			
-			System.out.println(facs);		
+//			System.out.println(facs);		
 			
 			if (this.strategy != null){
 				Position p = this.strategy.getPosition(auction);
@@ -218,6 +218,10 @@ public class AuctionMaster {
 	public float getExpectedUpperBound(FlightAuction auction) {
 		FlightAuctionChangeStore facs = getFlightAuctionChangeStore(auction);
 		return (float) facs.getExpectedUpperBound();
+	}
+
+	public Strategy getStrategy() {
+		return this.strategy;
 	}
 
 }

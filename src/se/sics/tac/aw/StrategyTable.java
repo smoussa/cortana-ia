@@ -95,7 +95,12 @@ public class StrategyTable {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
+		public void actionPerformed(ActionEvent ae) {
+			Object source = ae.getSource();
+			if (source == timer) {
+				preferenceTable.repaint();
+				strategyTable.repaint();
+			}
 		}
 	}
 	
@@ -116,7 +121,10 @@ public class StrategyTable {
 		}
 
 		public int getRowCount() {
-			return 8;
+			if (auctionMaster.getStrategy()!=null){
+				return auctionMaster.getStrategy().getClientPositionCount();
+			}
+			return 0;
 		}
 
 		public int getColumnCount() {

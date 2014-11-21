@@ -20,9 +20,6 @@ public class AuctionMaster {
 	private Map<Integer, EntertainmentAuction> entertainmentAuctions;
 	public Map<Integer, ClientPreference> clientPreferences;
 	
-	private Map<FlightAuction, FlightAuctionChangeStore> flightAuctionChangeStores;
-	private Map<FlightAuctionChangeStore, Double> previousPrices;
-	
 	private DummyAgent cortana;
 	
 	boolean flightUpdated = false;
@@ -38,8 +35,6 @@ public class AuctionMaster {
 		entertainmentAuctions = new HashMap<Integer, EntertainmentAuction>();
 		clientPreferences = new HashMap<Integer, ClientPreference>();
 		
-		flightAuctionChangeStores = new HashMap<FlightAuction, FlightAuctionChangeStore>();
-		previousPrices = new HashMap<FlightAuctionChangeStore, Double>();
 		createClientPreferences();
 	}
 	
@@ -127,8 +122,6 @@ public class AuctionMaster {
 			case TACAgent.CAT_FLIGHT:
 				FlightAuction flightAuction = new FlightAuction(agent, quote);
 				flightAuctions.put(auctionId, flightAuction);
-				FlightAuctionChangeStore facs = new FlightAuctionChangeStore();
-				flightAuctionChangeStores.put(flightAuction, facs);
 			break;
 			case TACAgent.CAT_HOTEL:
 				HotelAuction hotelAuction = new HotelAuction(agent, quote);
@@ -155,43 +148,16 @@ public class AuctionMaster {
 		
 		if(auction.AUCTION_CAT == TacCategoryEnum.CAT_FLIGHT)
 		{
-			((FlightAuction) auction).addP((float) auction.getAskPrice());
-			
-			FlightAuctionChangeStore facs = flightAuctionChangeStores.get(auction);
-			
-			double tSecondsNearest10 = this.get10SecondChunkElapsed();
-			
-			if(tSecondsNearest10 == 0){
-				previousPrices.put(facs, auction.getAskPrice());
-			}
-			else{
-	
-				double previousPrice = previousPrices.get(facs);
-				double priceChange = auction.getAskPrice() - previousPrice;
-				previousPrices.put(facs, auction.getAskPrice());
-				
-				facs.addChange(priceChange, (int) tSecondsNearest10, previousPrice);
-			}
-			
-			System.out.println(facs);		
+			((FlightAuction) auction).tick(cortana.agent.get10SecondChunkElapsed());	
 			
 			if (this.strategy != null){
 				Position p = this.strategy.getPosition(auction);
 				if (p!=null){
-					((FlightPosition) this.strategy.getPosition(auction)).tick();
+					((FlightPosition) this.strategy.getPosition(auction)).tick(this.cortana.agent.get10SecondChunkElapsed());
 				}
 			}
 		}
 			
-	}
-	
-	public FlightAuctionChangeStore getFlightAuctionChangeStore(FlightAuction f) {
-		return flightAuctionChangeStores.get(f);
-	}
-	
-	public Estimator getEstimatorForAuction(FlightAuction f) {
-		FlightAuctionChangeStore facs = getFlightAuctionChangeStore(f);
-		return new FlightPriceEstimatorMonteCarlo(facs, this.get10SecondChunkElapsed(), f.getAskPrice());
 	}
 
 	public synchronized void check() {
@@ -203,10 +169,6 @@ public class AuctionMaster {
 	public int getClientPreference(int clientId, ClientPreferenceEnum preference) {
 		return cortana.agent.getClientPreference(clientId, ClientPreferenceEnum.getCode(preference));
 	}
-	
-	public int get10SecondChunkElapsed(){
-		return (int) (Math.floor(cortana.agent.getGameTime()/1000 / 10) * 10);
-	}
 
 	public void gameEnd() {
 		for(FlightAuction f: flightAuctions.values()){
@@ -215,9 +177,8 @@ public class AuctionMaster {
 		System.out.println("We predicted our score would be " + strategy.getScore());
 	}
 
-	public float getExpectedUpperBound(FlightAuction auction) {
-		FlightAuctionChangeStore facs = getFlightAuctionChangeStore(auction);
-		return (float) facs.getExpectedUpperBound();
+	public Strategy getStrategy() {
+		return this.strategy;
 	}
 
 }

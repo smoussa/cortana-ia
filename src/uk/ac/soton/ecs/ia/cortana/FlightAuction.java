@@ -14,19 +14,28 @@ import com.xeiam.xchart.SwingWrapper;
 
 import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
+import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.FlightAuctionChangeStore;
 import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators.FlightPriceEstimatorMonteCarlo;
 
 
 public class FlightAuction extends Auction {
 
-	List<Float> ps = new ArrayList<Float>();
+	//used for plotting graph
 	float biddedPrice;
 	float biddedTime;
+	private HashMap<Integer, Double> futureAveragePricesFromEstimator;
 	
-	public HashMap<Integer, Double> futureAveragePricesFromEstimator;
+	//used for prediction
+	private FlightAuctionChangeStore facs = new FlightAuctionChangeStore();
+	private List<Float> prices = new ArrayList<Float>();
+	private Estimator e;
+	private float minPriceEstimate;
+	//just in case
+	private int expectedT = 0;
 	
 	public FlightAuction(TACAgent agent, Quote quote) {
 		super(agent, quote);
+		minPriceEstimate = (float) this.getAskPrice();
 	}
 	
 	@Override
@@ -34,25 +43,57 @@ public class FlightAuction extends Auction {
 		System.out.println("Flight " + AUCTION_TYPE + " on day: " + AUCTION_DAY + " is being bid on");
 		super.bid(quantity, price);
 		this.biddedPrice = price;
-		this.biddedTime = 10 * ps.size();
+		this.biddedTime = 10 * prices.size();
+		this.futureAveragePricesFromEstimator = ((FlightPriceEstimatorMonteCarlo)e).priceAtTimeMean;
 	}
 	
-	public void addP(float p) {
-		ps.add(p);
+	public void tick(int tSecondsNearest10) {
+		if (expectedT!=tSecondsNearest10){
+			System.out.println("An auction got a tick for a crazy time");
+			System.out.println("This should not happen. Talk to Sam");
+			System.out.println("Expected " + expectedT);
+			System.out.println("Got " + tSecondsNearest10);
+			System.exit(1);
+		}
+		expectedT = expectedT + 10;
+		
+		prices.add((float) this.getAskPrice());
+
+		if (tSecondsNearest10 > 0){
+			double previousPrice = prices.get(prices.size()-2);
+			double priceChange = this.getAskPrice() - previousPrice;
+			
+			facs.addChange(priceChange, (int) tSecondsNearest10, previousPrice);
+			
+			System.out.println(facs);	
+			
+			e = null;
+			e = new FlightPriceEstimatorMonteCarlo(facs, tSecondsNearest10, this.getAskPrice());
+			minPriceEstimate = e.getFutureMinPrice();
+			System.out.println("Estimated min is " + minPriceEstimate);	
+		}
+	}
+	
+	public float getExpectedUpperBound() {
+		return (float) facs.getExpectedUpperBound();
+	}
+	
+	public float getFutureMinPrice(){
+		return minPriceEstimate;
 	}
 	
 	public void plot() {
 		
 		ArrayList<Integer> x = new ArrayList<Integer>();
 		int i = 0;
-		for (Float p : this.ps){
+		for (Float p : this.prices){
 			x.add(i);
 			i += 10;
 		}
 		
 		Chart chart = new Chart(500, 500);
 		
-		Series series = chart.addSeries(("Price"), x, ps);
+		Series series = chart.addSeries(("Price"), x, prices);
 		series.setMarker(SeriesMarker.NONE);
 		series.setLineStyle(SeriesLineStyle.SOLID);
 		series.setLineColor(Color.BLACK);

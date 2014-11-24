@@ -5,8 +5,9 @@ public class EntertainmentStrategy {
 	/*
 	 * GENERAL NOTES:
 	 * 
-	 * - There are 3 (events) x 4 (days) x 8 (tickets) = 96 tickets in total.
-	 * - We start with 12
+	 * - There are 3 (events) x 4 (days) x 8 (tickets) = 96 tickets in total. We start with 12
+	 * - Competitors are more willing to trade at the end of games as client allocations have been made
+	 * 
 	 */
 	
 	public EntertainmentStrategy() {
@@ -66,11 +67,21 @@ public class EntertainmentStrategy {
 		
 	}
 	
+	private int daysFreeToTrade() {
+		
+		/*
+		 * Get the days clients won't need entertainment tickets
+		 * and we are free to trade the rest owned/willing to buy
+		 */
+		
+	}
+	
 	private boolean safeToTrade() {
 		
 		/*
 		 * Check whether we have satisfied as many clients as possible
 		 * and are able to safely play/trade in the auction
+		 * Get the days clients won't need entertainment tickets. daysFreeToTrade()
 		 */
 		
 	}
@@ -126,9 +137,11 @@ public class EntertainmentStrategy {
 	public void naiveStrategy() {
 		
 		/*
-		 * Gradually raise the buying price for tickets
+		 * Gradually raise the buying price for shortage/needed tickets
 		 * and gradually lower the ask price for tickets being sold
 		 * over time
+		 * 
+		 * Change the rate - based on a linear/polynomial function of time
 		 * 
 		 */
 		

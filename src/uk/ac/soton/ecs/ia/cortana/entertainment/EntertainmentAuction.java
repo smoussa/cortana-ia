@@ -1,8 +1,9 @@
-package uk.ac.soton.ecs.ia.cortana;
+package uk.ac.soton.ecs.ia.cortana.entertainment;
 
 import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
+import uk.ac.soton.ecs.ia.cortana.Auction;
 
 public class EntertainmentAuction extends Auction {
 

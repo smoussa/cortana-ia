@@ -1,5 +1,7 @@
 package uk.ac.soton.ecs.ia.cortana;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import se.sics.tac.aw.DayEnum;
@@ -12,12 +14,15 @@ public class ClientPosition {
 	public FlightAuction inFlight, outFlight;
 	public List<HotelAuction> hotels;
 	public EntertainmentAuction eAuction;
+	
+	private HashMap<DayEnum, TacTypeEnum> eTickets;
 
 	public ClientPosition(
 			ClientPreference client,
 			FlightAuction inFlight,
 			FlightAuction outFlight,
 			List<HotelAuction> hotels) {
+		
 		this.client = client;
 		this.inFlight = inFlight;
 		this.outFlight = outFlight;
@@ -57,7 +62,7 @@ public class ClientPosition {
 		if (this.outFlight == null || this.inFlight == null)
 			return false;
 		
-		int stayLength = this.outFlight.AUCTION_DAY.getDayNumber() - this.inFlight.AUCTION_DAY.getDayNumber();
+		int stayLength = numDaysStaying();
 		
 		if (stayLength == 0)
 			return false;
@@ -68,17 +73,30 @@ public class ClientPosition {
 		return true;
 	}
 	
-	public boolean hasEntertainmentTicketsForAllDays() {
+	public void giveEntertainmentTicket(DayEnum day, TacTypeEnum ticket) {
+		eTickets.put(day, ticket);
+	}
+	
+	public int numDaysStaying() {
+		return outFlight.AUCTION_DAY.getDayNumber() - inFlight.AUCTION_DAY.getDayNumber();
+	}
+	
+	public List<DayEnum> daysStaying() {
 		
-		int daysStaying = outFlight.AUCTION_DAY.getDayNumber() - inFlight.AUCTION_DAY.getDayNumber();
-		int numTickets = 0;
-		
-		for (int i = outFlight.AUCTION_DAY.getDayNumber(); i < daysStaying; i++) {
-//			if ()
+		List<DayEnum> days = new ArrayList<>();
+		for (int i = outFlight.AUCTION_DAY.getDayNumber(); i < numDaysStaying(); i++) {
+			days.add(DayEnum.getDay(i));
 		}
 		
-//		daysStaying == 
+		return days;
+	}
+	
+	public boolean isEntertainmentFeasible() {
 		return false;
+	}
+	
+	public boolean hasAllEntertainmentTickets() {
+		return eTickets.size() >= 3;
 	}
 
 }

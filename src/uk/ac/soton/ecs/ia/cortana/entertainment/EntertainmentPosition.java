@@ -32,7 +32,7 @@ public class EntertainmentPosition {
 	}
 	
 	/**
-	 * The number of clients waiting for a package
+	 * The number of clients that can be given entertainment packages.
 	 * @return
 	 */
 	public List<ClientPosition> clientsWaiting() {

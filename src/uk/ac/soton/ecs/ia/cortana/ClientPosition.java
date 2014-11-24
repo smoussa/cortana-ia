@@ -2,23 +2,26 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.List;
 
+import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.TacTypeEnum;
+import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 
 public class ClientPosition {
 	
 	public ClientPreference client;
 	public FlightAuction inFlight, outFlight;
 	public List<HotelAuction> hotels;
+	public EntertainmentAuction eAuction;
 
 	public ClientPosition(
 			ClientPreference client,
 			FlightAuction inFlight,
 			FlightAuction outFlight,
-			List<HotelAuction> hotels){
+			List<HotelAuction> hotels) {
+		this.client = client;
 		this.inFlight = inFlight;
 		this.outFlight = outFlight;
 		this.hotels = hotels;
-		this.client = client;
 	}
 	
 	public double getUtility(){
@@ -51,18 +54,31 @@ public class ClientPosition {
 	
 	public boolean isFeasible() {
 		
-		if(this.outFlight == null || this.inFlight == null)
+		if (this.outFlight == null || this.inFlight == null)
 			return false;
 		
 		int stayLength = this.outFlight.AUCTION_DAY.getDayNumber() - this.inFlight.AUCTION_DAY.getDayNumber();
 		
-		if(stayLength == 0)
+		if (stayLength == 0)
 			return false;
 		
-		if(hotels.size() != stayLength)
+		if (hotels.size() != stayLength)
 			return false;
 		
 		return true;
+	}
+	
+	public boolean hasEntertainmentTicketsForAllDays() {
+		
+		int daysStaying = outFlight.AUCTION_DAY.getDayNumber() - inFlight.AUCTION_DAY.getDayNumber();
+		int numTickets = 0;
+		
+		for (int i = outFlight.AUCTION_DAY.getDayNumber(); i < daysStaying; i++) {
+//			if ()
+		}
+		
+//		daysStaying == 
+		return false;
 	}
 
 }

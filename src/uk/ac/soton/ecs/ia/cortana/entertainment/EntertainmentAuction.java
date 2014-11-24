@@ -1,27 +1,15 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
 import se.sics.tac.aw.Bid;
-import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
-import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
+import uk.ac.soton.ecs.ia.cortana.Auction;
 
-public class EntertainmentAuction {
-
-	public final int AUCTION_ID;
-	public final TacTypeEnum AUCTION_TYPE;
-	public final TacCategoryEnum AUCTION_CAT;
-	public final DayEnum AUCTION_DAY;
-	
-	private TACAgent agent;
+public class EntertainmentAuction extends Auction {
 
 	public EntertainmentAuction(TACAgent agent, Quote quote) {
-		this.agent = agent;
-		this.AUCTION_ID = quote.getAuction();
-		this.AUCTION_TYPE = TacTypeEnum.getType(TacCategoryEnum.getCategory(TACAgent.getAuctionCategory(AUCTION_ID)), TACAgent.getAuctionType(AUCTION_ID));
-		this.AUCTION_DAY = DayEnum.getDay(TACAgent.getAuctionDay(AUCTION_ID));
-		this.AUCTION_CAT = TacCategoryEnum.getCategory(TACAgent.getAuctionCategory(AUCTION_ID));
+		super(agent, quote);
 	}
 	
 	public void bid(int quantity, float price) {
@@ -64,6 +52,10 @@ public class EntertainmentAuction {
 		return getQuote().getBid();
 	}
 	
+	public double getCurrentBidQuantity() {
+		return getBid().getQuantity();
+	}
+	
 	public double getCurrentBidPrice() {
 		return getQuote().getBidPrice();
 	}
@@ -78,6 +70,10 @@ public class EntertainmentAuction {
 
 	public int getNumberProbablyOwned(){
 		return agent.getProbablyOwn(AUCTION_ID);
+	}
+	
+	public TacTypeEnum getAuctionTyoe() {
+		return AUCTION_TYPE;
 	}
 
 }

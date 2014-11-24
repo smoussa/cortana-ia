@@ -1,45 +1,21 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import se.sics.tac.aw.TACAgent;
-import uk.ac.soton.ecs.ia.cortana.Auction;
 import uk.ac.soton.ecs.ia.cortana.ClientPosition;
-
-/*
- * Entertainment
- */
 
 public class EntertainmentPosition {
 	
-	private Auction auction;
+	private EntertainmentAuction auction;
 	public List<ClientPosition> clientsWanting;
 	
-	public EntertainmentPosition(Auction auction) {
+	public EntertainmentPosition(EntertainmentAuction auction) {
 		this.auction = auction;
 	}
 	
-	public float getAskPrice() {
-		return 0;
-	}
-
-	public float getBidPrice() {
-		return auction.getBid().
-	}
-	
-	public void bid(Auction auction) {
-		System.out.println("Bidding for " + auction.AUCTION_TYPE);
-		
-	}
-	
-	public void ask() {
-		
-		
-		
-	}
-	
-	public int getNumOwned() {
-		return auction.get
+	public boolean canBuy() {
+		return auction.getQuote().getHQW() > 0;
 	}
 	
 	private int getQuantityToBid() {
@@ -53,6 +29,22 @@ public class EntertainmentPosition {
 		// if there are fewer tickets available than are needed, return how many are left
 		
 		return 0;
+	}
+	
+	/**
+	 * The number of clients waiting for a package
+	 * @return
+	 */
+	public List<ClientPosition> clientsWaiting() {
+		
+		List<ClientPosition> waiting = new ArrayList<>();
+		for (ClientPosition client : clientsWanting) {
+			if (!client.isFeasible()) {
+				waiting.add(client);
+			}
+		}
+		
+		return waiting;
 	}
 	
 	

@@ -14,10 +14,6 @@ public class EntertainmentPosition {
 		this.auction = auction;
 	}
 	
-	public boolean canBuy() {
-		return auction.getQuote().getHQW() > 0;
-	}
-	
 	private int getQuantityToBid() {
 		
 		int numClientsWanting = clientsWanting.size();

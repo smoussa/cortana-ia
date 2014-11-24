@@ -3,8 +3,6 @@ package uk.ac.soton.ecs.ia.cortana;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.sics.tac.aw.Bid;
-
 public abstract class Position {
 
 	protected final Auction auction;

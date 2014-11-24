@@ -1,8 +1,8 @@
 package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.TacTypeEnum;
@@ -15,7 +15,7 @@ public class ClientPosition {
 	public List<HotelAuction> hotels;
 	public EntertainmentAuction eAuction;
 	
-	private HashMap<DayEnum, TacTypeEnum> eTickets;
+	private Map<DayEnum, TacTypeEnum> eTickets;
 
 	public ClientPosition(
 			ClientPreference client,

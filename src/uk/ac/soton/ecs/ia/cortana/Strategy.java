@@ -117,8 +117,8 @@ public abstract class Strategy {
 	public float getScore(){
 		float ut = 0;
 		for(ClientPosition cp: clientPositions){
-			ut += cp.getUtility();
-			System.out.println("Utility " + cp.getUtility());
+			ut += cp.getTotalUtility();
+			System.out.println("Utility " + cp.getTotalUtility());
 		}
 		System.out.println("Total Utility " + ut);
 		float cost = 0;

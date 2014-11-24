@@ -29,7 +29,7 @@ public class ClientPosition {
 		this.hotels = hotels;
 	}
 	
-	public double getUtility(){
+	public double getTotalUtility(){
 
 
 		if(!isFeasible())
@@ -53,6 +53,28 @@ public class ClientPosition {
 		ut -= 100 * (inFlightDayError + outFlightDayError);
 		
 //		System.out.println("Ut inflight error -" + (100 * (inFlightDayError + outFlightDayError)));
+		
+		return ut;
+	}
+	
+	public double getEntertianmentUtility() {
+		
+		double ut = 0;
+		for (TacTypeEnum ticket : eTickets.values()) {
+			switch (ticket.getCode()) {
+			case 1:
+				ut += client.e1Bonus;
+				break;
+			case 2:
+				ut += client.e2Bonus;
+				break;
+			case 3:
+				ut += client.e3Bonus;
+				break;
+			default:
+				break;
+			}
+		}
 		
 		return ut;
 	}
@@ -89,10 +111,6 @@ public class ClientPosition {
 		}
 		
 		return days;
-	}
-	
-	public boolean isEntertainmentFeasible() {
-		return false;
 	}
 	
 	public boolean hasAllEntertainmentTickets() {

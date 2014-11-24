@@ -7,7 +7,7 @@ public class FlightPositionBidMin extends FlightPosition {
 	private float min;
 	private AuctionMaster auctionMaster;
 		
-	public FlightPositionBidMin(Auction auction, AuctionMaster auctionMaster) {
+	public FlightPositionBidMin(FlightAuction auction, AuctionMaster auctionMaster) {
 		super(auction);
 		this.auctionMaster = auctionMaster;
 		min = 0;
@@ -24,28 +24,15 @@ public class FlightPositionBidMin extends FlightPosition {
 	}
 
 	@Override
-	public void tick() {
+	public void tick(int tSecondsNearest10) {
 		if(!isFullySatisfied()){
-			
-			FlightPriceEstimatorMonteCarlo e = getEstimator();
-		
-			this.min = e.getFutureMinPrice();
-			this.shouldBid = this.shouldBuy(auction.getAskPrice(), this.min, this.auctionMaster.get10SecondChunkElapsed(), this.getExpectedUpperBound());
-			
-			if(shouldBid){
-				((FlightAuction) auction).futureAveragePricesFromEstimator = e.priceAtTimeMean;
-			}
+			System.out.println("Min tick");
+
+			this.min = ((FlightAuction)auction).getFutureMinPrice();
+			this.shouldBid = this.shouldBuy(auction.getAskPrice(), this.min, tSecondsNearest10,  ((FlightAuction)auction).getExpectedUpperBound());
 			
 			this.bidMe();
 		}
-	}
-
-	private float getExpectedUpperBound() {
-		return auctionMaster.getExpectedUpperBound((FlightAuction) auction);
-	}
-	
-	private FlightPriceEstimatorMonteCarlo getEstimator() {
-		return (FlightPriceEstimatorMonteCarlo)auctionMaster.getEstimatorForAuction((FlightAuction) auction);
 	}
 	
 	@Override
@@ -57,6 +44,10 @@ public class FlightPositionBidMin extends FlightPosition {
 	//TODO I expect that getCost needs to be overridden to actually be relavent
 
 	private boolean shouldBuy(double currentPrice, double predictedFutureMinPrice, int currentTime, float expectation){
+		System.out.println("#############################");
+		System.out.println("***** Current price is " + currentPrice + " predictedFutureMinPrice is " + predictedFutureMinPrice);
+		System.out.println("#############################");
+		
 		if(currentTime>=510){
 			return true;
 		}
@@ -72,9 +63,6 @@ public class FlightPositionBidMin extends FlightPosition {
 		double diff = currentPrice - predictedFutureMinPrice;
 		
 		if(diff<=10){
-			System.out.println("#############################");
-			System.out.println("***** Current price is " + currentPrice + " predictedFutureMinPrice is " + predictedFutureMinPrice);
-			System.out.println("#############################");
 			return true;
 		}
 		

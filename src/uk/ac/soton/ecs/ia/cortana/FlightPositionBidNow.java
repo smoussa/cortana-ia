@@ -2,7 +2,7 @@ package uk.ac.soton.ecs.ia.cortana;
 
 public class FlightPositionBidNow extends FlightPosition {
 
-	public FlightPositionBidNow(Auction auction) {
+	public FlightPositionBidNow(FlightAuction auction) {
 		super(auction);
 		shouldBid = true;
 	}
@@ -13,6 +13,6 @@ public class FlightPositionBidNow extends FlightPosition {
 	}
 
 	@Override
-	public void tick() {}
+	public void tick(int tSecondsNearest10) {}
 
 }

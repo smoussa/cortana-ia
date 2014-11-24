@@ -3,12 +3,12 @@ package uk.ac.soton.ecs.ia.cortana;
 
 public abstract class FlightPosition extends Position {
 
-	public FlightPosition(Auction auction) {
+	public FlightPosition(FlightAuction auction) {
 		super(auction);
 		this.shouldBid = false;
 	}
 
-	public abstract void tick();
+	public abstract void tick(int timetSecondsNearest10);
 	
 	@Override
 	public float getCost(){

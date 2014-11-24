@@ -37,6 +37,7 @@ import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.table.AbstractTableModel;
 
 import se.sics.tac.util.ArgEnumerator;
@@ -473,6 +474,10 @@ public class TACAgent implements Task, TACMessageReceiver {
 	// API's for the agent
 	// -------------------------------------------------------------------
 
+	public int get10SecondChunkElapsed(){
+		return (int) (Math.floor(this.getGameTime()/1000 / 10) * 10);
+	}
+	
 	public int getGameID() {
 		return playingGame;
 	}

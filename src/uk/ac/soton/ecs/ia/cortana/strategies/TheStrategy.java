@@ -1,10 +1,10 @@
 package uk.ac.soton.ecs.ia.cortana.strategies;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
@@ -12,7 +12,6 @@ import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.AuctionMaster;
 import uk.ac.soton.ecs.ia.cortana.ClientPosition;
-import uk.ac.soton.ecs.ia.cortana.ClientPositionFixedHotelPrice;
 import uk.ac.soton.ecs.ia.cortana.ClientPositionVariableHotelPrice;
 import uk.ac.soton.ecs.ia.cortana.ClientPreference;
 import uk.ac.soton.ecs.ia.cortana.CortanaHeuristics;
@@ -23,19 +22,19 @@ import uk.ac.soton.ecs.ia.cortana.HotelPositionBidNow;
 import uk.ac.soton.ecs.ia.cortana.Position;
 import uk.ac.soton.ecs.ia.cortana.Strategy;
 
-public class PreferenceStrategy extends Strategy {
+public class TheStrategy extends Strategy {
 
-	public PreferenceStrategy(AuctionMaster auctionMaster) {
+	public TheStrategy(AuctionMaster auctionMaster) {
 		super(auctionMaster);
 	}
 	
-	public PreferenceStrategy(Strategy OldStrategy) {
+	public TheStrategy(Strategy OldStrategy) {
 		super(OldStrategy);
 	}
 
 	@Override
 	public void createClientPositions() {
-CLIENT:	for (ClientPreference c: auctionMaster.clientPreferences.values()){		
+		for (ClientPreference c: auctionMaster.clientPreferences.values()){		
 			FlightAuction inflight = auctionMaster.getFlightAuction(TacTypeEnum.INFLIGHT, c.inFlight);
 			FlightAuction outflight = auctionMaster.getFlightAuction(TacTypeEnum.OUTFLIGHT, c.outFlight);
 			
@@ -46,8 +45,6 @@ CLIENT:	for (ClientPreference c: auctionMaster.clientPreferences.values()){
 			for (int d = c.inFlight.getDayNumber(); d < c.outFlight.getDayNumber(); d++) {
 				int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, hotelType, DayEnum.getDay(d));
 				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
-				if(hotelAuction.isClosed())
-					continue CLIENT;
 				hotelList.add(hotelAuction);
 			}
 
@@ -70,28 +67,8 @@ CLIENT:	for (ClientPreference c: auctionMaster.clientPreferences.values()){
 	
 	private TacTypeEnum calculateBestHotel(int hotelBonus, FlightAuction inflight, FlightAuction outflight) {
 		
-		int cheapAskSum = 0;
-		int premiumAskSum = -hotelBonus;
-		
-		for (int d = inflight.AUCTION_DAY.getDayNumber(); d < outflight.AUCTION_DAY.getDayNumber(); d++) {
-			int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, TacTypeEnum.GOOD_HOTEL, DayEnum.getDay(d));
-			HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
-			
-			premiumAskSum += hotelAuction.getMinimumBid();
-		
-			if(hotelAuction.isClosed())
-				premiumAskSum -= 99999;
-			
-			auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, TacTypeEnum.CHEAP_HOTEL, DayEnum.getDay(d));
-			hotelAuction = auctionMaster.getHotelAuction(auction);
-
-			cheapAskSum += hotelAuction.getMinimumBid();
-			
-			if(hotelAuction.isClosed())
-				cheapAskSum -= 99999;
-		}
-
-		if(cheapAskSum < premiumAskSum)
+		//TODO do probability stuff
+		if(hotelBonus < 70)
 			return TacTypeEnum.CHEAP_HOTEL;
 
 		return TacTypeEnum.GOOD_HOTEL;
@@ -99,6 +76,17 @@ CLIENT:	for (ClientPreference c: auctionMaster.clientPreferences.values()){
 
 	@Override
 	public void createPositions() {
+		
+		// [Price, quant of ppl.]
+		List<double[]> cheapHotelsSums = new ArrayList<double[]>(); 
+		for(int i = 0; i < 5; i++) {
+			cheapHotelsSums.add(new double[2]);
+		}
+		List<double[]> premiumHotelsSums = new ArrayList<double[]>();
+		for(int i = 0; i < 5; i++) {
+			premiumHotelsSums.add(new double[2]);
+		}
+		
 		for(ClientPosition cpSuper: this.clientPositions){
 			
 			if(!cpSuper.isFeasible())
@@ -107,27 +95,60 @@ CLIENT:	for (ClientPreference c: auctionMaster.clientPreferences.values()){
 			ClientPositionVariableHotelPrice cp = (ClientPositionVariableHotelPrice)cpSuper;
 			FlightAuction inflightAuction = cp.inFlight;
 			FlightAuction outflightAuction = cp.outFlight;
-			Collection<HotelAuction> hotelList = cp.hotels;
 	
 			if (!auctionPositions.containsKey(inflightAuction)){
 				Position flightPosition = new FlightPositionBidMin(inflightAuction, this.auctionMaster);
 				auctionPositions.put(inflightAuction, flightPosition);
 			}
-			auctionPositions.get(inflightAuction).peopleWhoWantMe.add(cp);
+			auctionPositions.get(inflightAuction).peopleWhoWantMe++;
 			
 			if (!auctionPositions.containsKey(outflightAuction)){
 				Position flightPosition = new FlightPositionBidMin(outflightAuction, this.auctionMaster);
 				auctionPositions.put(outflightAuction, flightPosition);
 			}
-			auctionPositions.get(outflightAuction).peopleWhoWantMe.add(cp);
+			auctionPositions.get(outflightAuction).peopleWhoWantMe++;
 			
-			for(HotelAuction hotelAuction:hotelList) {
-				if (!auctionPositions.containsKey(hotelAuction)){
-					Position hotelPosition = new HotelPositionBidNow(hotelAuction, cp.getHotelPriceForAuction(hotelAuction));
-					auctionPositions.put(hotelAuction, hotelPosition);
+			Map<HotelAuction, Double> clientHotelPrices = cp.clientHotelPrices;
+			for(Entry<HotelAuction, Double> entry:clientHotelPrices.entrySet()) {
+				double[] priceInfo;
+				
+				if(entry.getKey().AUCTION_TYPE == TacTypeEnum.CHEAP_HOTEL) {
+					priceInfo = cheapHotelsSums.get(entry.getKey().AUCTION_DAY.getDayNumber());
 				}
-				auctionPositions.get(hotelAuction).peopleWhoWantMe.add(cp);
+				else {
+					priceInfo = premiumHotelsSums.get(entry.getKey().AUCTION_DAY.getDayNumber());
+				}
+				
+				priceInfo[0] += entry.getValue();
+				priceInfo[1]++;
 			}
+			
+		}
+		
+		// Make hotels mean price
+		for(int i = 1; i < cheapHotelsSums.size(); i++) {
+			cheapHotelsSums.get(i)[0] = cheapHotelsSums.get(i)[0] / cheapHotelsSums.get(i)[1];
+			premiumHotelsSums.get(i)[0] = premiumHotelsSums.get(i)[0] / premiumHotelsSums.get(i)[1];
+		}
+		
+		for(int i = 1; i < 5; i++) {
+			
+			HotelAuction hotelAuctionCheap = auctionMaster.getHotelAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, TacTypeEnum.CHEAP_HOTEL, DayEnum.getDay(i)));
+			HotelAuction hotelAuctionPremium = auctionMaster.getHotelAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, TacTypeEnum.GOOD_HOTEL, DayEnum.getDay(i)));
+			
+			Position hotelPositionCheap = new HotelPositionBidNow(hotelAuctionCheap, cheapHotelsSums.get(i)[0]);
+			Position hotelPositionPremium = new HotelPositionBidNow(hotelAuctionPremium, premiumHotelsSums.get(i)[0]);
+			
+			auctionPositions.put(hotelAuctionCheap, hotelPositionCheap);
+			auctionPositions.put(hotelAuctionPremium, hotelPositionPremium);
+			
+			hotelPositionCheap.peopleWhoWantMe = (int)cheapHotelsSums.get(i)[1];
+			if(hotelPositionCheap.peopleWhoWantMe == 0)
+				hotelPositionCheap.peopleWhoWantMe++;
+			
+			hotelPositionPremium.peopleWhoWantMe = (int)premiumHotelsSums.get(i)[1];
+			if(hotelPositionPremium.peopleWhoWantMe == 0)
+				hotelPositionPremium.peopleWhoWantMe++;
 		}
 	}
 	

@@ -5,28 +5,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import se.sics.tac.aw.DayEnum;
+import se.sics.tac.aw.DummyAgent;
+import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
+import uk.ac.soton.ecs.ia.cortana.AuctionMaster;
 import uk.ac.soton.ecs.ia.cortana.ClientPosition;
+import uk.ac.soton.ecs.ia.cortana.ClientPositionFixedHotelPrice;
+import uk.ac.soton.ecs.ia.cortana.ClientPreference;
+import uk.ac.soton.ecs.ia.cortana.FlightAuction;
+import uk.ac.soton.ecs.ia.cortana.HotelAuction;
 
 public class EntertainmentStrategy {
 	
 	/*
 	 * GENERAL NOTES:
 	 * 
-	 * - There are 3 (events) x 4 (days) x 8 (tickets) = 96 tickets in total. We start with 12
+	 * - there are 3 (events) x 4 (days) x 8 (tickets) = 96 tickets available. We start with 12 of them
+	 * - there are 3 (events) x 4 (days) = 12 auctions running throught the game
 	 * - competitors are more willing to trade at the end of games as client allocations have been made
 	 * - it is better to hold tickets than to sell them cheap as it works in favour of competitors
 	 * 
 	 */
 	
+	private AuctionMaster master;
 	public List<ClientPosition> clients;
-	private TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
-	private TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
-	private TacTypeEnum MU = TacTypeEnum.MUSEUM;
+	public static final int NUM_CLIENTS = 8;
 	
+	private static final TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
+	private static final TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
+	private static final TacTypeEnum MU = TacTypeEnum.MUSEUM;
 	
-	public EntertainmentStrategy() {
-		// TODO Auto-generated constructor stub
+	public EntertainmentStrategy(AuctionMaster master) {
+		this.master = master;
 	}
 	
 	/**
@@ -46,31 +57,41 @@ public class EntertainmentStrategy {
 	}
 	
 	/**
-	 * The number of tickets needed for each of the ticket types
+	 * The number of tickets needed for each of the ticket type
 	 * @return
 	 */
 	public Map<TacTypeEnum, Integer> allTicketsNeeded() {
 		
-		Map<TacTypeEnum, Integer> ticketsNeeded = new HashMap<>();
-		ticketsNeeded.put(TacTypeEnum.ALLIGATOR_WRESTLING, 0);
-		ticketsNeeded.put(TacTypeEnum.AMUSEMENT, 0);
-		ticketsNeeded.put(TacTypeEnum.MUSEUM, 0);
+		Map<TacTypeEnum, Integer> needed = new HashMap<>();
+		needed.put(AW, 0);
+		needed.put(AP, 0);
+		needed.put(MU, 0);
 		
 		for (ClientPosition client : clients) {
 			if (!client.hasEntertainmentTicket(AW)) {
-				ticketsNeeded.put(AW, ticketsNeeded.get(AW) + 1);
+				needed.put(AW, needed.get(AW) + 1);
 			}
 			if (!client.hasEntertainmentTicket(AP)) {
-				ticketsNeeded.put(AP, ticketsNeeded.get(AP) + 1);
+				needed.put(AP, needed.get(AP) + 1);
 			}
 			if (!client.hasEntertainmentTicket(MU)) {
-				ticketsNeeded.put(MU, ticketsNeeded.get(MU) + 1);
+				needed.put(MU, needed.get(MU) + 1);
 			}
 		}
 		
-		return ticketsNeeded;
+		// print
+		System.out.println("We need " + needed.get(AW) + " tickets for Alligator Wrestling");
+		System.out.println("We need " + needed.get(AP) + " tickets for Amusement Park Wrestling");
+		System.out.println("We need " + needed.get(MU) + " tickets for Alligator Wrestling");
+		
+		return needed;
 	}
 	
+	/**
+	 * Number of tickets needed for a particular type of ticket to satisfy the clients
+	 * @param ticketType
+	 * @return
+	 */
 	public int ticketsNeeded(TacTypeEnum ticketType) {
 
 		int needed = 0;
@@ -83,7 +104,46 @@ public class EntertainmentStrategy {
 		return needed;
 	}
 	
+	private void createClientPositions() {
+		
+		for (ClientPreference cp: master.clientPreferences.values()) {
+			
+		}
+		
+	}
+	
+	public void createClientPositions() {
+		for (ClientPreference c: auctionMaster.clientPreferences.values()){		
+			FlightAuction inflight = auctionMaster.getFlightAuction(TacTypeEnum.INFLIGHT, c.inFlight);
+			FlightAuction outflight = auctionMaster.getFlightAuction(TacTypeEnum.OUTFLIGHT, c.outFlight);
+			
+			TacTypeEnum hotelType = TacTypeEnum.CHEAP_HOTEL;
+			
+			double highestHotelPrice = 0;
+			
+			List<HotelAuction> hotelList = new ArrayList<HotelAuction>();
+			
+			for (int d = c.inFlight.getDayNumber(); d < c.outFlight.getDayNumber(); d++) {
+				int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, hotelType, DayEnum.getDay(d));
+				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
+				hotelList.add(hotelAuction);
+				
+				if(hotelAuction.getAskPrice() > highestHotelPrice)
+					highestHotelPrice = hotelAuction.getAskPrice();
+			}
+			
+			// For testing we take the highest hotel price and bid that
+			double nightPrice = highestHotelPrice + 100;
+			ClientPositionFixedHotelPrice cp = new ClientPositionFixedHotelPrice(c, inflight, outflight, hotelList, nightPrice);
+			this.clientPositions.add(cp);
+		}
+	}
+	
 	private boolean worthBuying() {
+		
+		Map<TacTypeEnum, Integer> ticketsNeeded = allTicketsNeeded();
+		Map<TacTypeEnum, Integer> ticketCosts = new HashMap<>();
+		Map<ClientPosition, Integer> clientBonuses = new HashMap<>();
 		
 		
 		

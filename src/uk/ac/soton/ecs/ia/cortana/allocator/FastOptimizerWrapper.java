@@ -3,7 +3,6 @@ package uk.ac.soton.ecs.ia.cortana.allocator;
 import java.util.List;
 
 import se.sics.tac.aw.DayEnum;
-import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.ClientPreference;
 
@@ -60,7 +59,7 @@ public class FastOptimizerWrapper {
 				break;
 		}
 		
-		owns[firstIndex][day.getDayNumber()-1] = owned;
+		owns[day.getDayNumber()-1][firstIndex] = owned;
 	}
 	
 	public int[][] go(){

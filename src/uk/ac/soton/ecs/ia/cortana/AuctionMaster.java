@@ -1,5 +1,6 @@
 package uk.ac.soton.ecs.ia.cortana;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
+import uk.ac.soton.ecs.ia.cortana.allocator.FastOptimizerWrapper;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 import uk.ac.soton.ecs.ia.cortana.strategies.TheStrategy;
 
@@ -175,6 +177,19 @@ public class AuctionMaster {
 			f.plot();
 		}
 		System.out.println("We predicted our score would be " + strategy.getScore());
+		FastOptimizerWrapper fastOptimizerWrapper = new FastOptimizerWrapper();
+		fastOptimizerWrapper.addClientPreferences(new ArrayList<>(this.clientPreferences.values()));
+		
+		for(FlightAuction flightAuction:this.flightAuctions.values()) {
+			fastOptimizerWrapper.addOwned(flightAuction.AUCTION_TYPE, flightAuction.AUCTION_DAY, flightAuction.getNumberOwned());
+		}
+		for(HotelAuction hotetAuction:this.hotelAuctions.values()) {
+			fastOptimizerWrapper.addOwned(hotetAuction.AUCTION_TYPE, hotetAuction.AUCTION_DAY, hotetAuction.getNumberOwned());
+		}
+		for(EntertainmentAuction entertainmentAuction:this.entertainmentAuctions.values()) {
+			fastOptimizerWrapper.addOwned(entertainmentAuction.AUCTION_TYPE, entertainmentAuction.AUCTION_DAY, entertainmentAuction.getNumberOwned());
+		}
+		int[][] go = fastOptimizerWrapper.go();
 	}
 
 	public Strategy getStrategy() {

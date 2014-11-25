@@ -59,20 +59,20 @@ public class StrategyBidMoreGoodHotel extends Strategy {
 				Position flightPosition = new FlightPositionBidNow(inflightAuction);
 				auctionPositions.put(inflightAuction, flightPosition);
 			}
-			auctionPositions.get(inflightAuction).peopleWhoWantMe.add(cp);
+			auctionPositions.get(inflightAuction).peopleWhoWantMe++;
 			
 			if (!auctionPositions.containsKey(outflightAuction)){
 				Position flightPosition = new FlightPositionBidNow(outflightAuction);
 				auctionPositions.put(outflightAuction, flightPosition);
 			}
-			auctionPositions.get(outflightAuction).peopleWhoWantMe.add(cp);
+			auctionPositions.get(outflightAuction).peopleWhoWantMe++;
 			
 			for(HotelAuction hotelAuction:hotelList) {
 				if (!auctionPositions.containsKey(hotelAuction)){
 					Position hotelPosition = new HotelPositionBidNow(hotelAuction, cp.pricePerNight);
 					auctionPositions.put(hotelAuction, hotelPosition);
 				}
-				auctionPositions.get(hotelAuction).peopleWhoWantMe.add(cp);
+				auctionPositions.get(hotelAuction).peopleWhoWantMe++;
 			}
 		}
 	}

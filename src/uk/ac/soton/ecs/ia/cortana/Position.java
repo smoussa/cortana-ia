@@ -1,14 +1,13 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class Position {
 
 	protected final Auction auction;
 	protected boolean isTheoretical = true; // indicates position has been put into play. i.e has been bidded
 	
-	public List<ClientPosition> peopleWhoWantMe;
+//	public List<ClientPosition> peopleWhoWantMe;
+	public int peopleWhoWantMe;
 	
 	private boolean finalised; // indicates peopleWhoWantMe, the bid price and quantity wont be changed
 	private float actualBid;
@@ -17,7 +16,8 @@ public abstract class Position {
 	
 	public Position(Auction auction) {
 		this.auction = auction;
-		this.peopleWhoWantMe = new ArrayList<ClientPosition>();
+//		this.peopleWhoWantMe = new ArrayList<ClientPosition>();
+		this.peopleWhoWantMe = 0;
 		this.finalised = false;
 		this.shouldBid = false;
 	}
@@ -40,7 +40,7 @@ public abstract class Position {
 		if (finalised)
 			return this.quantityBid;
 		
-		int numPeopleWhoWantMe = this.peopleWhoWantMe.size();
+		int numPeopleWhoWantMe = this.peopleWhoWantMe;
 		int numOwned = auction.getNumberOwned();
 		
 		if (auction.getBid() == null)
@@ -53,7 +53,7 @@ public abstract class Position {
 	}
 	
 	public boolean isFullySatisfied(){
-		return peopleWhoWantMe.size() <= auction.getNumberOwned();
+		return peopleWhoWantMe <= auction.getNumberOwned();
 	}
 	
 	public boolean isValid() {		
@@ -77,11 +77,11 @@ public abstract class Position {
 			isValid = false;
 		}
 		
-		if(!auction.isClosed() && !isTheoretical && peopleWhoWantMe.size() <= auction.getNumberProbablyOwned() + auction.getNumberOwned()) {
+		if(!auction.isClosed() && !isTheoretical && peopleWhoWantMe <= auction.getNumberProbablyOwned() + auction.getNumberOwned()) {
 //			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
 		}
 		else if(!auction.isClosed() && !isTheoretical) {
-			System.out.print("We only have " + (auction.getNumberProbablyOwned()+auction.getNumberOwned()) + " of " + peopleWhoWantMe.size() + " :(");
+			System.out.print("We only have " + (auction.getNumberProbablyOwned()+auction.getNumberOwned()) + " of " + peopleWhoWantMe + " :(");
 			isValid = false;
 		}
 		
@@ -113,5 +113,5 @@ public abstract class Position {
 		
 		System.out.println("Finalised to " + quantityBid + " at " + actualBid);
 	}
-	
+
 }

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ClientPositionVariableHotelPrice extends ClientPosition {
 
-	private Map<HotelAuction, Double> clientHotelPrices;
+	public Map<HotelAuction, Double> clientHotelPrices;
 	
 	public ClientPositionVariableHotelPrice(ClientPreference client,
 											FlightAuction inFlight, FlightAuction outFlight,

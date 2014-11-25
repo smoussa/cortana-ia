@@ -11,6 +11,7 @@ import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
+import uk.ac.soton.ecs.ia.cortana.strategies.TheStrategy;
 
 public class AuctionMaster {
 
@@ -19,7 +20,7 @@ public class AuctionMaster {
 	private Map<Integer, EntertainmentAuction> entertainmentAuctions;
 	public Map<Integer, ClientPreference> clientPreferences;
 	
-	private DummyAgent cortana;
+	public DummyAgent cortana;
 	
 	boolean flightUpdated = false;
 	boolean hotelUpdated = false;
@@ -102,7 +103,7 @@ public class AuctionMaster {
 	private synchronized void createStrategy() {
 		System.out.println("MAKING A STRATEGY");
 
-		this.strategy = Planner.makeStrategy(this, this.strategy);
+		this.strategy = new TheStrategy(this);
 		
 		System.out.println("We chose: " + this.strategy.toString());
 		
@@ -160,7 +161,7 @@ public class AuctionMaster {
 	}
 
 	public synchronized void check() {
-		if((strategy == null || !strategy.isStrategyValid()) && this.entertainmentAuctions.size()+this.flightAuctions.size()+this.hotelAuctions.size() == 28) {
+		if(strategy == null && this.entertainmentAuctions.size()+this.flightAuctions.size()+this.hotelAuctions.size() == 28) {
 			createStrategy();
 		}
 	}

@@ -16,6 +16,7 @@ public class ClientPosition {
 	public EntertainmentAuction eAuction;
 	
 	private Map<DayEnum, TacTypeEnum> eTickets;
+	private int numETickets;
 
 	public ClientPosition(
 			ClientPreference client,
@@ -27,6 +28,8 @@ public class ClientPosition {
 		this.inFlight = inFlight;
 		this.outFlight = outFlight;
 		this.hotels = hotels;
+		
+		numETickets = 0;
 	}
 	
 	public double getTotalUtility(){
@@ -95,7 +98,12 @@ public class ClientPosition {
 		return true;
 	}
 	
+	public int numTicketsHeld() {
+		return numETickets;
+	}
+	
 	public void giveEntertainmentTicket(DayEnum day, TacTypeEnum ticket) {
+		numETickets++;
 		eTickets.put(day, ticket);
 	}
 	
@@ -105,6 +113,10 @@ public class ClientPosition {
 	
 	public boolean hasEntertainmentTicket(DayEnum day) {
 		return eTickets.get(day) != null;
+	}
+	
+	public boolean hasEntertainmentTicket(TacTypeEnum ticket) {
+		return eTickets.containsValue(ticket);
 	}
 	
 	public int numDaysStaying() {

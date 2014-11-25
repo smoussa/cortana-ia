@@ -1,8 +1,11 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.ClientPosition;
 
 public class EntertainmentStrategy {
@@ -16,7 +19,10 @@ public class EntertainmentStrategy {
 	 * 
 	 */
 	
-	public List<ClientPosition> clientsWanting;
+	public List<ClientPosition> clients;
+	private TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
+	private TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
+	private TacTypeEnum MU = TacTypeEnum.MUSEUM;
 	
 	
 	public EntertainmentStrategy() {
@@ -30,7 +36,7 @@ public class EntertainmentStrategy {
 	public List<ClientPosition> clientsWaiting() {
 		
 		List<ClientPosition> waiting = new ArrayList<>();
-		for (ClientPosition client : clientsWanting) {
+		for (ClientPosition client : clients) {
 			if (!client.isFeasible()) {
 				waiting.add(client);
 			}
@@ -39,12 +45,52 @@ public class EntertainmentStrategy {
 		return waiting;
 	}
 	
+	/**
+	 * The number of tickets needed for each of the ticket types
+	 * @return
+	 */
+	public Map<TacTypeEnum, Integer> allTicketsNeeded() {
+		
+		Map<TacTypeEnum, Integer> ticketsNeeded = new HashMap<>();
+		ticketsNeeded.put(TacTypeEnum.ALLIGATOR_WRESTLING, 0);
+		ticketsNeeded.put(TacTypeEnum.AMUSEMENT, 0);
+		ticketsNeeded.put(TacTypeEnum.MUSEUM, 0);
+		
+		for (ClientPosition client : clients) {
+			if (!client.hasEntertainmentTicket(AW)) {
+				ticketsNeeded.put(AW, ticketsNeeded.get(AW) + 1);
+			}
+			if (!client.hasEntertainmentTicket(AP)) {
+				ticketsNeeded.put(AP, ticketsNeeded.get(AP) + 1);
+			}
+			if (!client.hasEntertainmentTicket(MU)) {
+				ticketsNeeded.put(MU, ticketsNeeded.get(MU) + 1);
+			}
+		}
+		
+		return ticketsNeeded;
+	}
+	
+	public int ticketsNeeded(TacTypeEnum ticketType) {
+
+		int needed = 0;
+		for (ClientPosition client : clients) {
+			if (!client.hasEntertainmentTicket(ticketType)) {
+				needed++;
+			}
+		}
+		
+		return needed;
+	}
+	
 	private boolean worthBuying() {
 		
+		
+		
 		/*
-		 * if we don't have tickets that are needed by clients,
+		 * if we don't have the tickets that are needed by clients,
 		 * check how much each client is willing to pay (the bonuses)
-		 * and if the bonus is higher than the cost of the ticket,
+		 * and if at least one bonus is higher than the cost of the ticket,
 		 * buy the tickets
 		 * 
 		 * But then how many do we need? getSuggestedBuyQuantity()

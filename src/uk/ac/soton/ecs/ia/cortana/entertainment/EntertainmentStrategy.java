@@ -1,17 +1,42 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.ac.soton.ecs.ia.cortana.ClientPosition;
+
 public class EntertainmentStrategy {
 	
 	/*
 	 * GENERAL NOTES:
 	 * 
 	 * - There are 3 (events) x 4 (days) x 8 (tickets) = 96 tickets in total. We start with 12
-	 * - Competitors are more willing to trade at the end of games as client allocations have been made
+	 * - competitors are more willing to trade at the end of games as client allocations have been made
+	 * - it is better to hold tickets than to sell them cheap as it works in favour of competitors
 	 * 
 	 */
 	
+	public List<ClientPosition> clientsWanting;
+	
+	
 	public EntertainmentStrategy() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	/**
+	 * A list of clients that do not have the full set of entertainment packages
+	 * @return
+	 */
+	public List<ClientPosition> clientsWaiting() {
+		
+		List<ClientPosition> waiting = new ArrayList<>();
+		for (ClientPosition client : clientsWanting) {
+			if (!client.isFeasible()) {
+				waiting.add(client);
+			}
+		}
+		
+		return waiting;
 	}
 	
 	private boolean worthBuying() {

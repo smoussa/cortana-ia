@@ -99,6 +99,14 @@ public class ClientPosition {
 		eTickets.put(day, ticket);
 	}
 	
+	public TacTypeEnum getEntertainmentTicket(DayEnum day) {
+		return eTickets.get(day);
+	}
+	
+	public boolean hasEntertainmentTicket(DayEnum day) {
+		return eTickets.get(day) != null;
+	}
+	
 	public int numDaysStaying() {
 		return outFlight.AUCTION_DAY.getDayNumber() - inFlight.AUCTION_DAY.getDayNumber();
 	}

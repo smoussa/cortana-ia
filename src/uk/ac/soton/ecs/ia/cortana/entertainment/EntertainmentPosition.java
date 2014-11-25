@@ -27,22 +27,5 @@ public class EntertainmentPosition {
 		return 0;
 	}
 	
-	/**
-	 * The number of clients that can be given entertainment packages.
-	 * @return
-	 */
-	public List<ClientPosition> clientsWaiting() {
-		
-		List<ClientPosition> waiting = new ArrayList<>();
-		for (ClientPosition client : clientsWanting) {
-			if (!client.isFeasible()) {
-				waiting.add(client);
-			}
-		}
-		
-		return waiting;
-	}
-	
-	
 
 }

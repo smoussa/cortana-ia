@@ -3,6 +3,8 @@ package uk.ac.soton.ecs.ia.cortana;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import se.sics.tac.aw.ClientPreferenceEnum;
 import se.sics.tac.aw.DayEnum;
@@ -22,7 +24,7 @@ public class AuctionMaster {
 	private Map<Integer, EntertainmentAuction> entertainmentAuctions;
 	public Map<Integer, ClientPreference> clientPreferences;
 	
-	public DummyAgent cortana;
+	public final DummyAgent cortana;
 	
 	boolean flightUpdated = false;
 	boolean hotelUpdated = false;
@@ -30,6 +32,8 @@ public class AuctionMaster {
 	
 	private Strategy strategy;
 
+	private Timer gameTimer;
+	
 	public AuctionMaster(DummyAgent cortana) {
 		this.cortana = cortana;
 		flightAuctions = new HashMap<Integer, FlightAuction>();
@@ -38,6 +42,14 @@ public class AuctionMaster {
 		clientPreferences = new HashMap<Integer, ClientPreference>();
 		
 		createClientPreferences();
+		gameTimer = new Timer();
+		gameTimer.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				lastMinuteStrategy();
+			}
+		}, 60000 * 8, 20000);
 	}
 	
 	public Auction getAuction(int auctionId) {
@@ -112,6 +124,27 @@ public class AuctionMaster {
 		sendBids();
 	}
 	
+	public synchronized void lastMinuteStrategy() {
+		gameTimer.cancel();
+		
+		System.out.println("LAST MIN FLIGHT PURCHASES");
+		
+		FastOptimizerWrapper fastOptimizerWrapper = new FastOptimizerWrapper();
+		fastOptimizerWrapper.addClientPreferences(new ArrayList<>(this.clientPreferences.values()));
+		
+		for(FlightAuction flightAuction:this.flightAuctions.values()) {
+			fastOptimizerWrapper.addOwned(flightAuction.AUCTION_TYPE, flightAuction.AUCTION_DAY, flightAuction.getNumberOwned());
+		}
+		for(HotelAuction hotetAuction:this.hotelAuctions.values()) {
+			fastOptimizerWrapper.addOwned(hotetAuction.AUCTION_TYPE, hotetAuction.AUCTION_DAY, hotetAuction.getNumberOwned());
+		}
+		for(EntertainmentAuction entertainmentAuction:this.entertainmentAuctions.values()) {
+			fastOptimizerWrapper.addOwned(entertainmentAuction.AUCTION_TYPE, entertainmentAuction.AUCTION_DAY, entertainmentAuction.getNumberOwned());
+		}
+		int[][] go = fastOptimizerWrapper.go();
+		
+	}
+	
 	public void sendBids() {
 		this.strategy.sendBids();
 	}
@@ -177,19 +210,6 @@ public class AuctionMaster {
 			f.plot();
 		}
 		System.out.println("We predicted our score would be " + strategy.getScore());
-		FastOptimizerWrapper fastOptimizerWrapper = new FastOptimizerWrapper();
-		fastOptimizerWrapper.addClientPreferences(new ArrayList<>(this.clientPreferences.values()));
-		
-		for(FlightAuction flightAuction:this.flightAuctions.values()) {
-			fastOptimizerWrapper.addOwned(flightAuction.AUCTION_TYPE, flightAuction.AUCTION_DAY, flightAuction.getNumberOwned());
-		}
-		for(HotelAuction hotetAuction:this.hotelAuctions.values()) {
-			fastOptimizerWrapper.addOwned(hotetAuction.AUCTION_TYPE, hotetAuction.AUCTION_DAY, hotetAuction.getNumberOwned());
-		}
-		for(EntertainmentAuction entertainmentAuction:this.entertainmentAuctions.values()) {
-			fastOptimizerWrapper.addOwned(entertainmentAuction.AUCTION_TYPE, entertainmentAuction.AUCTION_DAY, entertainmentAuction.getNumberOwned());
-		}
-		int[][] go = fastOptimizerWrapper.go();
 	}
 
 	public Strategy getStrategy() {

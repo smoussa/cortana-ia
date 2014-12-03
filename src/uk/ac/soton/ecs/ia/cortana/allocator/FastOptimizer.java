@@ -576,9 +576,14 @@ public class FastOptimizer implements Solver {
 
 	// This will store the latest allocation
 	int[][] latestAlloc = new int[8][6];
+	int latestScore = 0;
 
 	public int[][] getLatestAllocation() {
 		return latestAlloc;
+	}
+
+	public int getLatestScore() {
+		return latestScore;
 	}
 
 	public long getCalculationTime() {
@@ -664,6 +669,7 @@ public class FastOptimizer implements Solver {
 			sb.append(EOL);
 		}
 		sb.append("Total score = ").append(total).append(EOL);
+		latestScore = total;
 	}
 
 	// Set a clients preferences based on an array of 8 x 6

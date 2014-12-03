@@ -124,24 +124,139 @@ public class AuctionMaster {
 		sendBids();
 	}
 	
-	public synchronized void lastMinuteStrategy() {
-		gameTimer.cancel();
-		
-		System.out.println("LAST MIN FLIGHT PURCHASES");
-		
+	private int getCurrentScore() {
 		FastOptimizerWrapper fastOptimizerWrapper = new FastOptimizerWrapper();
 		fastOptimizerWrapper.addClientPreferences(new ArrayList<>(this.clientPreferences.values()));
 		
 		for(FlightAuction flightAuction:this.flightAuctions.values()) {
 			fastOptimizerWrapper.addOwned(flightAuction.AUCTION_TYPE, flightAuction.AUCTION_DAY, flightAuction.getNumberOwned());
 		}
-		for(HotelAuction hotetAuction:this.hotelAuctions.values()) {
-			fastOptimizerWrapper.addOwned(hotetAuction.AUCTION_TYPE, hotetAuction.AUCTION_DAY, hotetAuction.getNumberOwned());
+		for(HotelAuction hotelAuction:this.hotelAuctions.values()) {
+			fastOptimizerWrapper.addOwned(hotelAuction.AUCTION_TYPE, hotelAuction.AUCTION_DAY, hotelAuction.getNumberOwned());
 		}
 		for(EntertainmentAuction entertainmentAuction:this.entertainmentAuctions.values()) {
 			fastOptimizerWrapper.addOwned(entertainmentAuction.AUCTION_TYPE, entertainmentAuction.AUCTION_DAY, entertainmentAuction.getNumberOwned());
 		}
-		int[][] go = fastOptimizerWrapper.go();
+		
+		fastOptimizerWrapper.go();
+		
+		return fastOptimizerWrapper.getLatestScore();
+	}
+	
+	public synchronized void lastMinuteStrategy() {
+		gameTimer.cancel();
+		
+		System.out.println("LAST MIN FLIGHT PURCHASES");
+		
+		// Work out what would happen if we didn't buy anything
+		int currentScore = getCurrentScore();
+		
+		
+		// Assume we have all flights to see if we need more once the optimiser runs
+		FastOptimizerWrapper fastOptimizerWrapper = new FastOptimizerWrapper();
+		fastOptimizerWrapper.addClientPreferences(new ArrayList<>(this.clientPreferences.values()));
+		
+		
+		fastOptimizerWrapper.addOwned(TacTypeEnum.INFLIGHT, DayEnum.MONDAY, 8);
+		fastOptimizerWrapper.addOwned(TacTypeEnum.INFLIGHT, DayEnum.TUESDAY, 8);
+		fastOptimizerWrapper.addOwned(TacTypeEnum.OUTFLIGHT, DayEnum.TUESDAY, 8);
+		fastOptimizerWrapper.addOwned(TacTypeEnum.INFLIGHT, DayEnum.WEDNESDAY, 8);
+		fastOptimizerWrapper.addOwned(TacTypeEnum.OUTFLIGHT, DayEnum.WEDNESDAY, 8);
+		fastOptimizerWrapper.addOwned(TacTypeEnum.INFLIGHT, DayEnum.THURSDAY, 8);
+		fastOptimizerWrapper.addOwned(TacTypeEnum.OUTFLIGHT, DayEnum.THURSDAY, 8);
+		fastOptimizerWrapper.addOwned(TacTypeEnum.OUTFLIGHT, DayEnum.FRIDAY, 8);
+		
+		
+		for(HotelAuction hotelAuction:this.hotelAuctions.values()) {
+			fastOptimizerWrapper.addOwned(hotelAuction.AUCTION_TYPE, hotelAuction.AUCTION_DAY, hotelAuction.getNumberOwned());
+		}
+		for(EntertainmentAuction entertainmentAuction:this.entertainmentAuctions.values()) {
+			fastOptimizerWrapper.addOwned(entertainmentAuction.AUCTION_TYPE, entertainmentAuction.AUCTION_DAY, entertainmentAuction.getNumberOwned());
+		}
+		
+		/*
+		 * prefs[i][0] = c.inFlight.getDayNumber();
+			prefs[i][1] = c.outFlight.getDayNumber();
+			... etc.
+		 */
+		
+		int[][] prefs = fastOptimizerWrapper.go();
+		
+		
+		// If we could improve our score then work out if the flights are cheap enough to do so
+		int latestScore = fastOptimizerWrapper.getLatestScore();
+		
+		System.out.println("Score is " + currentScore + " if we had more flights it would be " + latestScore);
+		
+		if(latestScore < currentScore)
+			return;
+		
+		//[Day][inflight quant., outflight quant.]
+		int[][] idealFlightTotals = new int[8][2];
+		for(int i = 0; i < idealFlightTotals.length; i++) {
+			idealFlightTotals[i][0] = 0;
+			idealFlightTotals[i][1] = 0;
+		}
+		
+		for(int[] preference:prefs) {
+			idealFlightTotals[preference[0]][0]++;
+			idealFlightTotals[preference[1]][1]++;
+		}
+		
+		int[][] flightsToBuy = new int[8][2];
+		for(int i = 0; i < flightsToBuy.length; i++) {
+			flightsToBuy[i][0] = 0;
+			flightsToBuy[i][1] = 0;
+		}
+		
+		// Add what we own, minus off what we need
+		for(FlightAuction flightAuction:this.flightAuctions.values()) {
+			int typeCode = 0;
+			if(flightAuction.AUCTION_TYPE == TacTypeEnum.OUTFLIGHT)
+				typeCode = 1;
+			
+			flightsToBuy[flightAuction.AUCTION_DAY.getDayNumber()][typeCode]++;
+		}
+		
+		for(int i = 0; i < idealFlightTotals.length; i++) {
+			flightsToBuy[i][0]-=idealFlightTotals[i][0];
+			flightsToBuy[i][1]-=idealFlightTotals[i][1];
+		}
+		
+		float totalExtraCost = 0;
+		
+		for(int i = 0; i < flightsToBuy.length; i++) {
+			if(flightsToBuy[i][0] > 0) {
+				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.INFLIGHT, DayEnum.getDay(i)));
+				
+				// We do this right at the end of the game so don't wait for a minimum as the price is likely just going up and up
+				totalExtraCost += (float)auction.getAskPrice() + 20;
+			}
+			if(flightsToBuy[i][1] > 0) {
+				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.OUTFLIGHT, DayEnum.getDay(i)));
+				//  + 20 because the flight increment might go up before we can buy
+				totalExtraCost += (float)auction.getAskPrice() + 20;
+			}
+		}
+		
+		// Check if the improvement in score is worth it given the price of flights
+		
+		System.out.println("Score could be " + latestScore + " with the flights its only " + (latestScore - totalExtraCost) + " compared to our original " + currentScore);
+		if(latestScore - totalExtraCost < currentScore)
+			return;
+		
+		System.out.println("WE'RE BUYING TICKETS!");
+		
+		for(int i = 0; i < flightsToBuy.length; i++) {
+			if(flightsToBuy[i][0] > 0) {
+				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.INFLIGHT, DayEnum.getDay(i)));
+				auction.bid(flightsToBuy[i][0], (float)auction.getAskPrice());
+			}
+			if(flightsToBuy[i][1] > 0) {
+				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.OUTFLIGHT, DayEnum.getDay(i)));
+				auction.bid(flightsToBuy[i][1], (float)auction.getAskPrice() + 20);
+			}
+		}
 		
 	}
 	

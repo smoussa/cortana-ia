@@ -67,5 +67,9 @@ public class FastOptimizerWrapper {
 		fo.solve();
 		return fo.getLatestAllocation();
 	}
+	
+	public int getLatestScore() {
+		return fo.getLatestScore();
+	}
 
 }

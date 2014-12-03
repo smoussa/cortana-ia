@@ -1,6 +1,5 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators.FlightPriceEstimatorMonteCarlo;
 
 public class FlightPositionBidMin extends FlightPosition {
 

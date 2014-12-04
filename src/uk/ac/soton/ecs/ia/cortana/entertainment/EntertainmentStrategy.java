@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
+import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
@@ -17,6 +18,7 @@ import uk.ac.soton.ecs.ia.cortana.ClientPositionFixedHotelPrice;
 import uk.ac.soton.ecs.ia.cortana.ClientPreference;
 import uk.ac.soton.ecs.ia.cortana.FlightAuction;
 import uk.ac.soton.ecs.ia.cortana.HotelAuction;
+import uk.ac.soton.ecs.ia.cortana.Position;
 
 public class EntertainmentStrategy {
 	
@@ -41,6 +43,15 @@ public class EntertainmentStrategy {
 	public EntertainmentStrategy(AuctionMaster master) {
 		this.master = master;
 		createClientPositions();
+	}
+	
+	/*
+	 * TAC Methods
+	 */
+	
+	public void quoteUpdated(Quote quote) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	/**
@@ -151,13 +162,6 @@ public class EntertainmentStrategy {
 		
 	}
 	
-	private Map<TacTypeEnum, Integer> getTicketCost() {
-		
-		
-		
-		DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, AW, DayEnum.MONDAY);
-	}
-	
 	
 	
 	
@@ -165,6 +169,10 @@ public class EntertainmentStrategy {
 	/*
 	 * STRATEGIES
 	 */
+	
+	private void dummyStrategy() {
+		
+	}
 	
 	
 	private int worthBuying(TacTypeEnum ticket) {
@@ -324,5 +332,7 @@ public class EntertainmentStrategy {
 		 */
 		
 	}
+
+	
 
 }

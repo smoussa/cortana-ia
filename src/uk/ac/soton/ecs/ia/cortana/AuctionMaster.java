@@ -15,6 +15,7 @@ import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.allocator.FastOptimizerWrapper;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
+import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentStrategy;
 import uk.ac.soton.ecs.ia.cortana.strategies.TheStrategy;
 
 public class AuctionMaster {
@@ -31,6 +32,7 @@ public class AuctionMaster {
 	boolean bidsNotSent = true;
 	
 	private Strategy strategy;
+	private EntertainmentStrategy entertainmentStrategy;
 
 	private Timer gameTimer;
 	
@@ -118,6 +120,7 @@ public class AuctionMaster {
 		System.out.println("MAKING A STRATEGY");
 
 		this.strategy = new TheStrategy(this);
+		this.entertainmentStrategy = new EntertainmentStrategy(this);
 		
 		System.out.println("We chose: " + this.strategy.toString());
 		
@@ -306,6 +309,8 @@ public class AuctionMaster {
 					((FlightPosition) this.strategy.getPosition(auction)).tick(this.cortana.agent.get10SecondChunkElapsed());
 				}
 			}
+		} else if (auction.AUCTION_CAT == TacCategoryEnum.CAT_ENTERTAINMENT) {
+			entertainmentStrategy.quoteUpdated(quote);
 		}
 			
 	}

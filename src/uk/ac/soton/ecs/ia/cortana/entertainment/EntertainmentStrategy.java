@@ -22,7 +22,7 @@ public class EntertainmentStrategy {
 	 * GENERAL NOTES:
 	 * 
 	 * - there are 3 (events) x 4 (days) x 8 (tickets) = 96 tickets available. We start with 12 of them
-	 * - there are 3 (events) x 4 (days) = 12 auctions running throught the game
+	 * - there are 3 (events) x 4 (days) = 12 auctions running throughout the game
 	 * - competitors are more willing to trade at the end of games as client allocations have been made
 	 * - it is better to hold tickets than to sell them cheap as it works in favour of competitors
 	 * 
@@ -106,37 +106,11 @@ public class EntertainmentStrategy {
 	
 	private void createClientPositions() {
 		
+		// create positions with any flight and hotel auctions as they won't affect entertainment
 		for (ClientPreference cp: master.clientPreferences.values()) {
-			
+			clients.add(new ClientPosition(cp, null, null, null));
 		}
 		
-	}
-	
-	public void createClientPositions() {
-		for (ClientPreference c: auctionMaster.clientPreferences.values()){		
-			FlightAuction inflight = auctionMaster.getFlightAuction(TacTypeEnum.INFLIGHT, c.inFlight);
-			FlightAuction outflight = auctionMaster.getFlightAuction(TacTypeEnum.OUTFLIGHT, c.outFlight);
-			
-			TacTypeEnum hotelType = TacTypeEnum.CHEAP_HOTEL;
-			
-			double highestHotelPrice = 0;
-			
-			List<HotelAuction> hotelList = new ArrayList<HotelAuction>();
-			
-			for (int d = c.inFlight.getDayNumber(); d < c.outFlight.getDayNumber(); d++) {
-				int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, hotelType, DayEnum.getDay(d));
-				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
-				hotelList.add(hotelAuction);
-				
-				if(hotelAuction.getAskPrice() > highestHotelPrice)
-					highestHotelPrice = hotelAuction.getAskPrice();
-			}
-			
-			// For testing we take the highest hotel price and bid that
-			double nightPrice = highestHotelPrice + 100;
-			ClientPositionFixedHotelPrice cp = new ClientPositionFixedHotelPrice(c, inflight, outflight, hotelList, nightPrice);
-			this.clientPositions.add(cp);
-		}
 	}
 	
 	private boolean worthBuying() {

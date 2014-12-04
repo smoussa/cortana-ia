@@ -10,7 +10,7 @@ public class ClientPositionVariableHotelPrice extends ClientPosition {
 	public ClientPositionVariableHotelPrice(ClientPreference client,
 											FlightAuction inFlight, FlightAuction outFlight,
 											Map<HotelAuction, Double> clientHotelPrices) {
-		super(client, inFlight, outFlight, new ArrayList<>(clientHotelPrices.keySet()));
+		super(client, inFlight, outFlight, new ArrayList<>(clientHotelPrices.keySet()), null);
 		this.clientHotelPrices = clientHotelPrices;
 	}
 	

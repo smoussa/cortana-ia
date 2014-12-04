@@ -72,7 +72,7 @@ public class EntertainmentAuction extends Auction {
 		return agent.getProbablyOwn(AUCTION_ID);
 	}
 	
-	public TacTypeEnum getAuctionTyoe() {
+	public TacTypeEnum getAuctionType() {
 		return AUCTION_TYPE;
 	}
 

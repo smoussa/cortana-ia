@@ -108,22 +108,60 @@ public class EntertainmentStrategy {
 		
 		// create positions with any flight and hotel auctions as they won't affect entertainment
 		for (ClientPreference cp: master.clientPreferences.values()) {
-			clients.add(new ClientPosition(cp, null, null, null));
+			
+			List<EntertainmentAuction> eAuctions = new ArrayList<>();
+			
+			for (int d = c.inFlight.getDayNumber(); d < c.outFlight.getDayNumber(); d++) {
+				int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, hotelType, DayEnum.getDay(d));
+				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
+				hotelList.add(hotelAuction);
+			}
+			clients.add(new ClientPosition(cp, null, null, null, eAuctions));
 		}
 		
 	}
 	
+	private Map<TacTypeEnum, Integer> getTicketCost() {
+		
+		
+		
+		DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, AW, DayEnum.MONDAY);
+	}
+	
+	
+	
+	
+	
+	/*
+	 * STRATEGIES
+	 */
+	
+	
 	private boolean worthBuying() {
 		
 		Map<TacTypeEnum, Integer> ticketsNeeded = allTicketsNeeded();
-		Map<TacTypeEnum, Integer> ticketCosts = new HashMap<>();
+		Map<TacTypeEnum, Integer> ticketCosts = getTicketCosts();
 		Map<ClientPosition, Integer> clientBonuses = new HashMap<>();
 		
+		/*
+		 * for each the days, check how many are needed, if needed more than 0
+		 * get the cost of each of the tickets for that day.
+		 * get the client bonuses for 
+		 */
 		
+		for (ClientPosition client : clients) {
+			
+			int bonusAW = client.getEntertainmentBonus(AW);
+			int bonusAP = client.getEntertainmentBonus(AP);
+			int bonusMU = client.getEntertainmentBonus(MU);
+			
+			
+		}
 		
 		/*
 		 * if we don't have the tickets that are needed by clients,
 		 * check how much each client is willing to pay (the bonuses)
+		 * and whether they are staying for that day
 		 * and if at least one bonus is higher than the cost of the ticket,
 		 * buy the tickets
 		 * 

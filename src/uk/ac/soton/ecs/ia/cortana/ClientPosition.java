@@ -13,7 +13,7 @@ public class ClientPosition {
 	public ClientPreference client;
 	public FlightAuction inFlight, outFlight;
 	public List<HotelAuction> hotels;
-	public EntertainmentAuction eAuction;
+	public List<EntertainmentAuction> eAuctions;
 	
 	private Map<DayEnum, TacTypeEnum> eTickets;
 	private int numETickets;
@@ -22,12 +22,14 @@ public class ClientPosition {
 			ClientPreference client,
 			FlightAuction inFlight,
 			FlightAuction outFlight,
-			List<HotelAuction> hotels) {
+			List<HotelAuction> hotels,
+			List<EntertainmentAuction> eAuctions) {
 		
 		this.client = client;
 		this.inFlight = inFlight;
 		this.outFlight = outFlight;
 		this.hotels = hotels;
+		this.eAuctions = eAuctions;
 		
 		numETickets = 0;
 	}
@@ -96,6 +98,17 @@ public class ClientPosition {
 			return false;
 		
 		return true;
+	}
+	
+	public int getEntertainmentBonus(TacTypeEnum ticket) {
+		if (ticket == TacTypeEnum.ALLIGATOR_WRESTLING) {
+			return client.e1Bonus;
+		} else if (ticket == TacTypeEnum.AMUSEMENT) {
+			return client.e2Bonus;
+		} else if (ticket == TacTypeEnum.MUSEUM) {
+			return client.e3Bonus;
+		}
+		return 0;
 	}
 	
 	public int numTicketsHeld() {

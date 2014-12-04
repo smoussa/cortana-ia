@@ -38,6 +38,7 @@ public class EntertainmentStrategy {
 	
 	public EntertainmentStrategy(AuctionMaster master) {
 		this.master = master;
+		createClientPositions();
 	}
 	
 	/**
@@ -106,17 +107,26 @@ public class EntertainmentStrategy {
 	
 	private void createClientPositions() {
 		
-		// create positions with any flight and hotel auctions as they won't affect entertainment
-		for (ClientPreference cp: master.clientPreferences.values()) {
+		for (ClientPreference cpref : master.clientPreferences.values()) {
+			
+			// TODO Days staying should be based on the actual flight days rather than the client preference
+			
+			FlightAuction inflight = master.getFlightAuction(TacTypeEnum.INFLIGHT, cpref.inFlight);
+			FlightAuction outflight = master.getFlightAuction(TacTypeEnum.OUTFLIGHT, cpref.outFlight);
 			
 			List<EntertainmentAuction> eAuctions = new ArrayList<>();
-			
-			for (int d = c.inFlight.getDayNumber(); d < c.outFlight.getDayNumber(); d++) {
-				int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, hotelType, DayEnum.getDay(d));
-				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
-				hotelList.add(hotelAuction);
+			for (int d = cpref.inFlight.getDayNumber(); d < cpref.outFlight.getDayNumber(); d++) {
+				int auctionIdAW = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, AW, DayEnum.getDay(d));
+				int auctionIdAP = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, AP, DayEnum.getDay(d));
+				int auctionIdMU = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, MU, DayEnum.getDay(d));
+				EntertainmentAuction auctionAW = master.getEntertainmentAuction(auctionIdAW);
+				EntertainmentAuction auctionAP = master.getEntertainmentAuction(auctionIdAP);
+				EntertainmentAuction auctionMU = master.getEntertainmentAuction(auctionIdMU);
+				eAuctions.add(auctionAW);
+				eAuctions.add(auctionAP);
+				eAuctions.add(auctionMU);
 			}
-			clients.add(new ClientPosition(cp, null, null, null, eAuctions));
+			clients.add(new ClientPosition(cpref, inflight, outflight, null, eAuctions));
 		}
 		
 	}

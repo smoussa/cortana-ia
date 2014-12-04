@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
@@ -58,42 +59,60 @@ public class EntertainmentStrategy {
 	}
 	
 	/**
-	 * The number of tickets needed for each of the ticket type
+	 * Total number of tickets needed by all clients for every ticket type
 	 * @return
 	 */
-	public Map<TacTypeEnum, Integer> allTicketsNeeded() {
+	public Map<TacTypeEnum, Integer> ticketsNeeded() {
 		
-		Map<TacTypeEnum, Integer> needed = new HashMap<>();
-		needed.put(AW, 0);
-		needed.put(AP, 0);
-		needed.put(MU, 0);
+		int neededAW = 0;
+		int neededAP = 0;
+		int neededMU = 0;
 		
 		for (ClientPosition client : clients) {
-			if (!client.hasEntertainmentTicket(AW)) {
-				needed.put(AW, needed.get(AW) + 1);
-			}
-			if (!client.hasEntertainmentTicket(AP)) {
-				needed.put(AP, needed.get(AP) + 1);
-			}
-			if (!client.hasEntertainmentTicket(MU)) {
-				needed.put(MU, needed.get(MU) + 1);
-			}
+			if (!client.hasEntertainmentTicket(AW))
+				neededAW++;
+			if (!client.hasEntertainmentTicket(AP))
+				neededAP++;
+			if (!client.hasEntertainmentTicket(MU))
+				neededMU++;
 		}
 		
 		// print
-		System.out.println("We need " + needed.get(AW) + " tickets for Alligator Wrestling");
-		System.out.println("We need " + needed.get(AP) + " tickets for Amusement Park Wrestling");
-		System.out.println("We need " + needed.get(MU) + " tickets for Alligator Wrestling");
+		System.out.println("We need " + neededAW + " tickets for Alligator Wrestling");
+		System.out.println("We need " + neededAP + " tickets for Amusement Park");
+		System.out.println("We need " + neededMU + " tickets for Museum");
+		
+		Map<TacTypeEnum, Integer> needed = new HashMap<>();
+		needed.put(AW, neededAW);
+		needed.put(AP, neededAP);
+		needed.put(MU, neededMU);
 		
 		return needed;
 	}
 	
 	/**
-	 * Number of tickets needed for a particular type of ticket to satisfy the clients
+	 * Total number of tickets needed by all clients for a particular type of ticket
 	 * @param ticketType
 	 * @return
 	 */
 	public int ticketsNeeded(TacTypeEnum ticketType) {
+
+		int needed = 0;
+		for (ClientPosition client : clients) {
+			if (!client.hasEntertainmentTicket(ticketType)) {
+				needed++;
+			}
+		}
+		
+		return needed;
+	}
+	
+	/**
+	 * Total number of tickets needed by all clients for a particular type of ticket and day
+	 * @param ticketType
+	 * @return
+	 */
+	public int ticketsNeeded(TacTypeEnum ticketType, DayEnum day) {
 
 		int needed = 0;
 		for (ClientPosition client : clients) {
@@ -149,23 +168,41 @@ public class EntertainmentStrategy {
 	
 	private boolean worthBuying() {
 		
-		Map<TacTypeEnum, Integer> ticketsNeeded = allTicketsNeeded();
+		Map<TacTypeEnum, Integer> ticketsNeeded = ticketsNeeded();
 		Map<TacTypeEnum, Integer> ticketCosts = getTicketCosts();
 		Map<ClientPosition, Integer> clientBonuses = new HashMap<>();
 		
 		/*
-		 * for each the days, check how many are needed, if needed more than 0
-		 * get the cost of each of the tickets for that day.
-		 * get the client bonuses for 
+		 * for each of the days, check how many are needed, if needed more than 0
+		 * get the cost of each of the 3 tickets for that day.
+		 * get the client bonuses for
 		 */
 		
+		
+		
+		
+		for (Entry<TacTypeEnum, Integer> ticket : ticketsNeeded.entrySet()) {
+			if (ticket.getValue() > 0) { // if ticket needed
+				if (ticket.getKey().equals(AW)) {
+					
+				} else if (ticket.getKey().equals(AP)) {
+					
+				} else if (ticket.getKey().equals(MU)) {
+					
+				} 
+			}
+		}
+		
 		for (ClientPosition client : clients) {
+			
+			List<DayEnum> daysStaying = client.daysStaying();
+			
 			
 			int bonusAW = client.getEntertainmentBonus(AW);
 			int bonusAP = client.getEntertainmentBonus(AP);
 			int bonusMU = client.getEntertainmentBonus(MU);
 			
-			
+			client.
 		}
 		
 		/*

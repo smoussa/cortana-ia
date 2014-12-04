@@ -136,6 +136,11 @@ public class ClientPosition {
 		return outFlight.AUCTION_DAY.getDayNumber() - inFlight.AUCTION_DAY.getDayNumber();
 	}
 	
+	public boolean isStaying(DayEnum day) { // should be based on actual days staying rather than pref?
+		return client.inFlight.getDayNumber() <= day.getDayNumber()
+				&& day.getDayNumber() < client.outFlight.getDayNumber();
+	}
+	
 	public List<DayEnum> daysStaying() {
 		
 		List<DayEnum> days = new ArrayList<>();

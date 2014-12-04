@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
+import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.AuctionMaster;
@@ -112,11 +113,11 @@ public class EntertainmentStrategy {
 	 * @param ticketType
 	 * @return
 	 */
-	public int ticketsNeeded(TacTypeEnum ticketType, DayEnum day) {
+	public int ticketsNeeded(TacTypeEnum ticket, DayEnum day) {
 
 		int needed = 0;
 		for (ClientPosition client : clients) {
-			if (!client.hasEntertainmentTicket(ticketType)) {
+			if (client.isStaying(day) && !client.hasEntertainmentTicket(day) && !client.hasEntertainmentTicket(ticket)) {
 				needed++;
 			}
 		}
@@ -166,43 +167,29 @@ public class EntertainmentStrategy {
 	 */
 	
 	
-	private boolean worthBuying() {
+	private int worthBuying(TacTypeEnum ticket) {
 		
-		Map<TacTypeEnum, Integer> ticketsNeeded = ticketsNeeded();
-		Map<TacTypeEnum, Integer> ticketCosts = getTicketCosts();
-		Map<ClientPosition, Integer> clientBonuses = new HashMap<>();
+		int numWorthBuying = 0;
 		
-		/*
-		 * for each of the days, check how many are needed, if needed more than 0
-		 * get the cost of each of the 3 tickets for that day.
-		 * get the client bonuses for
-		 */
-		
-		
-		
-		
-		for (Entry<TacTypeEnum, Integer> ticket : ticketsNeeded.entrySet()) {
-			if (ticket.getValue() > 0) { // if ticket needed
-				if (ticket.getKey().equals(AW)) {
-					
-				} else if (ticket.getKey().equals(AP)) {
-					
-				} else if (ticket.getKey().equals(MU)) {
-					
-				} 
+		for (int d = 1; d <= 5; d++) { // for each day
+			DayEnum day = DayEnum.getDay(d);
+			if (ticketsNeeded(ticket, day) > 0) {
+				
+				int highestBonus = 0;
+				for (ClientPosition client : clients) {
+					int bonus = client.getEntertainmentBonus(ticket);
+					if (bonus > highestBonus) {
+						highestBonus = bonus;
+					}
+				}
+				
+				int auctionId = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, ticket, day);
+				EntertainmentAuction auction = master.getEntertainmentAuction(auctionId);
+				
+				if (highestBonus > auction.getAskPrice()) { // if a profit can be made
+					numWorthBuying++;
+				}
 			}
-		}
-		
-		for (ClientPosition client : clients) {
-			
-			List<DayEnum> daysStaying = client.daysStaying();
-			
-			
-			int bonusAW = client.getEntertainmentBonus(AW);
-			int bonusAP = client.getEntertainmentBonus(AP);
-			int bonusMU = client.getEntertainmentBonus(MU);
-			
-			client.
 		}
 		
 		/*
@@ -212,10 +199,11 @@ public class EntertainmentStrategy {
 		 * and if at least one bonus is higher than the cost of the ticket,
 		 * buy the tickets
 		 * 
-		 * But then how many do we need? getSuggestedBuyQuantity()
+		 * How many do we need?
 		 * 
 		 */
 		
+		return numWorthBuying;
 	}
 	
 	private void shortSell() {

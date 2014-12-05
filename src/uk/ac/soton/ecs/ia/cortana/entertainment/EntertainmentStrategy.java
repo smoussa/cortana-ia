@@ -48,6 +48,7 @@ public abstract class EntertainmentStrategy {
 		this.clients = new ArrayList<ClientPosition>();
 		prices = new float[agent.getAuctionNo()];
 		createClientPositions();
+//		sellHigh();
 	}
 	
 	/*
@@ -55,6 +56,7 @@ public abstract class EntertainmentStrategy {
 	 */
 	
 	public abstract void quoteUpdated(Quote quote);
+
 	
 	/**
 	 * A list of clients that do not have the full set of entertainment packages

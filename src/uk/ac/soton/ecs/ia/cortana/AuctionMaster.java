@@ -14,6 +14,7 @@ import se.sics.tac.aw.TACAgent;
 import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.allocator.FastOptimizerWrapper;
+import uk.ac.soton.ecs.ia.cortana.entertainment.DummyEntertainmentStrategy;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentStrategy;
 import uk.ac.soton.ecs.ia.cortana.strategies.TheStrategy;
@@ -120,7 +121,7 @@ public class AuctionMaster {
 		System.out.println("MAKING A STRATEGY");
 
 		this.strategy = new TheStrategy(this);
-//		this.entertainmentStrategy = new EntertainmentStrategy(this);
+		this.entertainmentStrategy = new DummyEntertainmentStrategy(this);
 		
 		System.out.println("We chose: " + this.strategy.toString());
 		

@@ -48,13 +48,13 @@ public class FlightAuction extends Auction {
 	}
 	
 	public void tick(int tSecondsNearest10) {
-		if (expectedT!=tSecondsNearest10){
+		/*if (expectedT!=tSecondsNearest10){
 			System.out.println("An auction got a tick for a crazy time");
 			System.out.println("This should not happen. Talk to Sam");
 			System.out.println("Expected " + expectedT);
 			System.out.println("Got " + tSecondsNearest10);
 			System.exit(1);
-		}
+		}*/
 		expectedT = expectedT + 10;
 		
 		prices.add((float) this.getAskPrice());

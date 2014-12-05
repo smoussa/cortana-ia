@@ -2,6 +2,7 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -342,6 +343,18 @@ public class AuctionMaster {
 
 	public Strategy getStrategy() {
 		return this.strategy;
+	}
+	
+	public Iterator<FlightAuction> getFlightAuctionIterator() {
+		return this.flightAuctions.values().iterator();
+	}
+	
+	public Iterator<HotelAuction> getHotelAuctionIterator() {
+		return this.hotelAuctions.values().iterator();
+	}
+	
+	public Iterator<EntertainmentAuction> getEntertainmentAuctionIterator() {
+		return this.entertainmentAuctions.values().iterator();
 	}
 
 }

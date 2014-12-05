@@ -46,8 +46,8 @@ public abstract class Position {
 		if (auction.getBid() == null)
 			return numPeopleWhoWantMe - numOwned;
 		
-		if (numPeopleWhoWantMe - numOwned < auction.getBid().getQuantity())
-			return auction.getBid().getQuantity();
+		if (numPeopleWhoWantMe - numOwned < auction.getNumberProbablyOwned())
+			return auction.getNumberProbablyOwned();
 		
 		return numPeopleWhoWantMe - numOwned;
 	}

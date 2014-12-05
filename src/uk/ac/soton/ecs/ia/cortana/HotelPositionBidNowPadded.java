@@ -16,6 +16,7 @@ public class HotelPositionBidNowPadded extends Position {
 		if (shouldBid && isTheoretical) {
 			
 			HotelAuction auctionH = (HotelAuction) auction;
+			auctionH.setup();
 			
 			if(isFullySatisfied() && !auction.isClosed()){
 				auctionH.bidPoint(16, 1);

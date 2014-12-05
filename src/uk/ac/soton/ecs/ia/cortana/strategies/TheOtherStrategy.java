@@ -50,7 +50,7 @@ public class TheOtherStrategy extends TheStrategy {
 		Iterator<HotelAuction> hotelAuctionIterator = auctionMaster.getHotelAuctionIterator();
 		while(hotelAuctionIterator.hasNext()) {
 			HotelAuction hotelAuction = hotelAuctionIterator.next();
-			fastOptimizerWrapper.addOwned(hotelAuction.AUCTION_TYPE, hotelAuction.AUCTION_DAY, hotelAuction.getNumberOwned());
+			fastOptimizerWrapper.addOwned(hotelAuction.AUCTION_TYPE, hotelAuction.AUCTION_DAY, hotelAuction.getNumberOwned() + hotelAuction.getNumberProbablyOwned());
 		}
 		
 		Iterator<EntertainmentAuction> entertainmentAuctionIterator = auctionMaster.getEntertainmentAuctionIterator();
@@ -93,6 +93,7 @@ public class TheOtherStrategy extends TheStrategy {
 
 			double nightPrice;
 			
+			// Need to re-think this, take into consideration flights already bought
 			nightPrice = (CortanaHeuristics.CLIENT_UTILITY - inflight.getAskPrice() - outflight.getAskPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / hotelList.size();
 			
 			Map<HotelAuction, Double> hotelMap = new HashMap<HotelAuction, Double>();
@@ -106,6 +107,16 @@ public class TheOtherStrategy extends TheStrategy {
 			
 			index++;
 		}
+		/*for(ClientPosition position:this.clientPositions) {
+			ClientPositionVariableHotelPrice cpvp = (ClientPositionVariableHotelPrice) position;
+			Map<HotelAuction, Double> clientHotelPrices = cpvp.clientHotelPrices;
+			System.out.println("Printing client position, look for NAN!!!");
+			for(Double price:clientHotelPrices.values()) {
+				System.out.println(price);
+			}
+		}
+
+		System.out.println();*/
 	}
 
 	@Override
@@ -114,11 +125,11 @@ public class TheOtherStrategy extends TheStrategy {
 		// [Price, quant of ppl.]
 		List<double[]> cheapHotelsSums = new ArrayList<double[]>(); 
 		for(int i = 0; i < 5; i++) {
-			cheapHotelsSums.add(new double[2]);
+			cheapHotelsSums.add(new double[]{0,0});
 		}
 		List<double[]> premiumHotelsSums = new ArrayList<double[]>();
 		for(int i = 0; i < 5; i++) {
-			premiumHotelsSums.add(new double[2]);
+			premiumHotelsSums.add(new double[]{0,0});
 		}
 		
 		for(ClientPosition cpSuper: this.clientPositions){
@@ -177,12 +188,8 @@ public class TheOtherStrategy extends TheStrategy {
 			auctionPositions.put(hotelAuctionPremium, hotelPositionPremium);
 			
 			hotelPositionCheap.peopleWhoWantMe = (int)cheapHotelsSums.get(i)[1];
-			if(hotelPositionCheap.peopleWhoWantMe == 0)
-				hotelPositionCheap.peopleWhoWantMe++;
 			
 			hotelPositionPremium.peopleWhoWantMe = (int)premiumHotelsSums.get(i)[1];
-			if(hotelPositionPremium.peopleWhoWantMe == 0)
-				hotelPositionPremium.peopleWhoWantMe++;
 		}
 		
 	}

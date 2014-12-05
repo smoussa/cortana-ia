@@ -18,10 +18,11 @@ public class HotelAuction extends Auction {
 		throw new UnsupportedOperationException();
 	}
 
+	public void setup() {
+		this.bid = new Bid(AUCTION_ID);
+	}
+	
 	public void bidPoint(int qtyToBid, float actualBidPrice) {
-		if(this.bid == null){
-			this.bid = new Bid(AUCTION_ID);
-		}
 		this.bid.addBidPoint(qtyToBid, actualBidPrice);		
 	}
 

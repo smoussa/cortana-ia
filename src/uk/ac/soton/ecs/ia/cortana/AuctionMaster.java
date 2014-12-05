@@ -18,6 +18,7 @@ import uk.ac.soton.ecs.ia.cortana.allocator.FastOptimizerWrapper;
 import uk.ac.soton.ecs.ia.cortana.entertainment.DummyEntertainmentStrategy;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentStrategy;
+import uk.ac.soton.ecs.ia.cortana.strategies.TheOtherStrategy;
 import uk.ac.soton.ecs.ia.cortana.strategies.TheStrategy;
 
 public class AuctionMaster {
@@ -126,6 +127,12 @@ public class AuctionMaster {
 		
 		System.out.println("We chose: " + this.strategy.toString());
 		
+		sendBids();
+	}
+	
+	private void createOtherStrategy() {
+		System.out.println("MAKING OTHER STRATEGY");
+		this.strategy = new TheOtherStrategy(this);
 		sendBids();
 	}
 	
@@ -327,6 +334,9 @@ public class AuctionMaster {
 	public synchronized void check() {
 		if(strategy == null && this.entertainmentAuctions.size()+this.flightAuctions.size()+this.hotelAuctions.size() == 28) {
 			createStrategy();
+		}
+		else if(strategy != null && !strategy.isStrategyValid()) {
+			createOtherStrategy();
 		}
 	}
 	

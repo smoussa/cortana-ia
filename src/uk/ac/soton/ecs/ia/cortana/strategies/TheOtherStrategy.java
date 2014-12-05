@@ -19,7 +19,7 @@ import uk.ac.soton.ecs.ia.cortana.CortanaHeuristics;
 import uk.ac.soton.ecs.ia.cortana.FlightAuction;
 import uk.ac.soton.ecs.ia.cortana.FlightPositionBidMin;
 import uk.ac.soton.ecs.ia.cortana.HotelAuction;
-import uk.ac.soton.ecs.ia.cortana.HotelPositionBidNow;
+import uk.ac.soton.ecs.ia.cortana.HotelPositionBidNowPadded;
 import uk.ac.soton.ecs.ia.cortana.Position;
 import uk.ac.soton.ecs.ia.cortana.allocator.FastOptimizerWrapper;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
@@ -170,8 +170,8 @@ public class TheOtherStrategy extends TheStrategy {
 			HotelAuction hotelAuctionCheap = auctionMaster.getHotelAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, TacTypeEnum.CHEAP_HOTEL, DayEnum.getDay(i)));
 			HotelAuction hotelAuctionPremium = auctionMaster.getHotelAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, TacTypeEnum.GOOD_HOTEL, DayEnum.getDay(i)));
 			
-			Position hotelPositionCheap = new HotelPositionBidNow(hotelAuctionCheap, cheapHotelsSums.get(i)[0]);
-			Position hotelPositionPremium = new HotelPositionBidNow(hotelAuctionPremium, premiumHotelsSums.get(i)[0]);
+			Position hotelPositionCheap = new HotelPositionBidNowPadded(hotelAuctionCheap, cheapHotelsSums.get(i)[0]);
+			Position hotelPositionPremium = new HotelPositionBidNowPadded(hotelAuctionPremium, premiumHotelsSums.get(i)[0]);
 			
 			auctionPositions.put(hotelAuctionCheap, hotelPositionCheap);
 			auctionPositions.put(hotelAuctionPremium, hotelPositionPremium);

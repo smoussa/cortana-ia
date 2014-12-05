@@ -12,12 +12,12 @@ public abstract class Strategy {
 	private static final int VALIDITY_WAIT_TIME = 1;
 	private static final int MAX_VALIDITY = 5;
 
-	protected Map<Auction, Position> auctionPositions;
+	public Map<Auction, Position> auctionPositions;
 	protected List<ClientPosition> clientPositions;
 	
 	protected AuctionMaster auctionMaster;
 	
-	private Strategy oldStrategy;
+	protected Strategy oldStrategy;
 	
 	Date lastTimeFailed;
 	private int validity;

@@ -51,7 +51,7 @@ public class AuctionMaster {
 			public void run() {
 				lastMinuteStrategy();
 			}
-		}, 60000 * 8, 20000);
+		}, 60000 * 8 + 10000, 20000);
 	}
 	
 	public Auction getAuction(int auctionId) {
@@ -120,7 +120,7 @@ public class AuctionMaster {
 		System.out.println("MAKING A STRATEGY");
 
 		this.strategy = new TheStrategy(this);
-		this.entertainmentStrategy = new EntertainmentStrategy(this);
+//		this.entertainmentStrategy = new EntertainmentStrategy(this);
 		
 		System.out.println("We chose: " + this.strategy.toString());
 		
@@ -195,8 +195,8 @@ public class AuctionMaster {
 			return;
 		
 		//[Day][inflight quant., outflight quant.]
-		int[][] idealFlightTotals = new int[8][2];
-		for(int i = 0; i < idealFlightTotals.length; i++) {
+		int[][] idealFlightTotals = new int[6][2];
+		for(int i = 1; i < idealFlightTotals.length; i++) {
 			idealFlightTotals[i][0] = 0;
 			idealFlightTotals[i][1] = 0;
 		}
@@ -206,54 +206,59 @@ public class AuctionMaster {
 			idealFlightTotals[preference[1]][1]++;
 		}
 		
-		int[][] flightsToBuy = new int[8][2];
-		for(int i = 0; i < flightsToBuy.length; i++) {
+		int[][] flightsToBuy = new int[6][2];
+		for(int i = 1; i < flightsToBuy.length; i++) {
 			flightsToBuy[i][0] = 0;
 			flightsToBuy[i][1] = 0;
 		}
 		
-		// Add what we own, minus off what we need
+		// Set buy to what we need
+		for(int i = 1; i < idealFlightTotals.length; i++) {
+			flightsToBuy[i][0] = idealFlightTotals[i][0];
+			flightsToBuy[i][1] = idealFlightTotals[i][1];
+		}
+		
 		for(FlightAuction flightAuction:this.flightAuctions.values()) {
+			// Now minus off what we already own
 			int typeCode = 0;
 			if(flightAuction.AUCTION_TYPE == TacTypeEnum.OUTFLIGHT)
 				typeCode = 1;
 			
-			flightsToBuy[flightAuction.AUCTION_DAY.getDayNumber()][typeCode]++;
-		}
-		
-		for(int i = 0; i < idealFlightTotals.length; i++) {
-			flightsToBuy[i][0]-=idealFlightTotals[i][0];
-			flightsToBuy[i][1]-=idealFlightTotals[i][1];
+			flightsToBuy[flightAuction.AUCTION_DAY.getDayNumber()][typeCode] -= flightAuction.getNumberOwned();
 		}
 		
 		float totalExtraCost = 0;
 		
-		for(int i = 0; i < flightsToBuy.length; i++) {
+		for(int i = 1; i < flightsToBuy.length; i++) {
 			if(flightsToBuy[i][0] > 0) {
 				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.INFLIGHT, DayEnum.getDay(i)));
 				
 				// We do this right at the end of the game so don't wait for a minimum as the price is likely just going up and up
-				totalExtraCost += (float)auction.getAskPrice() + 20;
+				totalExtraCost += ((float)auction.getAskPrice() + 20) * flightsToBuy[i][0];
 			}
 			if(flightsToBuy[i][1] > 0) {
 				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.OUTFLIGHT, DayEnum.getDay(i)));
 				//  + 20 because the flight increment might go up before we can buy
-				totalExtraCost += (float)auction.getAskPrice() + 20;
+				totalExtraCost += ((float)auction.getAskPrice() + 20) * flightsToBuy[i][1];
 			}
 		}
 		
 		// Check if the improvement in score is worth it given the price of flights
 		
 		System.out.println("Score could be " + latestScore + " with the flights its only " + (latestScore - totalExtraCost) + " compared to our original " + currentScore);
-		if(latestScore - totalExtraCost < currentScore)
-			return;
+//		if(latestScore - totalExtraCost < currentScore)
+//			return;
 		
 		System.out.println("WE'RE BUYING TICKETS!");
 		
-		for(int i = 0; i < flightsToBuy.length; i++) {
+		for(int i = 1; i < flightsToBuy.length; i++) {
+			System.out.println(DayEnum.getDay(i) + " " + flightsToBuy[i][0] + " " + flightsToBuy[i][1]);
+		}
+		
+		for(int i = 1; i < flightsToBuy.length; i++) {
 			if(flightsToBuy[i][0] > 0) {
 				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.INFLIGHT, DayEnum.getDay(i)));
-				auction.bid(flightsToBuy[i][0], (float)auction.getAskPrice());
+				auction.bid(flightsToBuy[i][0], (float)auction.getAskPrice() + 20);
 			}
 			if(flightsToBuy[i][1] > 0) {
 				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.OUTFLIGHT, DayEnum.getDay(i)));
@@ -309,9 +314,10 @@ public class AuctionMaster {
 					((FlightPosition) this.strategy.getPosition(auction)).tick(this.cortana.agent.get10SecondChunkElapsed());
 				}
 			}
-		} else if (auction.AUCTION_CAT == TacCategoryEnum.CAT_ENTERTAINMENT) {
+		} 
+		/*else if (auction.AUCTION_CAT == TacCategoryEnum.CAT_ENTERTAINMENT) {
 			entertainmentStrategy.quoteUpdated(quote);
-		}
+		}*/
 			
 	}
 

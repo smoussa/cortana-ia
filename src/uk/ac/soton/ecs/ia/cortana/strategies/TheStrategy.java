@@ -18,7 +18,7 @@ import uk.ac.soton.ecs.ia.cortana.CortanaHeuristics;
 import uk.ac.soton.ecs.ia.cortana.FlightAuction;
 import uk.ac.soton.ecs.ia.cortana.FlightPositionBidMin;
 import uk.ac.soton.ecs.ia.cortana.HotelAuction;
-import uk.ac.soton.ecs.ia.cortana.HotelPositionBidNow;
+import uk.ac.soton.ecs.ia.cortana.HotelPositionBidNowPadded;
 import uk.ac.soton.ecs.ia.cortana.Position;
 import uk.ac.soton.ecs.ia.cortana.Strategy;
 
@@ -65,7 +65,7 @@ public class TheStrategy extends Strategy {
 		}
 	}
 	
-	private TacTypeEnum calculateBestHotel(int hotelBonus, FlightAuction inflight, FlightAuction outflight) {
+	protected TacTypeEnum calculateBestHotel(int hotelBonus, FlightAuction inflight, FlightAuction outflight) {
 		
 		//TODO do probability stuff
 		if(hotelBonus < 70)
@@ -136,19 +136,15 @@ public class TheStrategy extends Strategy {
 			HotelAuction hotelAuctionCheap = auctionMaster.getHotelAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, TacTypeEnum.CHEAP_HOTEL, DayEnum.getDay(i)));
 			HotelAuction hotelAuctionPremium = auctionMaster.getHotelAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, TacTypeEnum.GOOD_HOTEL, DayEnum.getDay(i)));
 			
-			Position hotelPositionCheap = new HotelPositionBidNow(hotelAuctionCheap, cheapHotelsSums.get(i)[0]);
-			Position hotelPositionPremium = new HotelPositionBidNow(hotelAuctionPremium, premiumHotelsSums.get(i)[0]);
+			Position hotelPositionCheap = new HotelPositionBidNowPadded(hotelAuctionCheap, cheapHotelsSums.get(i)[0]);
+			Position hotelPositionPremium = new HotelPositionBidNowPadded(hotelAuctionPremium, premiumHotelsSums.get(i)[0]);
 			
 			auctionPositions.put(hotelAuctionCheap, hotelPositionCheap);
 			auctionPositions.put(hotelAuctionPremium, hotelPositionPremium);
 			
 			hotelPositionCheap.peopleWhoWantMe = (int)cheapHotelsSums.get(i)[1];
-			if(hotelPositionCheap.peopleWhoWantMe == 0)
-				hotelPositionCheap.peopleWhoWantMe++;
 			
 			hotelPositionPremium.peopleWhoWantMe = (int)premiumHotelsSums.get(i)[1];
-			if(hotelPositionPremium.peopleWhoWantMe == 0)
-				hotelPositionPremium.peopleWhoWantMe++;
 		}
 	}
 	

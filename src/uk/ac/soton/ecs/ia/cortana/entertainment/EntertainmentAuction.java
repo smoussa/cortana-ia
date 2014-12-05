@@ -34,10 +34,10 @@ public class EntertainmentAuction extends Auction {
 			System.err.println("Invalid ask quantity. Must be a negative number.");
 			return;
 		}
-		if (getQuote().getBid().getQuantity() > 0) {
-			System.err.println("Invalid ask bid. It is illegal to sell to yourself.");
-			return;
-		}
+//		if (getQuote().getBid().getQuantity() > 0) {
+//			System.err.println("Invalid ask bid. It is illegal to sell to yourself.");
+//			return;
+//		}
 		
 		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(quantity, price);

@@ -310,7 +310,9 @@ public class AuctionMaster {
 				}
 			}
 		} else if (auction.AUCTION_CAT == TacCategoryEnum.CAT_ENTERTAINMENT) {
-			entertainmentStrategy.quoteUpdated(quote);
+			if (entertainmentStrategy != null) {
+				entertainmentStrategy.quoteUpdated(quote);
+			}
 		}
 			
 	}

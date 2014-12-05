@@ -46,7 +46,7 @@ public class FlightPositionBidMin extends FlightPosition {
 		System.out.println("#############################");
 		System.out.println("***** Current price is " + currentPrice + " predictedFutureMinPrice is " + predictedFutureMinPrice);
 		System.out.println("#############################");
-	/*	
+		
 		if(currentTime>=510){
 			return true;
 		}
@@ -64,7 +64,7 @@ public class FlightPositionBidMin extends FlightPosition {
 		if(diff<=10){
 			return true;
 		}
-		*/
+		
 		return false;
 	}
 

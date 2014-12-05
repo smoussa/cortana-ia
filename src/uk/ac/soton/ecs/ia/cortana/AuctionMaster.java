@@ -246,8 +246,8 @@ public class AuctionMaster {
 		// Check if the improvement in score is worth it given the price of flights
 		
 		System.out.println("Score could be " + latestScore + " with the flights its only " + (latestScore - totalExtraCost) + " compared to our original " + currentScore);
-//		if(latestScore - totalExtraCost < currentScore)
-//			return;
+		if(latestScore - totalExtraCost < currentScore)
+			return;
 		
 		System.out.println("WE'RE BUYING TICKETS!");
 		

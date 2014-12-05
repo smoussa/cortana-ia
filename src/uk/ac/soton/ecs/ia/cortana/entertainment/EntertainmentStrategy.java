@@ -20,7 +20,7 @@ import uk.ac.soton.ecs.ia.cortana.FlightAuction;
 import uk.ac.soton.ecs.ia.cortana.HotelAuction;
 import uk.ac.soton.ecs.ia.cortana.Position;
 
-public class EntertainmentStrategy {
+public abstract class EntertainmentStrategy {
 	
 	/*
 	 * GENERAL NOTES:
@@ -32,9 +32,11 @@ public class EntertainmentStrategy {
 	 * 
 	 */
 	
-	private AuctionMaster master;
+	protected AuctionMaster master;
+	protected TACAgent agent;
 	public List<ClientPosition> clients;
-	public static final int NUM_CLIENTS = 8;
+	protected static final int NUM_CLIENTS = 8;
+	protected float[] prices;
 	
 	private static final TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
 	private static final TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
@@ -42,6 +44,9 @@ public class EntertainmentStrategy {
 	
 	public EntertainmentStrategy(AuctionMaster master) {
 		this.master = master;
+		this.agent = master.cortana.agent;
+		this.clients = new ArrayList<ClientPosition>();
+		prices = new float[agent.getAuctionNo()];
 		createClientPositions();
 	}
 	
@@ -49,10 +54,7 @@ public class EntertainmentStrategy {
 	 * TAC Methods
 	 */
 	
-	public void quoteUpdated(Quote quote) {
-		// TODO Auto-generated method stub
-		
-	}
+	public abstract void quoteUpdated(Quote quote);
 	
 	/**
 	 * A list of clients that do not have the full set of entertainment packages
@@ -171,6 +173,10 @@ public class EntertainmentStrategy {
 	 */
 	
 	private void dummyStrategy() {
+		
+		
+		
+		
 		
 	}
 	

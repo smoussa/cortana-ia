@@ -314,10 +314,11 @@ public class AuctionMaster {
 					((FlightPosition) this.strategy.getPosition(auction)).tick(this.cortana.agent.get10SecondChunkElapsed());
 				}
 			}
-		} 
-		/*else if (auction.AUCTION_CAT == TacCategoryEnum.CAT_ENTERTAINMENT) {
-			entertainmentStrategy.quoteUpdated(quote);
-		}*/
+		} else if (auction.AUCTION_CAT == TacCategoryEnum.CAT_ENTERTAINMENT) {
+			if (entertainmentStrategy != null) {
+				entertainmentStrategy.quoteUpdated(quote);
+			}
+		}
 			
 	}
 

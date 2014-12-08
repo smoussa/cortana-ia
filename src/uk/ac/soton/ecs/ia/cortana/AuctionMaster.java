@@ -131,9 +131,9 @@ public class AuctionMaster {
 	}
 	
 	private void createOtherStrategy() {
-//		System.out.println("MAKING OTHER STRATEGY");
-//		this.strategy = new TheOtherStrategy(this);
-//		sendBids();
+		System.out.println("MAKING OTHER STRATEGY");
+		this.strategy = new TheOtherStrategy(this);
+		sendBids();
 	}
 	
 	private int getCurrentScore() {

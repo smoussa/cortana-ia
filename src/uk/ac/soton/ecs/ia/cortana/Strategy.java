@@ -13,7 +13,7 @@ public abstract class Strategy {
 	private static final int MAX_VALIDITY = 5;
 
 	public Map<Auction, Position> auctionPositions;
-	protected List<ClientPosition> clientPositions;
+	public List<ClientPosition> clientPositions;
 	
 	protected AuctionMaster auctionMaster;
 	

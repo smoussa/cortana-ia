@@ -1,10 +1,12 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.PriorityQueue;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
@@ -14,11 +16,6 @@ import se.sics.tac.aw.TacCategoryEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.AuctionMaster;
 import uk.ac.soton.ecs.ia.cortana.ClientPosition;
-import uk.ac.soton.ecs.ia.cortana.ClientPositionFixedHotelPrice;
-import uk.ac.soton.ecs.ia.cortana.ClientPreference;
-import uk.ac.soton.ecs.ia.cortana.FlightAuction;
-import uk.ac.soton.ecs.ia.cortana.HotelAuction;
-import uk.ac.soton.ecs.ia.cortana.Position;
 
 public abstract class EntertainmentStrategy {
 	
@@ -38,6 +35,8 @@ public abstract class EntertainmentStrategy {
 	protected static final int NUM_CLIENTS = 8;
 	protected float[] prices;
 	
+	private static List<TacTypeEnum> ticketTypes;
+	
 	private static final TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
 	private static final TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
 	private static final TacTypeEnum MU = TacTypeEnum.MUSEUM;
@@ -47,7 +46,13 @@ public abstract class EntertainmentStrategy {
 		this.master = master;
 		this.agent = master.cortana.agent;
 		this.clients = master.getStrategy().getAllClientPositions();
+		
 		prices = new float[agent.getAuctionNo()];
+		ticketTypes = new ArrayList<>(3);
+		ticketTypes.add(AW);
+		ticketTypes.add(AP);
+		ticketTypes.add(MU);
+		
 		start();
 	}
 	
@@ -62,52 +67,6 @@ public abstract class EntertainmentStrategy {
 	protected void allocateTickets() {
 		
 		/*
-		 
-		 Client 0 has ticket MUSEUM on MONDAY
-		Client 0 has ticket MUSEUM on TUESDAY
-		Client 0 has ticket ALLIGATOR_WRESTLING on WEDNESDAY
-		Client 0 has ticket null on THURSDAY
-		Client 0 has ticket null on FRIDAY
-		Client 1 has ticket MUSEUM on MONDAY
-		Client 1 has ticket null on TUESDAY
-		Client 1 has ticket null on WEDNESDAY
-		Client 1 has ticket null on THURSDAY
-		Client 1 has ticket null on FRIDAY
-		Client 2 has ticket ALLIGATOR_WRESTLING on MONDAY
-		Client 2 has ticket MUSEUM on TUESDAY
-		Client 2 has ticket ALLIGATOR_WRESTLING on WEDNESDAY
-		Client 2 has ticket null on THURSDAY
-		Client 2 has ticket null on FRIDAY
-		Client 3 has ticket null on MONDAY
-		Client 3 has ticket null on TUESDAY
-		Client 3 has ticket ALLIGATOR_WRESTLING on WEDNESDAY
-		Client 3 has ticket null on THURSDAY
-		Client 3 has ticket null on FRIDAY
-		Client 4 has ticket null on MONDAY
-		Client 4 has ticket null on TUESDAY
-		Client 4 has ticket ALLIGATOR_WRESTLING on WEDNESDAY
-		Client 4 has ticket null on THURSDAY
-		Client 4 has ticket null on FRIDAY
-		Client 5 has ticket null on MONDAY
-		Client 5 has ticket null on TUESDAY
-		Client 5 has ticket null on WEDNESDAY
-		Client 5 has ticket null on THURSDAY
-		Client 5 has ticket null on FRIDAY
-		Client 6 has ticket null on MONDAY
-		Client 6 has ticket null on TUESDAY
-		Client 6 has ticket null on WEDNESDAY
-		Client 6 has ticket null on THURSDAY
-		Client 6 has ticket null on FRIDAY
-		Client 7 has ticket null on MONDAY
-		Client 7 has ticket null on TUESDAY
-		Client 7 has ticket null on WEDNESDAY
-		Client 7 has ticket null on THURSDAY
-		Client 7 has ticket null on FRIDAY
-		 
-		 
-		 */
-		
-		/*
 		 * For each client, see what they want and if we have tickets for them,
 		 * allocate the tickets to them.
 		 * 
@@ -115,34 +74,39 @@ public abstract class EntertainmentStrategy {
 		 * - don't allocate the same ticket twice
 		 */
 		
-		for (ClientPosition client : clients) {
-			for (EntertainmentAuction auction : client.eAuctions) {
-				int owned = agent.getOwn(auction.AUCTION_ID);
-				int allocated = agent.getAllocation(auction.AUCTION_ID);
-				if (owned > 0 && owned - allocated > 0 && !client.hasEntertainmentTicket(auction.getAuctionType())) {
-					client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-					agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+		// allocate tickets in order of highest bonus clients
+		
+		
+		for (TacTypeEnum ticket : ticketTypes) {
+			for (ClientPosition client : getClientsByHighestBonus(ticket)) {
+				if (!client.hasEntertainmentTicket(ticket)) {
+					for (EntertainmentAuction auction : client.eAuctions) {
+						if (auction.AUCTION_TYPE == ticket && !client.hasEntertainmentTicket(auction.AUCTION_DAY)) {
+							
+							int owned = agent.getOwn(auction.AUCTION_ID);
+							int allocated = agent.getAllocation(auction.AUCTION_ID);
+
+							if (owned > 0 && (owned - allocated) > 0) {
+								client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+								agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+								break;
+							}
+						}
+					}
 				}
-			}
-			for (int i = 1; i <= DayEnum.values().length; i++) {
-				System.out.println("Client " + client.client.CLIENT_ID + " has ticket " + client.getEntertainmentTicket(DayEnum.getDay(i))
-						+ " on " + DayEnum.getDay(i));
 			}
 		}
 	}
 	
-	public ClientPosition getHighestBonusClient(TacTypeEnum ticket) {
+	public PriorityQueue<ClientPosition> getClientsByHighestBonus(TacTypeEnum ticket) {
 		
-		int highest = 0;
-		ClientPosition highestClient = null;
+		Comparator<ClientPosition> comparator = new BonusComparator(ticket);
+		PriorityQueue<ClientPosition> queue = new PriorityQueue<>(comparator);
+		
 		for (ClientPosition client : clients) {
-			int bonus = client.getEntertainmentBonus(ticket);
-			if (bonus > highest) {
-				highestClient = client;
-				highest = bonus;
-			}
+			queue.add(client);
 		}
-		return highestClient;
+		return queue;
 	}
 	
 	/**

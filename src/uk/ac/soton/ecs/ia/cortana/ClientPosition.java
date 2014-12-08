@@ -1,6 +1,7 @@
 package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,7 @@ import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 
-public class ClientPosition {
+public class ClientPosition implements Comparator<Integer> {
 	
 	public ClientPreference client;
 	public FlightAuction inFlight, outFlight;
@@ -155,6 +156,11 @@ public class ClientPosition {
 	
 	public boolean hasAllEntertainmentTickets() {
 		return eTickets.size() >= 3;
+	}
+
+	@Override
+	public int compare(Integer e1, Integer e2) {
+		return (e1 < e2) ? 1 : -1;
 	}
 
 }

@@ -71,9 +71,5 @@ public class EntertainmentAuction extends Auction {
 	public int getNumberProbablyOwned(){
 		return agent.getProbablyOwn(AUCTION_ID);
 	}
-	
-	public TacTypeEnum getAuctionType() {
-		return AUCTION_TYPE;
-	}
 
 }

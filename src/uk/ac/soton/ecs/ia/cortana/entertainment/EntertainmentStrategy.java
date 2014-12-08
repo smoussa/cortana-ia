@@ -64,6 +64,11 @@ public abstract class EntertainmentStrategy {
 	 * 
 	 */
 	
+	public void update() {
+		this.clients = master.getStrategy().getAllClientPositions();
+		allocateTickets();
+	}
+	
 	protected void allocateTickets() {
 		
 		/*
@@ -90,6 +95,50 @@ public abstract class EntertainmentStrategy {
 				}
 			}
 		}
+	}
+	
+	public void ticketsToBuy() {
+		
+		/*
+		 * We want to optimise the bonuses which means selling the highest bonus across
+		 * ticket types for each client.
+		 * 
+		 * for each client
+		 * for each of the ticket types, get the bonus and save the highest
+		 * add the client to the ticket type priority queue for the highest ticket type bonus
+		 * 
+		 * for each of the queues, get the ticket type
+		 * for each client in the queue
+		 * get the bonus
+		 * get the list of ent auctions for that client
+		 * for each ent auction
+		 * get the auction day
+		 * if the client is staying on this day
+		 * 	if we own tickets on this day
+		 * 	 remove auction from list of auctions we need to sell tickets to
+		 * 	 keep and add auction to list of auctions to watch as we can potentially sell tickets if the sell price is higher than the client bonus
+		 * 	 [rest of code to allocate to client]
+		 *  otherwise (we need to buy tickets on this day as they are staying on this day)
+		 * 	 remove auction from list of auctions we need to sell tickets to
+		 * 	 add this auction to the list of auctions we should buy from - the ask/buy price may be lower than the bonus
+		 * otherwise client isn't staying on this day
+		 * 	if we own tickets on this day
+		 * 	 add auction to list of auctions we have to sell to as no client wants it (with quantity we want to sell)
+		 * 
+		 * get the list of auctions we need to buy from
+		 * for each auction, get auction type
+		 * for each client in the queue of clients for that auction/ticket type
+		 * if the client doesn't have a ticket of this type on this auction day and the ask price is lower than their bonus
+		 * 	put a bid in for that ticket
+		 * 
+		 * get the list of auctions we need to sell to
+		 * get the quantity we need to sell
+		 * get optimal price we can sell at (depending on time of the game)
+		 * sell all
+		 * 
+		 * 
+		 */
+		
 	}
 	
 	public PriorityQueue<ClientPosition> getClientsByHighestBonus(TacTypeEnum ticket) {
@@ -349,6 +398,8 @@ public abstract class EntertainmentStrategy {
 		 */
 		
 	}
+
+	
 
 	
 

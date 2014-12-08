@@ -136,6 +136,7 @@ public class AuctionMaster {
 		System.out.println("MAKING OTHER STRATEGY");
 		this.strategy = new TheOtherStrategy(this.strategy);
 		sendBids();
+		this.entertainmentStrategy.update();
 	}
 	
 	public int getCurrentScore() {

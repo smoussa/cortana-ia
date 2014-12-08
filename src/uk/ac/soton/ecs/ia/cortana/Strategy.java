@@ -135,6 +135,10 @@ public abstract class Strategy {
 		return this.auctionPositions.get(auction);
 	}
 	
+	public List<ClientPosition> getAllClientPositions() {
+		return this.clientPositions;
+	}
+	
 	public ClientPosition getClientPosition(int index) {
 		return this.clientPositions.get(index);
 	}

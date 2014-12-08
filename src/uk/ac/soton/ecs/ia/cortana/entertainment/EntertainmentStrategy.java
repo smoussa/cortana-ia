@@ -46,10 +46,8 @@ public abstract class EntertainmentStrategy {
 		
 		this.master = master;
 		this.agent = master.cortana.agent;
-		this.clients = new ArrayList<ClientPosition>();
+		this.clients = master.getStrategy().getAllClientPositions();
 		prices = new float[agent.getAuctionNo()];
-		
-		createClientPositions();
 		start();
 	}
 	
@@ -215,34 +213,6 @@ Client 7 has ticket null on FRIDAY
 		}
 		
 		return needed;
-	}
-	
-	private void createClientPositions() {
-		
-		master.cl
-		
-		for (ClientPreference cpref : master.clientPreferences.values()) {
-			
-			// TODO Days staying should be based on the actual flight days rather than the client preference
-			
-			FlightAuction inflight = master.getFlightAuction(TacTypeEnum.INFLIGHT, cpref.inFlight);
-			FlightAuction outflight = master.getFlightAuction(TacTypeEnum.OUTFLIGHT, cpref.outFlight);
-			
-			List<EntertainmentAuction> eAuctions = new ArrayList<>();
-			for (int d = cpref.inFlight.getDayNumber(); d < cpref.outFlight.getDayNumber(); d++) {
-				int auctionIdAW = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, AW, DayEnum.getDay(d));
-				int auctionIdAP = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, AP, DayEnum.getDay(d));
-				int auctionIdMU = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, MU, DayEnum.getDay(d));
-				EntertainmentAuction auctionAW = master.getEntertainmentAuction(auctionIdAW);
-				EntertainmentAuction auctionAP = master.getEntertainmentAuction(auctionIdAP);
-				EntertainmentAuction auctionMU = master.getEntertainmentAuction(auctionIdMU);
-				eAuctions.add(auctionAW);
-				eAuctions.add(auctionAP);
-				eAuctions.add(auctionMU);
-			}
-			clients.add(new ClientPosition(cpref, inflight, outflight, null, eAuctions));
-		}
-		
 	}
 	
 	

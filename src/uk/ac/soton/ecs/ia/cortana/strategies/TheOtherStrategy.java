@@ -15,6 +15,7 @@ import uk.ac.soton.ecs.ia.cortana.FlightPositionBidMin;
 import uk.ac.soton.ecs.ia.cortana.HotelAuction;
 import uk.ac.soton.ecs.ia.cortana.Position;
 import uk.ac.soton.ecs.ia.cortana.Strategy;
+import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 import uk.ac.soton.ecs.ia.cortana.strategies.StrategyUtils.StrategyInfo;
 
 public class TheOtherStrategy extends TheStrategy {
@@ -49,14 +50,26 @@ public class TheOtherStrategy extends TheStrategy {
 				hotelType = TacTypeEnum.CHEAP_HOTEL;
 				
 			List<HotelAuction> hotelList = new ArrayList<HotelAuction>();
+			List<EntertainmentAuction> eAuctions = new ArrayList<>();
 			
 			for (int d = preference[0]; d < preference[1]; d++) {
+				
 				int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, hotelType, DayEnum.getDay(d));
 				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
 				hotelList.add(hotelAuction);
+				
+				int auctionIdAW = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, TacTypeEnum.ALLIGATOR_WRESTLING, DayEnum.getDay(d));
+				int auctionIdAP = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, TacTypeEnum.AMUSEMENT, DayEnum.getDay(d));
+				int auctionIdMU = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, TacTypeEnum.MUSEUM, DayEnum.getDay(d));
+				EntertainmentAuction auctionAW = auctionMaster.getEntertainmentAuction(auctionIdAW);
+				EntertainmentAuction auctionAP = auctionMaster.getEntertainmentAuction(auctionIdAP);
+				EntertainmentAuction auctionMU = auctionMaster.getEntertainmentAuction(auctionIdMU);
+				eAuctions.add(auctionAW);
+				eAuctions.add(auctionAP);
+				eAuctions.add(auctionMU);
 			}
 
-			ClientPosition cp = new ClientPosition(auctionMaster.clientPreferences.get(index), inflight, outflight, hotelList, null);
+			ClientPosition cp = new ClientPosition(auctionMaster.clientPreferences.get(index), inflight, outflight, hotelList, eAuctions);
 			this.clientPositions.add(cp);
 			
 			index++;

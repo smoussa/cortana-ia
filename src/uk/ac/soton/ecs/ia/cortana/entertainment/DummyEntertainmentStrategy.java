@@ -20,6 +20,7 @@ public class DummyEntertainmentStrategy extends EntertainmentStrategy {
 		
 		allocateTickets();
 		
+		
 	}
 
 	@Override

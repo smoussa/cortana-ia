@@ -68,14 +68,8 @@ public abstract class EntertainmentStrategy {
 		
 		/*
 		 * For each client, see what they want and if we have tickets for them,
-		 * allocate the tickets to them.
-		 * 
-		 * - get highest bonus client and allocate to them first
-		 * - don't allocate the same ticket twice
+		 * allocate the tickets to them in order of highest bonus.
 		 */
-		
-		// allocate tickets in order of highest bonus clients
-		
 		
 		for (TacTypeEnum ticket : ticketTypes) {
 			for (ClientPosition client : getClientsByHighestBonus(ticket)) {
@@ -101,7 +95,7 @@ public abstract class EntertainmentStrategy {
 	public PriorityQueue<ClientPosition> getClientsByHighestBonus(TacTypeEnum ticket) {
 		
 		Comparator<ClientPosition> comparator = new BonusComparator(ticket);
-		PriorityQueue<ClientPosition> queue = new PriorityQueue<>(comparator);
+		PriorityQueue<ClientPosition> queue = new PriorityQueue<ClientPosition>(8, comparator);
 		
 		for (ClientPosition client : clients) {
 			queue.add(client);

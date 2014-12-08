@@ -132,7 +132,7 @@ public class AuctionMaster {
 	
 	private void createOtherStrategy() {
 		System.out.println("MAKING OTHER STRATEGY");
-		this.strategy = new TheOtherStrategy(this);
+		this.strategy = new TheOtherStrategy(this.strategy);
 		sendBids();
 	}
 	

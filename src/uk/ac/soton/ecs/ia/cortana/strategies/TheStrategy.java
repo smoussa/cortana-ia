@@ -21,6 +21,7 @@ import uk.ac.soton.ecs.ia.cortana.HotelAuction;
 import uk.ac.soton.ecs.ia.cortana.HotelPositionBidNowPadded;
 import uk.ac.soton.ecs.ia.cortana.Position;
 import uk.ac.soton.ecs.ia.cortana.Strategy;
+import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 
 public class TheStrategy extends Strategy {
 
@@ -41,11 +42,23 @@ public class TheStrategy extends Strategy {
 			TacTypeEnum hotelType = calculateBestHotel(c.hotelBonus, inflight, outflight);
 			
 			List<HotelAuction> hotelList = new ArrayList<HotelAuction>();
+			List<EntertainmentAuction> eAuctions = new ArrayList<>();
 			
 			for (int d = c.inFlight.getDayNumber(); d < c.outFlight.getDayNumber(); d++) {
+				
 				int auction = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_HOTEL, hotelType, DayEnum.getDay(d));
 				HotelAuction hotelAuction = auctionMaster.getHotelAuction(auction);
 				hotelList.add(hotelAuction);
+				
+				int auctionIdAW = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, TacTypeEnum.ALLIGATOR_WRESTLING, DayEnum.getDay(d));
+				int auctionIdAP = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, TacTypeEnum.AMUSEMENT, DayEnum.getDay(d));
+				int auctionIdMU = DummyAgent.getAuctionFor(TacCategoryEnum.CAT_ENTERTAINMENT, TacTypeEnum.MUSEUM, DayEnum.getDay(d));
+				EntertainmentAuction auctionAW = auctionMaster.getEntertainmentAuction(auctionIdAW);
+				EntertainmentAuction auctionAP = auctionMaster.getEntertainmentAuction(auctionIdAP);
+				EntertainmentAuction auctionMU = auctionMaster.getEntertainmentAuction(auctionIdMU);
+				eAuctions.add(auctionAW);
+				eAuctions.add(auctionAP);
+				eAuctions.add(auctionMU);
 			}
 
 			double nightPrice;
@@ -60,7 +73,7 @@ public class TheStrategy extends Strategy {
 				hotelMap.put(hotelAuction, Math.max(nightPrice, hotelAuction.getMinimumBid()));
 			}
 			
-			ClientPositionVariableHotelPrice cp = new ClientPositionVariableHotelPrice(c, inflight, outflight, hotelMap);
+			ClientPositionVariableHotelPrice cp = new ClientPositionVariableHotelPrice(c, inflight, outflight, hotelMap, eAuctions);
 			this.clientPositions.add(cp);
 		}
 	}

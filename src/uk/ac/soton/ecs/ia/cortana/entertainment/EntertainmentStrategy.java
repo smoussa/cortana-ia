@@ -62,53 +62,55 @@ public abstract class EntertainmentStrategy {
 	protected void allocateTickets() {
 		
 		/*
-		 * Client 0 has ticket MUSEUM on MONDAY
-Client 0 has ticket AMUSEMENT on TUESDAY
-Client 0 has ticket null on WEDNESDAY
-Client 0 has ticket AMUSEMENT on THURSDAY
-Client 0 has ticket null on FRIDAY
-Client 1 has ticket null on MONDAY
-Client 1 has ticket AMUSEMENT on TUESDAY
-Client 1 has ticket null on WEDNESDAY
-Client 1 has ticket null on THURSDAY
-Client 1 has ticket null on FRIDAY
-Client 2 has ticket MUSEUM on MONDAY
-Client 2 has ticket AMUSEMENT on TUESDAY
-Client 2 has ticket null on WEDNESDAY
-Client 2 has ticket null on THURSDAY
-Client 2 has ticket null on FRIDAY
-Client 3 has ticket MUSEUM on MONDAY
-Client 3 has ticket AMUSEMENT on TUESDAY
-Client 3 has ticket null on WEDNESDAY
-Client 3 has ticket null on THURSDAY
-Client 3 has ticket null on FRIDAY
-Client 4 has ticket MUSEUM on MONDAY
-Client 4 has ticket AMUSEMENT on TUESDAY
-Client 4 has ticket null on WEDNESDAY
-Client 4 has ticket null on THURSDAY
-Client 4 has ticket null on FRIDAY
-Client 5 has ticket null on MONDAY
-Client 5 has ticket null on TUESDAY
-Client 5 has ticket null on WEDNESDAY
-Client 5 has ticket AMUSEMENT on THURSDAY
-Client 5 has ticket null on FRIDAY
-Client 6 has ticket null on MONDAY
-Client 6 has ticket AMUSEMENT on TUESDAY
-Client 6 has ticket null on WEDNESDAY
-Client 6 has ticket null on THURSDAY
-Client 6 has ticket null on FRIDAY
-Client 7 has ticket MUSEUM on MONDAY
-Client 7 has ticket null on TUESDAY
-Client 7 has ticket null on WEDNESDAY
-Client 7 has ticket null on THURSDAY
-Client 7 has ticket null on FRIDAY
+		 
+		 Client 0 has ticket MUSEUM on MONDAY
+		Client 0 has ticket MUSEUM on TUESDAY
+		Client 0 has ticket ALLIGATOR_WRESTLING on WEDNESDAY
+		Client 0 has ticket null on THURSDAY
+		Client 0 has ticket null on FRIDAY
+		Client 1 has ticket MUSEUM on MONDAY
+		Client 1 has ticket null on TUESDAY
+		Client 1 has ticket null on WEDNESDAY
+		Client 1 has ticket null on THURSDAY
+		Client 1 has ticket null on FRIDAY
+		Client 2 has ticket ALLIGATOR_WRESTLING on MONDAY
+		Client 2 has ticket MUSEUM on TUESDAY
+		Client 2 has ticket ALLIGATOR_WRESTLING on WEDNESDAY
+		Client 2 has ticket null on THURSDAY
+		Client 2 has ticket null on FRIDAY
+		Client 3 has ticket null on MONDAY
+		Client 3 has ticket null on TUESDAY
+		Client 3 has ticket ALLIGATOR_WRESTLING on WEDNESDAY
+		Client 3 has ticket null on THURSDAY
+		Client 3 has ticket null on FRIDAY
+		Client 4 has ticket null on MONDAY
+		Client 4 has ticket null on TUESDAY
+		Client 4 has ticket ALLIGATOR_WRESTLING on WEDNESDAY
+		Client 4 has ticket null on THURSDAY
+		Client 4 has ticket null on FRIDAY
+		Client 5 has ticket null on MONDAY
+		Client 5 has ticket null on TUESDAY
+		Client 5 has ticket null on WEDNESDAY
+		Client 5 has ticket null on THURSDAY
+		Client 5 has ticket null on FRIDAY
+		Client 6 has ticket null on MONDAY
+		Client 6 has ticket null on TUESDAY
+		Client 6 has ticket null on WEDNESDAY
+		Client 6 has ticket null on THURSDAY
+		Client 6 has ticket null on FRIDAY
+		Client 7 has ticket null on MONDAY
+		Client 7 has ticket null on TUESDAY
+		Client 7 has ticket null on WEDNESDAY
+		Client 7 has ticket null on THURSDAY
+		Client 7 has ticket null on FRIDAY
+		 
+		 
 		 */
 		
 		/*
 		 * For each client, see what they want and if we have tickets for them,
 		 * allocate the tickets to them.
 		 * 
-		 * - remove
 		 * - get highest bonus client and allocate to them first
 		 * - don't allocate the same ticket twice
 		 */
@@ -117,13 +119,9 @@ Client 7 has ticket null on FRIDAY
 			for (EntertainmentAuction auction : client.eAuctions) {
 				int owned = agent.getOwn(auction.AUCTION_ID);
 				int allocated = agent.getAllocation(auction.AUCTION_ID);
-				if (owned > 0) {
-					int alloc = owned - allocated;
-					if (alloc > allocated) {
-						client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-						agent.setAllocation(auction.AUCTION_ID, allocated + 1);
-					}
-					
+				if (owned > 0 && owned - allocated > 0 && !client.hasEntertainmentTicket(auction.getAuctionType())) {
+					client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+					agent.setAllocation(auction.AUCTION_ID, allocated + 1);
 				}
 			}
 			for (int i = 1; i <= DayEnum.values().length; i++) {
@@ -131,6 +129,20 @@ Client 7 has ticket null on FRIDAY
 						+ " on " + DayEnum.getDay(i));
 			}
 		}
+	}
+	
+	public ClientPosition getHighestBonusClient(TacTypeEnum ticket) {
+		
+		int highest = 0;
+		ClientPosition highestClient = null;
+		for (ClientPosition client : clients) {
+			int bonus = client.getEntertainmentBonus(ticket);
+			if (bonus > highest) {
+				highestClient = client;
+				highest = bonus;
+			}
+		}
+		return highestClient;
 	}
 	
 	/**

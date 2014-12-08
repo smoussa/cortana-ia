@@ -1,7 +1,10 @@
 package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 
 public class ClientPositionVariableHotelPrice extends ClientPosition {
 
@@ -9,8 +12,9 @@ public class ClientPositionVariableHotelPrice extends ClientPosition {
 	
 	public ClientPositionVariableHotelPrice(ClientPreference client,
 											FlightAuction inFlight, FlightAuction outFlight,
-											Map<HotelAuction, Double> clientHotelPrices) {
-		super(client, inFlight, outFlight, new ArrayList<>(clientHotelPrices.keySet()), null);
+											Map<HotelAuction, Double> clientHotelPrices,
+											List<EntertainmentAuction> eAuctions) {
+		super(client, inFlight, outFlight, new ArrayList<>(clientHotelPrices.keySet()), eAuctions);
 		this.clientHotelPrices = clientHotelPrices;
 	}
 	

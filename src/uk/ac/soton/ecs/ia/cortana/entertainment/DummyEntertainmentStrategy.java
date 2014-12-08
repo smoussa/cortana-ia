@@ -8,9 +8,31 @@ public class DummyEntertainmentStrategy extends EntertainmentStrategy {
 	public DummyEntertainmentStrategy(AuctionMaster master) {
 		super(master);
 	}
+	
+	@Override
+	public void start() {
+		
+		/*
+		 * allocate all held tickets at the start to as many clients as possible (based on highest bonus)
+		 * check how many are left
+		 * sell the rest
+		 */
+		
+		allocateTickets();
+		
+	}
 
 	@Override
 	public void quoteUpdated(Quote quote) {
+		
+		/*
+		 * 
+		 */
+		
+		
+		
+		
+		
 		
 		int auctionId = quote.getAuction();
 		EntertainmentAuction auction = master.getEntertainmentAuction(auctionId);
@@ -34,5 +56,7 @@ public class DummyEntertainmentStrategy extends EntertainmentStrategy {
 		}
 		
 	}
+
+	
 
 }

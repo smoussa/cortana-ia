@@ -1,6 +1,7 @@
 package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ public class ClientPosition {
 		this.eAuctions = eAuctions;
 		
 		numETickets = 0;
+		eTickets = new HashMap<>();
 	}
 	
 	public double getTotalUtility(){

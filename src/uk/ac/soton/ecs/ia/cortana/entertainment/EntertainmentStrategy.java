@@ -43,20 +43,86 @@ public abstract class EntertainmentStrategy {
 	private static final TacTypeEnum MU = TacTypeEnum.MUSEUM;
 	
 	public EntertainmentStrategy(AuctionMaster master) {
+		
 		this.master = master;
 		this.agent = master.cortana.agent;
 		this.clients = new ArrayList<ClientPosition>();
 		prices = new float[agent.getAuctionNo()];
+		
 		createClientPositions();
-//		sellHigh();
+		start();
 	}
 	
-	/*
-	 * TAC Methods
-	 */
+	public abstract void start();
 	
 	public abstract void quoteUpdated(Quote quote);
-
+	
+	/*
+	 * 
+	 */
+	
+	protected void allocateTickets() {
+		
+		/*
+		 * Client 0 has ticket null on MONDAY
+Client 0 has ticket AMUSEMENT on TUESDAY
+Client 0 has ticket MUSEUM on WEDNESDAY
+Client 0 has ticket null on THURSDAY
+Client 0 has ticket null on FRIDAY
+Client 1 has ticket AMUSEMENT on MONDAY
+Client 1 has ticket AMUSEMENT on TUESDAY
+Client 1 has ticket null on WEDNESDAY
+Client 1 has ticket null on THURSDAY
+Client 1 has ticket null on FRIDAY
+Client 2 has ticket null on MONDAY
+Client 2 has ticket AMUSEMENT on TUESDAY
+Client 2 has ticket null on WEDNESDAY
+Client 2 has ticket null on THURSDAY
+Client 2 has ticket null on FRIDAY
+Client 3 has ticket AMUSEMENT on MONDAY
+Client 3 has ticket AMUSEMENT on TUESDAY
+Client 3 has ticket MUSEUM on WEDNESDAY
+Client 3 has ticket MUSEUM on THURSDAY
+Client 3 has ticket null on FRIDAY
+Client 4 has ticket null on MONDAY
+Client 4 has ticket AMUSEMENT on TUESDAY
+Client 4 has ticket MUSEUM on WEDNESDAY
+Client 4 has ticket null on THURSDAY
+Client 4 has ticket null on FRIDAY
+Client 5 has ticket AMUSEMENT on MONDAY
+Client 5 has ticket AMUSEMENT on TUESDAY
+Client 5 has ticket MUSEUM on WEDNESDAY
+Client 5 has ticket MUSEUM on THURSDAY
+Client 5 has ticket null on FRIDAY
+Client 6 has ticket null on MONDAY
+Client 6 has ticket null on TUESDAY
+Client 6 has ticket null on WEDNESDAY
+Client 6 has ticket MUSEUM on THURSDAY
+Client 6 has ticket null on FRIDAY
+Client 7 has ticket null on MONDAY
+Client 7 has ticket null on TUESDAY
+Client 7 has ticket null on WEDNESDAY
+Client 7 has ticket MUSEUM on THURSDAY
+Client 7 has ticket null on FRIDAY
+		 */
+		
+		/*
+		 * For each client, see what they want and if we have tickets for them,
+		 * allocate the tickets to them.
+		 */
+		
+		for (ClientPosition client : clients) {
+			for (EntertainmentAuction auction : client.eAuctions) {
+				if (agent.getOwn(auction.AUCTION_ID) > 0) {
+					client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+				}
+			}
+			for (int i = 1; i <= DayEnum.values().length; i++) {
+				System.out.println("Client " + client.client.CLIENT_ID + " has ticket " + client.getEntertainmentTicket(DayEnum.getDay(i))
+						+ " on " + DayEnum.getDay(i));
+			}
+		}
+	}
 	
 	/**
 	 * A list of clients that do not have the full set of entertainment packages
@@ -173,15 +239,6 @@ public abstract class EntertainmentStrategy {
 	/*
 	 * STRATEGIES
 	 */
-	
-	private void dummyStrategy() {
-		
-		
-		
-		
-		
-	}
-	
 	
 	private int worthBuying(TacTypeEnum ticket) {
 		

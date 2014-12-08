@@ -219,8 +219,6 @@ Client 7 has ticket null on FRIDAY
 	
 	private void createClientPositions() {
 		
-		master.cl
-		
 		for (ClientPreference cpref : master.clientPreferences.values()) {
 			
 			// TODO Days staying should be based on the actual flight days rather than the client preference

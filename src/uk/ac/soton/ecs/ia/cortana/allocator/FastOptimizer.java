@@ -150,11 +150,15 @@ public class FastOptimizer implements Solver {
 	long calculationTime = -1L;
 	
 	public FastOptimizer (){
-		log.setLevel(Level.ALL);
-		ConsoleHandler handler = new ConsoleHandler();
-		handler.setFormatter(new SimpleFormatter());
-		log.addHandler(handler);
-		handler.setLevel(Level.ALL);
+		System.out.println("Handlers length " + log.getHandlers().length);
+		if(log.getHandlers().length == 0) {
+			System.out.println("Setup handlers");
+			log.setLevel(Level.ALL);
+			ConsoleHandler handler = new ConsoleHandler();
+			handler.setFormatter(new SimpleFormatter());
+			log.addHandler(handler);
+			handler.setLevel(Level.ALL);
+		}
 		log.fine("hello world");
 	}
 

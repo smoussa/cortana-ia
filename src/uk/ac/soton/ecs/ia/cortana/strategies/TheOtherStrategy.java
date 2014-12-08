@@ -33,7 +33,7 @@ public class TheOtherStrategy extends TheStrategy {
 		currentScore = this.auctionMaster.getCurrentScore();
 		
 		// Run allocator to find positions
-		scoreGivenUnlimitedFlights = StrategyUtils.getScoreGivenUnlimitedFlights(auctionMaster);
+		scoreGivenUnlimitedFlights = StrategyUtils.getScoreGivenUnlimitedFlights(auctionMaster, true);
 		
 		int index = 0;
 		
@@ -85,6 +85,8 @@ public class TheOtherStrategy extends TheStrategy {
 		// Strategy logic follows
 		if(currentScore > scoreGivenUnlimitedFlights.getScore() - scoreGivenUnlimitedFlights.getAdditionalCosts())
 			buyFlights = false;
+
+		System.out.println("Other Strategy buy flights? " + buyFlights);
 		
 		// Make flight positions
 		if(buyFlights) {

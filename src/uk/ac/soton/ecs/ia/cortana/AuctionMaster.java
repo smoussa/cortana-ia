@@ -165,7 +165,7 @@ public class AuctionMaster {
 		// Work out what would happen if we didn't buy anything
 		int currentScore = getCurrentScore();
 		
-		StrategyInfo unlimitedFlightsInfo = StrategyUtils.getScoreGivenUnlimitedFlights(this);
+		StrategyInfo unlimitedFlightsInfo = StrategyUtils.getScoreGivenUnlimitedFlights(this, false);
 		
 		// Check if the improvement in score is worth it given the price of flights
 		System.out.println("Score could be " + unlimitedFlightsInfo.getScore() + " with the flights its only " + (unlimitedFlightsInfo.getScore() - unlimitedFlightsInfo.getAdditionalCosts()) + " compared to our original " + currentScore);

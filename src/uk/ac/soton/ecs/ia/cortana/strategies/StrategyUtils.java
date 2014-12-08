@@ -48,7 +48,7 @@ public class StrategyUtils {
 		
 	}
 
-	public static StrategyInfo getScoreGivenUnlimitedFlights(AuctionMaster auctionMaster) {
+	public static StrategyInfo getScoreGivenUnlimitedFlights(AuctionMaster auctionMaster, boolean includeHQW) {
 		// Assume we have all flights to see if we need more once the optimiser runs
 		FastOptimizerWrapper fastOptimizerWrapper = new FastOptimizerWrapper();
 		fastOptimizerWrapper.addClientPreferences(new ArrayList<>(auctionMaster.clientPreferences.values()));
@@ -67,7 +67,10 @@ public class StrategyUtils {
 		Iterator<HotelAuction> hotelAuctionIterator = auctionMaster.getHotelAuctionIterator();
 		while(hotelAuctionIterator.hasNext()) {
 			HotelAuction hotelAuction = hotelAuctionIterator.next();
-			fastOptimizerWrapper.addOwned(hotelAuction.AUCTION_TYPE, hotelAuction.AUCTION_DAY, hotelAuction.getNumberOwned());
+			if(includeHQW)
+				fastOptimizerWrapper.addOwned(hotelAuction.AUCTION_TYPE, hotelAuction.AUCTION_DAY, hotelAuction.getNumberOwned() + hotelAuction.getHQW());
+			else
+				fastOptimizerWrapper.addOwned(hotelAuction.AUCTION_TYPE, hotelAuction.AUCTION_DAY, hotelAuction.getNumberOwned());
 		}
 		
 		Iterator<EntertainmentAuction> entertainmentAuctionIterator = auctionMaster.getEntertainmentAuctionIterator();

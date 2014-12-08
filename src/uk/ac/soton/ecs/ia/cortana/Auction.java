@@ -64,6 +64,10 @@ public abstract class Auction {
 		return this.agent.getProbablyOwn(this.AUCTION_ID);
 	}
 	
+	public int getHQW() {
+		return this.agent.getHQW(this.AUCTION_ID);
+	}
+	
 	public Bid getBid() {
 		return this.agent.getBid(this.AUCTION_ID);
 	}

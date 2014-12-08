@@ -46,8 +46,8 @@ public abstract class Position {
 		if (auction.getBid() == null)
 			return numPeopleWhoWantMe - numOwned;
 		
-		if (numPeopleWhoWantMe - numOwned < auction.getNumberProbablyOwned())
-			return auction.getNumberProbablyOwned();
+		if (numPeopleWhoWantMe - numOwned < auction.getHQW())
+			return auction.getHQW();
 		
 		return numPeopleWhoWantMe - numOwned;
 	}
@@ -77,11 +77,12 @@ public abstract class Position {
 			isValid = false;
 		}
 		
+		// Probably owened has potential for being wrong but seems to work :S
 		if(!auction.isClosed() && !isTheoretical && peopleWhoWantMe <= auction.getNumberProbablyOwned() + auction.getNumberOwned()) {
 //			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
 		}
 		else if(!auction.isClosed() && !isTheoretical) {
-			System.out.print("We only have " + (auction.getNumberProbablyOwned()+auction.getNumberOwned()) + " of " + peopleWhoWantMe + " :(");
+			System.out.print("We only have " + (auction.getHQW()+auction.getNumberOwned()) + " of " + peopleWhoWantMe + " :(");
 			isValid = false;
 		}
 		

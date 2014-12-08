@@ -649,6 +649,17 @@ public class TACAgent implements Task, TACMessageReceiver {
 		}
 		return bid.getQuantity();
 	}
+	
+	public int getHQW(int auctionID) {
+		Bid bid = getBid(auctionID);
+		if (bid == null)
+			return 0;
+		Quote quote = getQuote(auctionID);
+		if (quote.hasHQW(bid)) {
+			return quote.getHQW();
+		}
+		return 0;
+	}
 
 	public synchronized Bid getBid(int auctionID) {
 		return bids[auctionID];

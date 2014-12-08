@@ -216,19 +216,16 @@ public class AuctionMaster {
 		}
 		
 		int[][] flightsToBuy = new int[6][2];
-		for(int i = 1; i < flightsToBuy.length; i++) {
-			flightsToBuy[i][0] = 0;
-			flightsToBuy[i][1] = 0;
-		}
-		
-		// Set buy to what we need
+
+		// Set buy to what we need ...
 		for(int i = 1; i < idealFlightTotals.length; i++) {
 			flightsToBuy[i][0] = idealFlightTotals[i][0];
 			flightsToBuy[i][1] = idealFlightTotals[i][1];
 		}
 		
+		// ... then minus off what we already own
 		for(FlightAuction flightAuction:this.flightAuctions.values()) {
-			// Now minus off what we already own
+			 
 			int typeCode = 0;
 			if(flightAuction.AUCTION_TYPE == TacTypeEnum.OUTFLIGHT)
 				typeCode = 1;
@@ -241,13 +238,13 @@ public class AuctionMaster {
 		for(int i = 1; i < flightsToBuy.length; i++) {
 			if(flightsToBuy[i][0] > 0) {
 				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.INFLIGHT, DayEnum.getDay(i)));
-				
+
 				// We do this right at the end of the game so don't wait for a minimum as the price is likely just going up and up
+				// + 20 because the flight increment might go up before we can buy
 				totalExtraCost += ((float)auction.getAskPrice() + 20) * flightsToBuy[i][0];
 			}
 			if(flightsToBuy[i][1] > 0) {
 				Auction auction = getAuction(DummyAgent.getAuctionFor(TacCategoryEnum.CAT_FLIGHT, TacTypeEnum.OUTFLIGHT, DayEnum.getDay(i)));
-				//  + 20 because the flight increment might go up before we can buy
 				totalExtraCost += ((float)auction.getAskPrice() + 20) * flightsToBuy[i][1];
 			}
 		}
@@ -260,6 +257,7 @@ public class AuctionMaster {
 		
 		System.out.println("WE'RE BUYING TICKETS!");
 		
+		// Print out tickets
 		for(int i = 1; i < flightsToBuy.length; i++) {
 			System.out.println(DayEnum.getDay(i) + " " + flightsToBuy[i][0] + " " + flightsToBuy[i][1]);
 		}

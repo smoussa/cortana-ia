@@ -218,7 +218,6 @@ Client 7 has ticket null on FRIDAY
 	
 	
 	
-	
 	/*
 	 * STRATEGIES
 	 */

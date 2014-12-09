@@ -114,6 +114,16 @@ public class ClientPosition implements Comparator<Integer> {
 		return 0;
 	}
 	
+	public List<EntertainmentAuction> getEntertainmentAuctions(TacTypeEnum ticketType) {
+		List<EntertainmentAuction> auctions = new ArrayList<EntertainmentAuction>(4);
+		for (EntertainmentAuction auction : eAuctions) {
+			if (auction.AUCTION_TYPE == ticketType) {
+				auctions.add(auction);
+			}
+		}
+		return auctions;
+	}
+	
 	public int numTicketsHeld() {
 		return numETickets;
 	}

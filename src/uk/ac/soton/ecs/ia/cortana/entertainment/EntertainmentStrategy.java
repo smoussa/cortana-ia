@@ -1,12 +1,13 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
@@ -31,15 +32,17 @@ public abstract class EntertainmentStrategy {
 	
 	protected AuctionMaster master;
 	protected TACAgent agent;
-	public List<ClientPosition> clients;
+	protected List<ClientPosition> clients;
 	protected static final int NUM_CLIENTS = 8;
 	protected float[] prices;
 	
-	private static TacTypeEnum[] ticketTypes;
+	protected static TacTypeEnum[] ticketTypes;
+	protected Set<EntertainmentAuction> sellToAuctions;
+	protected Set<EntertainmentAuction> buyFromAuctions;
 	
-	private static final TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
-	private static final TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
-	private static final TacTypeEnum MU = TacTypeEnum.MUSEUM;
+	protected static final TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
+	protected static final TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
+	protected static final TacTypeEnum MU = TacTypeEnum.MUSEUM;
 	
 	public EntertainmentStrategy(AuctionMaster master) {
 		
@@ -52,6 +55,9 @@ public abstract class EntertainmentStrategy {
 		ticketTypes[0] = AW;
 		ticketTypes[1] = AP;
 		ticketTypes[2] = MU;
+		
+		sellToAuctions = new HashSet<EntertainmentAuction>();
+		buyFromAuctions = new HashSet<EntertainmentAuction>();
 		
 		start();
 	}
@@ -153,23 +159,40 @@ public abstract class EntertainmentStrategy {
 			i++;
 		}
 		
+		
+		/*
+		 * for each client
+		 * get highest bonus ticket for that client
+		 * get the queue for that ticket
+		 * if the same client is highest in the queue (optimal), dequeue
+		 * 
+		 */
+		
+		
 		for (i = 0; i < ticketQueues.length; i++) {
 			TacTypeEnum ticket = ticketTypes[i];
 			
-			for (ClientPosition client : clients) {
-				int bonus = client.getEntertainmentBonus(ticket);
-				for (EntertainmentAuction auction : client.eAuctions) {
-					if (client.isStaying(auction.AUCTION_DAY)) {
-						if (agent.getOwn(auction.AUCTION_ID) > 0) {
-							
-						} else {
-							
-						}
-					} else {
-						if (agent.getOwn(auction.AUCTION_ID) > 0) {
-							
-						} else {
-							
+			for (ClientPosition client : ticketQueues[i]) {
+				if (!client.hasEntertainmentTicket(ticket)) {
+					int bonus = client.getEntertainmentBonus(ticket);
+					
+					for (EntertainmentAuction auction : client.getEntertainmentAuctions(ticket)) {
+						if (!client.hasEntertainmentTicket(auction.AUCTION_DAY)) {
+							int owned = agent.getOwn(auction.AUCTION_ID);
+							if (client.isStaying(auction.AUCTION_DAY)) { // METHOD MUST REFLECT TRUE STAYING DAYS
+								sellToAuctions.remove(auction);
+								if (owned > 0) {
+									int allocated = agent.getAllocation(auction.AUCTION_ID);
+									if (owned - allocated > 0) {
+										client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+										agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+									}
+								} else {
+									buyFromAuctions.add(auction);
+								}
+							} else if (owned > 0) {
+								sellToAuctions.add(auction);
+							}
 						}
 					}
 				}

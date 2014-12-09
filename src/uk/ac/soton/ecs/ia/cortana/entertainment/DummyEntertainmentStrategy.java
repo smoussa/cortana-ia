@@ -18,7 +18,8 @@ public class DummyEntertainmentStrategy extends EntertainmentStrategy {
 		 * sell the rest
 		 */
 		
-		allocateTickets();
+//		allocateTickets();
+		allocateTickets3();
 		
 		
 	}

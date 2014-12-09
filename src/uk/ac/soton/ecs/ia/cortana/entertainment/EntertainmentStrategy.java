@@ -1,6 +1,8 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.TreeSet;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
@@ -72,7 +75,8 @@ public abstract class EntertainmentStrategy {
 	
 	public void update() {
 		this.clients = master.getStrategy().getAllClientPositions();
-		allocateTickets();
+//		allocateTickets();
+//		allocateTickets3();
 	}
 	
 	protected void allocateTickets() {
@@ -105,7 +109,75 @@ public abstract class EntertainmentStrategy {
 	
 	
 	
-	
+	/*
+	 
+MUSEUM auction on day THURSDAY has bonus [2] :
+	Client: 4 with bonus [2
+	Client: 7 with bonus [189
+
+MUSEUM auction on day MONDAY has bonus [123] :
+	Client: 0 with bonus [123
+	Client: 6 with bonus [161
+	Client: 2 with bonus [178
+	Client: 5 with bonus [187
+
+MUSEUM auction on day TUESDAY has bonus [123] :
+	Client: 0 with bonus [123
+	Client: 1 with bonus [151
+	Client: 6 with bonus [161
+	Client: 2 with bonus [178
+
+MUSEUM auction on day WEDNESDAY has bonus [2] :
+	Client: 4 with bonus [2
+	Client: 3 with bonus [7
+	Client: 0 with bonus [123
+	Client: 2 with bonus [178
+
+AMUSEMENT auction on day MONDAY has bonus [22] :
+	Client: 6 with bonus [22
+	Client: 2 with bonus [50
+	Client: 5 with bonus [147
+	Client: 0 with bonus [166
+
+AMUSEMENT auction on day TUESDAY has bonus [22] :
+	Client: 6 with bonus [22
+	Client: 2 with bonus [50
+	Client: 1 with bonus [107
+	Client: 0 with bonus [166
+
+AMUSEMENT auction on day WEDNESDAY has bonus [50] :
+	Client: 2 with bonus [50
+	Client: 3 with bonus [142
+	Client: 4 with bonus [146
+	Client: 0 with bonus [166
+
+ALLIGATOR_WRESTLING auction on day MONDAY has bonus [26] :
+	Client: 2 with bonus [26
+	Client: 5 with bonus [69
+	Client: 6 with bonus [97
+	Client: 0 with bonus [189
+
+ALLIGATOR_WRESTLING auction on day TUESDAY has bonus [26] :
+	Client: 2 with bonus [26
+	Client: 1 with bonus [78
+	Client: 6 with bonus [97
+	Client: 0 with bonus [189
+
+ALLIGATOR_WRESTLING auction on day WEDNESDAY has bonus [26] :
+	Client: 2 with bonus [26
+	Client: 3 with bonus [65
+	Client: 4 with bonus [82
+	Client: 0 with bonus [189
+
+ALLIGATOR_WRESTLING auction on day THURSDAY has bonus [82] :
+	Client: 4 with bonus [82
+	Client: 7 with bonus [95
+
+AMUSEMENT auction on day THURSDAY has bonus [110] :
+	Client: 7 with bonus [110
+	Client: 4 with bonus [146
+	 
+	 */
 	
 	
 	
@@ -118,7 +190,6 @@ public abstract class EntertainmentStrategy {
 		 * PRIORITISE
 		 * 
 		 * create empty set of ent auctions
-		 * create empty queue of ent auctions
 		 * 
 		 * for each client
 		 * for each ticket type
@@ -132,8 +203,45 @@ public abstract class EntertainmentStrategy {
 		 * for each auction in set
 		 * 		add to priority queue of auctions based on highest client bonus
 		 * 
-		 * 
-		 * 
+		*/
+		
+		List<EntertainmentAuction> auctionsList = new ArrayList<EntertainmentAuction>(12);
+		
+		for (ClientPosition client : clients) {
+			for (TacTypeEnum ticket : ticketTypes) {
+				for (EntertainmentAuction auction : client.getEntertainmentAuctions(ticket)) {
+					
+					boolean containsAuction = false;
+					EntertainmentAuction chosenAuction = null;
+					
+					for (EntertainmentAuction auc : auctionsList) {
+						if (auc.AUCTION_DAY == auction.AUCTION_DAY && auc.AUCTION_TYPE == auction.AUCTION_TYPE) {
+							containsAuction = true;
+							chosenAuction = auc;
+							break;
+						}
+					}
+					
+					if (containsAuction) {
+						chosenAuction.addClient(client);
+					} else {
+						chosenAuction = new EntertainmentAuction(agent, auction.getQuote());
+						chosenAuction.addClient(client);
+						auctionsList.add(chosenAuction);
+					}
+				}
+			}
+		}
+		
+		Comparator<EntertainmentAuction> comparator = new Comparator<EntertainmentAuction>() {
+			@Override
+			public int compare(EntertainmentAuction e1, EntertainmentAuction e2) {
+				return (e1.highestBonus < e2.highestBonus) ? 1 : -1;
+			}
+		};
+		Collections.sort(auctionsList, comparator);
+		
+		/* 
 		 * 
 		 * ALLOCATE
 		 * 
@@ -157,6 +265,28 @@ public abstract class EntertainmentStrategy {
 		 * 
 		 * 
 		 */
+		
+		for (EntertainmentAuction auction : auctionsList) {
+			
+			System.out.println();
+			System.out.println(auction.AUCTION_TYPE + " auction on day " + auction.AUCTION_DAY + " has bonus [" + auction.highestBonus + "]");
+			
+			for (ClientPosition client : auction.clientsNeeding) {
+				
+				System.out.println("\tClient " + client.client.CLIENT_ID + " with bonus [" + client.getEntertainmentBonus(auction.AUCTION_TYPE) + "]");
+				
+				int owned = agent.getOwn(auction.AUCTION_ID);
+				int allocated = agent.getAllocation(auction.AUCTION_ID);
+
+				if (owned > 0 && (owned - allocated) > 0) {
+					client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+					agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+					break;
+				}
+				
+				// ... update auction allocation
+			}
+		}
 		
 	}
 	
@@ -227,62 +357,68 @@ public abstract class EntertainmentStrategy {
 		 * 
 		 */
 		
-		@SuppressWarnings("unchecked")
-		PriorityQueue<ClientPosition>[] ticketQueues = new PriorityQueue[3];
-		
-		int i = 0;
-		for (TacTypeEnum ticket : ticketTypes) {
-			PriorityQueue<ClientPosition> queue =
-					new PriorityQueue<ClientPosition>(8, new BonusComparator(ticket));
-			for (ClientPosition client : clients) {
-				queue.add(client);
-			}
-			ticketQueues[i] = queue;
-			i++;
-		}
-		
-		
-		for (i = 0; i < ticketQueues.length; i++) {
-			TacTypeEnum ticket = ticketTypes[i];
-			
-			for (ClientPosition client : ticketQueues[i]) {
-				if (!client.hasEntertainmentTicket(ticket)) {
-					int bonus = client.getEntertainmentBonus(ticket);
-					
-					for (EntertainmentAuction auction : client.getEntertainmentAuctions(ticket)) {
-						if (!client.hasEntertainmentTicket(auction.AUCTION_DAY)) {
-							int owned = agent.getOwn(auction.AUCTION_ID);
-							if (client.isStaying(auction.AUCTION_DAY)) { // METHOD MUST REFLECT TRUE STAYING DAYS
-								sellToAuctions.remove(auction);
-								if (owned > 0) {
-									int allocated = agent.getAllocation(auction.AUCTION_ID);
-									if (owned - allocated > 0) {
-										client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-										agent.setAllocation(auction.AUCTION_ID, allocated + 1);
-									}
-								} else {
-									buyFromAuctions.add(auction);
-								}
-							} else if (owned > 0) {
-								sellToAuctions.add(auction);
-							}
-						}
-					}
-				}
-			}
-		}
+//		@SuppressWarnings("unchecked")
+//		PriorityQueue<ClientPosition>[] ticketQueues = new PriorityQueue[3];
+//		
+//		int i = 0;
+//		for (TacTypeEnum ticket : ticketTypes) {
+//			PriorityQueue<ClientPosition> queue =
+//					new PriorityQueue<ClientPosition>(8, new BonusComparator(ticket));
+//			for (ClientPosition client : clients) {
+//				queue.add(client);
+//			}
+//			ticketQueues[i] = queue;
+//			i++;
+//		}
+//		
+//		
+//		for (i = 0; i < ticketQueues.length; i++) {
+//			TacTypeEnum ticket = ticketTypes[i];
+//			
+//			for (ClientPosition client : ticketQueues[i]) {
+//				if (!client.hasEntertainmentTicket(ticket)) {
+//					int bonus = client.getEntertainmentBonus(ticket);
+//					
+//					for (EntertainmentAuction auction : client.getEntertainmentAuctions(ticket)) {
+//						if (!client.hasEntertainmentTicket(auction.AUCTION_DAY)) {
+//							int owned = agent.getOwn(auction.AUCTION_ID);
+//							if (client.isStaying(auction.AUCTION_DAY)) { // METHOD MUST REFLECT TRUE STAYING DAYS
+//								sellToAuctions.remove(auction);
+//								if (owned > 0) {
+//									int allocated = agent.getAllocation(auction.AUCTION_ID);
+//									if (owned - allocated > 0) {
+//										client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+//										agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+//									}
+//								} else {
+//									buyFromAuctions.add(auction);
+//								}
+//							} else if (owned > 0) {
+//								sellToAuctions.add(auction);
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
 		
 	}
 	
-	public PriorityQueue<ClientPosition> getClientsByHighestBonus(TacTypeEnum ticket) {
+	public TreeSet<ClientPosition> getClientsByHighestBonus(TacTypeEnum ticket) {
 		
-		Comparator<ClientPosition> comparator = new BonusComparator(ticket);
-		PriorityQueue<ClientPosition> queue = new PriorityQueue<ClientPosition>(8, comparator);
+		final TacTypeEnum t = ticket;
+		Comparator<ClientPosition> comparator = new Comparator<ClientPosition>() {
+			@Override
+			public int compare(ClientPosition c1, ClientPosition c2) {
+				return (c1.getEntertainmentBonus(t) < c2.getEntertainmentBonus(t)) ? 1 : -1;
+			}
+		};
+		TreeSet<ClientPosition> set = new TreeSet<ClientPosition>(comparator);
 		
 		for (ClientPosition client : clients) {
-			queue.add(client);
+			set.add(client);
 		}
-		return queue;
+		return set;
 	}
 	
 	/**

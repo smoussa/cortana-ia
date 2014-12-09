@@ -1,8 +1,7 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.Quote;
@@ -13,12 +12,20 @@ import uk.ac.soton.ecs.ia.cortana.ClientPosition;
 public class EntertainmentAuction extends Auction {
 	
 	public int highestBonus;
-	public PriorityQueue<ClientPosition> clientsNeeded;
+	public TreeSet<ClientPosition> clientsNeeding;
 
 	public EntertainmentAuction(TACAgent agent, Quote quote) {
 		super(agent, quote);
-		clientsNeeded = new PriorityQueue<ClientPosition>();
 		highestBonus = 0;
+		
+		Comparator<ClientPosition> comparator = new Comparator<ClientPosition>() {
+			@Override
+			public int compare(ClientPosition c1, ClientPosition c2) {
+				return (c1.getEntertainmentBonus(AUCTION_TYPE) <
+						c2.getEntertainmentBonus(AUCTION_TYPE)) ? 1 : -1;
+			}
+		};
+		clientsNeeding = new TreeSet<ClientPosition>(comparator);
 	}
 	
 	public void bid(int quantity, float price) {
@@ -54,13 +61,13 @@ public class EntertainmentAuction extends Auction {
 	}
 	
 	public void addClient(ClientPosition client) {
-		clientsNeeded.add(client);
-		highestBonus = clientsNeeded.peek().getEntertainmentBonus(AUCTION_TYPE);
+		clientsNeeding.add(client);
+		highestBonus = clientsNeeding.first().getEntertainmentBonus(AUCTION_TYPE);
 	}
 	
 	public void removeClient(ClientPosition client) {
-		clientsNeeded.remove(client);
-		highestBonus = clientsNeeded.peek().getEntertainmentBonus(AUCTION_TYPE);
+		clientsNeeding.remove(client);
+		highestBonus = clientsNeeding.first().getEntertainmentBonus(AUCTION_TYPE);
 	}
 	
 	public Quote getQuote() {

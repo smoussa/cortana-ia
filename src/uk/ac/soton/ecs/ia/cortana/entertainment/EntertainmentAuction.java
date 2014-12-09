@@ -1,15 +1,24 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
+
 import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
-import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.Auction;
+import uk.ac.soton.ecs.ia.cortana.ClientPosition;
 
 public class EntertainmentAuction extends Auction {
+	
+	public int highestBonus;
+	public PriorityQueue<ClientPosition> clientsNeeded;
 
 	public EntertainmentAuction(TACAgent agent, Quote quote) {
 		super(agent, quote);
+		clientsNeeded = new PriorityQueue<ClientPosition>();
+		highestBonus = 0;
 	}
 	
 	public void bid(int quantity, float price) {
@@ -42,6 +51,16 @@ public class EntertainmentAuction extends Auction {
 		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(quantity, price);
 		agent.submitBid(bid);
+	}
+	
+	public void addClient(ClientPosition client) {
+		clientsNeeded.add(client);
+		highestBonus = clientsNeeded.peek().getEntertainmentBonus(AUCTION_TYPE);
+	}
+	
+	public void removeClient(ClientPosition client) {
+		clientsNeeded.remove(client);
+		highestBonus = clientsNeeded.peek().getEntertainmentBonus(AUCTION_TYPE);
 	}
 	
 	public Quote getQuote() {

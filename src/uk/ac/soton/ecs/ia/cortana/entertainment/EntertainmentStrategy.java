@@ -103,6 +103,88 @@ public abstract class EntertainmentStrategy {
 		}
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	public void allocateTickets3() {
+		
+		/* 
+		 * 
+		 * 
+		 * PRIORITISE
+		 * 
+		 * create empty set of ent auctions
+		 * create empty queue of ent auctions
+		 * 
+		 * for each client
+		 * for each ticket type
+		 * for each client ent auction of this ticket type
+		 * 		if this auction already exists in set (by searching for day and ticket type - don't compare objects)
+		 * 			add client to the existing auction's queue
+		 *		else
+		 *			create new ent auction
+		 *			add client to auction's queue
+		 *
+		 * for each auction in set
+		 * 		add to priority queue of auctions based on highest client bonus
+		 * 
+		 * 
+		 * 
+		 * 
+		 * ALLOCATE
+		 * 
+		 * for each ent auction in queue (max 12)
+		 * for each client in auction's queue
+		 * if we own tickets in this auction (can allocate)
+		 * 		allocate ticket to client by removing client from queue
+		 * 		updated auction allocation
+		 * else we can't allocate anymore
+		 * 		break;
+		 * end for each client
+		 * if auction's queue is empty (no client wants this auction at all)
+		 * 		remove this auction from queue of ent auctions
+		 * 
+		 * (we have now allocated the tickets we started with in order of highest bonus across all auctions and clients
+		 * 	we are then left with (in the ent auction queue) all auctions and their respective (queued) clients
+		 * 	who still need tickets)
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public void allocateTickets2() {
 		
 		/*
@@ -160,15 +242,6 @@ public abstract class EntertainmentStrategy {
 		}
 		
 		
-		/*
-		 * for each client
-		 * get highest bonus ticket for that client
-		 * get the queue for that ticket
-		 * if the same client is highest in the queue (optimal), dequeue
-		 * 
-		 */
-		
-		
 		for (i = 0; i < ticketQueues.length; i++) {
 			TacTypeEnum ticket = ticketTypes[i];
 			
@@ -198,8 +271,6 @@ public abstract class EntertainmentStrategy {
 				}
 			}
 		}
-		
-		
 		
 	}
 	

@@ -1,16 +1,13 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.TreeSet;
 
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
@@ -21,7 +18,7 @@ import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.AuctionMaster;
 import uk.ac.soton.ecs.ia.cortana.ClientPosition;
 
-public abstract class EntertainmentStrategy {
+public class EntertainmentStrategy {
 	
 	/*
 	 * GENERAL NOTES:
@@ -39,9 +36,10 @@ public abstract class EntertainmentStrategy {
 	protected static final int NUM_CLIENTS = 8;
 	protected float[] prices;
 	
-	protected static TacTypeEnum[] ticketTypes;
+	protected List<EntertainmentAuction> auctionsList;
 	protected Set<EntertainmentAuction> sellToAuctions;
 	protected Set<EntertainmentAuction> buyFromAuctions;
+	protected static TacTypeEnum[] ticketTypes;
 	
 	protected static final TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
 	protected static final TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
@@ -59,161 +57,22 @@ public abstract class EntertainmentStrategy {
 		ticketTypes[1] = AP;
 		ticketTypes[2] = MU;
 		
+		auctionsList = new ArrayList<EntertainmentAuction>(12);
 		sellToAuctions = new HashSet<EntertainmentAuction>();
 		buyFromAuctions = new HashSet<EntertainmentAuction>();
 		
-		start();
+		allocateTickets();
 	}
 	
-	public abstract void start();
-	
-	public abstract void quoteUpdated(Quote quote);
-	
-	/*
-	 * 
-	 */
-	
-	public void update() {
-		this.clients = master.getStrategy().getAllClientPositions();
-//		allocateTickets();
-//		allocateTickets3();
-	}
-	
-	protected void allocateTickets() {
+	public void allocateTickets() {
 		
-		/*
-		 * For each client, see what they want and if we have tickets for them,
-		 * allocate the tickets to them in order of highest bonus.
-		 */
-		
-		for (TacTypeEnum ticket : ticketTypes) {
-			for (ClientPosition client : getClientsByHighestBonus(ticket)) {
-				if (!client.hasEntertainmentTicket(ticket)) {
-					for (EntertainmentAuction auction : client.eAuctions) {
-						if (auction.AUCTION_TYPE == ticket && !client.hasEntertainmentTicket(auction.AUCTION_DAY)) {
-							
-							int owned = agent.getOwn(auction.AUCTION_ID);
-							int allocated = agent.getAllocation(auction.AUCTION_ID);
-
-							if (owned > 0 && (owned - allocated) > 0) {
-								client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-								agent.setAllocation(auction.AUCTION_ID, allocated + 1);
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	
-	
-	/*
-	 
-MUSEUM auction on day THURSDAY has bonus [2] :
-	Client: 4 with bonus [2
-	Client: 7 with bonus [189
-
-MUSEUM auction on day MONDAY has bonus [123] :
-	Client: 0 with bonus [123
-	Client: 6 with bonus [161
-	Client: 2 with bonus [178
-	Client: 5 with bonus [187
-
-MUSEUM auction on day TUESDAY has bonus [123] :
-	Client: 0 with bonus [123
-	Client: 1 with bonus [151
-	Client: 6 with bonus [161
-	Client: 2 with bonus [178
-
-MUSEUM auction on day WEDNESDAY has bonus [2] :
-	Client: 4 with bonus [2
-	Client: 3 with bonus [7
-	Client: 0 with bonus [123
-	Client: 2 with bonus [178
-
-AMUSEMENT auction on day MONDAY has bonus [22] :
-	Client: 6 with bonus [22
-	Client: 2 with bonus [50
-	Client: 5 with bonus [147
-	Client: 0 with bonus [166
-
-AMUSEMENT auction on day TUESDAY has bonus [22] :
-	Client: 6 with bonus [22
-	Client: 2 with bonus [50
-	Client: 1 with bonus [107
-	Client: 0 with bonus [166
-
-AMUSEMENT auction on day WEDNESDAY has bonus [50] :
-	Client: 2 with bonus [50
-	Client: 3 with bonus [142
-	Client: 4 with bonus [146
-	Client: 0 with bonus [166
-
-ALLIGATOR_WRESTLING auction on day MONDAY has bonus [26] :
-	Client: 2 with bonus [26
-	Client: 5 with bonus [69
-	Client: 6 with bonus [97
-	Client: 0 with bonus [189
-
-ALLIGATOR_WRESTLING auction on day TUESDAY has bonus [26] :
-	Client: 2 with bonus [26
-	Client: 1 with bonus [78
-	Client: 6 with bonus [97
-	Client: 0 with bonus [189
-
-ALLIGATOR_WRESTLING auction on day WEDNESDAY has bonus [26] :
-	Client: 2 with bonus [26
-	Client: 3 with bonus [65
-	Client: 4 with bonus [82
-	Client: 0 with bonus [189
-
-ALLIGATOR_WRESTLING auction on day THURSDAY has bonus [82] :
-	Client: 4 with bonus [82
-	Client: 7 with bonus [95
-
-AMUSEMENT auction on day THURSDAY has bonus [110] :
-	Client: 7 with bonus [110
-	Client: 4 with bonus [146
-	 
-	 */
-	
-	
-	
-	
-	public void allocateTickets3() {
-		
-		/* 
-		 * 
-		 * 
-		 * PRIORITISE
-		 * 
-		 * create empty set of ent auctions
-		 * 
-		 * for each client
-		 * for each ticket type
-		 * for each client ent auction of this ticket type
-		 * 		if this auction already exists in set (by searching for day and ticket type - don't compare objects)
-		 * 			add client to the existing auction's queue
-		 *		else
-		 *			create new ent auction
-		 *			add client to auction's queue
-		 *
-		 * for each auction in set
-		 * 		add to priority queue of auctions based on highest client bonus
-		 * 
-		*/
-		
-		List<EntertainmentAuction> auctionsList = new ArrayList<EntertainmentAuction>(12);
-		
+		// prioritise auctions by client bonuses
 		for (ClientPosition client : clients) {
 			for (TacTypeEnum ticket : ticketTypes) {
 				for (EntertainmentAuction auction : client.getEntertainmentAuctions(ticket)) {
 					
 					boolean containsAuction = false;
 					EntertainmentAuction chosenAuction = null;
-					
 					for (EntertainmentAuction auc : auctionsList) {
 						if (auc.AUCTION_DAY == auction.AUCTION_DAY && auc.AUCTION_TYPE == auction.AUCTION_TYPE) {
 							containsAuction = true;
@@ -233,6 +92,7 @@ AMUSEMENT auction on day THURSDAY has bonus [110] :
 			}
 		}
 		
+		// sort auctions
 		Comparator<EntertainmentAuction> comparator = new Comparator<EntertainmentAuction>() {
 			@Override
 			public int compare(EntertainmentAuction e1, EntertainmentAuction e2) {
@@ -241,185 +101,69 @@ AMUSEMENT auction on day THURSDAY has bonus [110] :
 		};
 		Collections.sort(auctionsList, comparator);
 		
-		/* 
-		 * 
-		 * ALLOCATE
-		 * 
-		 * for each ent auction in queue (max 12)
-		 * for each client in auction's queue
-		 * if we own tickets in this auction (can allocate)
-		 * 		allocate ticket to client by removing client from queue
-		 * 		updated auction allocation
-		 * else we can't allocate anymore
-		 * 		break;
-		 * end for each client
-		 * if auction's queue is empty (no client wants this auction at all)
-		 * 		remove this auction from queue of ent auctions
-		 * 
-		 * (we have now allocated the tickets we started with in order of highest bonus across all auctions and clients
-		 * 	we are then left with (in the ent auction queue) all auctions and their respective (queued) clients
-		 * 	who still need tickets)
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-		
+		// allocate
 		for (EntertainmentAuction auction : auctionsList) {
-			
-			System.out.println();
-			System.out.println(auction.AUCTION_TYPE + " auction on day " + auction.AUCTION_DAY + " has bonus [" + auction.highestBonus + "]");
+//			System.out.println();
+//			System.out.println(auction.AUCTION_TYPE + " auction on day " + auction.AUCTION_DAY + " has bonus [" + auction.highestBonus + "]");
 			
 			for (ClientPosition client : auction.clientsNeeding) {
-				
-				System.out.println("\tClient " + client.client.CLIENT_ID + " with bonus [" + client.getEntertainmentBonus(auction.AUCTION_TYPE) + "]");
+//				System.out.println("\tClient " + client.client.CLIENT_ID + " with bonus [" + client.getEntertainmentBonus(auction.AUCTION_TYPE) + "]");
 				
 				int owned = agent.getOwn(auction.AUCTION_ID);
 				int allocated = agent.getAllocation(auction.AUCTION_ID);
-
 				if (owned > 0 && (owned - allocated) > 0) {
 					client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
 					agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+					auction.removeClient(client);
+				} else {
 					break;
 				}
-				
-				// ... update auction allocation
+			}
+			
+			if (auction.clientsNeeding.isEmpty()) {
+				auctionsList.remove(auction);
 			}
 		}
-		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public void allocateTickets2() {
+	public void quoteUpdated(Quote quote) {
 		
-		/*
-		 * We want to optimise the bonuses which means selling the highest bonus across
-		 * ticket types for each client.
-		 * 
-		 * for each client
-		 * for each of the ticket types, get the bonus and save the highest
-		 * add the client to the ticket type priority queue for the highest ticket type bonus
-		 * 
-		 * for each of the queues, get the ticket type
-		 * for each client in the queue
-		 * get the bonus
-		 * get the list of ent auctions for that client
-		 * for each ent auction
-		 * get the auction day
-		 * if the client is staying on this day
-		 * 	if we own tickets on this day
-		 * 	 remove auction from list of auctions we need to sell tickets to
-		 * 	 keep and add auction to list of auctions to watch as we can potentially sell tickets if the sell price is higher than the client bonus
-		 * 	 [rest of code to allocate to client]
-		 *  otherwise (we need to buy tickets on this day as they are staying on this day)
-		 * 	 remove auction from list of auctions we need to sell tickets to
-		 * 	 add this auction to the list of auctions we should buy from - the ask/buy price may be lower than the bonus
-		 * otherwise client isn't staying on this day
-		 * 	if we own tickets on this day
-		 * 	 add auction to list of auctions we have to sell to as no client wants it (with quantity we want to sell)
-		 * 
-		 * get the list of auctions we need to buy from
-		 * for each auction, get auction type
-		 * for each client in the queue of clients for that auction/ticket type
-		 * if the client doesn't have a ticket of this type on this auction day and the ask price is lower than their bonus
-		 * 	put a bid in for that ticket
-		 * 
-		 * get the list of auctions we need to sell to
-		 * get the quantity we need to sell
-		 * get optimal price we can sell at (depending on time of the game)
-		 * sell all
-		 * 
-		 * 
-		 */
+		int auctionId = quote.getAuction();
+		EntertainmentAuction auction = master.getEntertainmentAuction(auctionId);
 		
-//		@SuppressWarnings("unchecked")
-//		PriorityQueue<ClientPosition>[] ticketQueues = new PriorityQueue[3];
-//		
-//		int i = 0;
-//		for (TacTypeEnum ticket : ticketTypes) {
-//			PriorityQueue<ClientPosition> queue =
-//					new PriorityQueue<ClientPosition>(8, new BonusComparator(ticket));
-//			for (ClientPosition client : clients) {
-//				queue.add(client);
-//			}
-//			ticketQueues[i] = queue;
-//			i++;
-//		}
-//		
-//		
-//		for (i = 0; i < ticketQueues.length; i++) {
-//			TacTypeEnum ticket = ticketTypes[i];
-//			
-//			for (ClientPosition client : ticketQueues[i]) {
-//				if (!client.hasEntertainmentTicket(ticket)) {
-//					int bonus = client.getEntertainmentBonus(ticket);
-//					
-//					for (EntertainmentAuction auction : client.getEntertainmentAuctions(ticket)) {
-//						if (!client.hasEntertainmentTicket(auction.AUCTION_DAY)) {
-//							int owned = agent.getOwn(auction.AUCTION_ID);
-//							if (client.isStaying(auction.AUCTION_DAY)) { // METHOD MUST REFLECT TRUE STAYING DAYS
-//								sellToAuctions.remove(auction);
-//								if (owned > 0) {
-//									int allocated = agent.getAllocation(auction.AUCTION_ID);
-//									if (owned - allocated > 0) {
-//										client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-//										agent.setAllocation(auction.AUCTION_ID, allocated + 1);
-//									}
-//								} else {
-//									buyFromAuctions.add(auction);
-//								}
-//							} else if (owned > 0) {
-//								sellToAuctions.add(auction);
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-		
-	}
-	
-	public TreeSet<ClientPosition> getClientsByHighestBonus(TacTypeEnum ticket) {
-		
-		final TacTypeEnum t = ticket;
-		Comparator<ClientPosition> comparator = new Comparator<ClientPosition>() {
-			@Override
-			public int compare(ClientPosition c1, ClientPosition c2) {
-				return (c1.getEntertainmentBonus(t) < c2.getEntertainmentBonus(t)) ? 1 : -1;
+		int alloc = agent.getAllocation(auctionId) - agent.getOwn(auctionId);
+		if (alloc != 0) {
+			if (alloc < 0) {
+				prices[auctionId] = 100f - (agent.getGameTime() * 120f) / 720000;
+				auction.ask(alloc, prices[auctionId]);
+			} else {
+				prices[auctionId] = 20f + (agent.getGameTime() * 100f) / 720000;
+				auction.bid(alloc, prices[auctionId]);
 			}
-		};
-		TreeSet<ClientPosition> set = new TreeSet<ClientPosition>(comparator);
-		
-		for (ClientPosition client : clients) {
-			set.add(client);
 		}
-		return set;
 	}
+	
+	public void update() {
+		this.clients = master.getStrategy().getAllClientPositions();
+		allocateTickets();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * A list of clients that do not have the full set of entertainment packages
@@ -502,13 +246,6 @@ AMUSEMENT auction on day THURSDAY has bonus [110] :
 		
 		return needed;
 	}
-	
-	
-	
-	
-	/*
-	 * STRATEGIES
-	 */
 	
 	private int worthBuying(TacTypeEnum ticket) {
 		

@@ -35,7 +35,7 @@ public abstract class EntertainmentStrategy {
 	protected static final int NUM_CLIENTS = 8;
 	protected float[] prices;
 	
-	private static List<TacTypeEnum> ticketTypes;
+	private static TacTypeEnum[] ticketTypes;
 	
 	private static final TacTypeEnum AW = TacTypeEnum.ALLIGATOR_WRESTLING;
 	private static final TacTypeEnum AP = TacTypeEnum.AMUSEMENT;
@@ -48,10 +48,10 @@ public abstract class EntertainmentStrategy {
 		this.clients = master.getStrategy().getAllClientPositions();
 		
 		prices = new float[agent.getAuctionNo()];
-		ticketTypes = new ArrayList<>(3);
-		ticketTypes.add(AW);
-		ticketTypes.add(AP);
-		ticketTypes.add(MU);
+		ticketTypes = new TacTypeEnum[3];
+		ticketTypes[0] = AW;
+		ticketTypes[1] = AP;
+		ticketTypes[2] = MU;
 		
 		start();
 	}
@@ -97,7 +97,7 @@ public abstract class EntertainmentStrategy {
 		}
 	}
 	
-	public void ticketsToBuy() {
+	public void allocateTickets2() {
 		
 		/*
 		 * We want to optimise the bonuses which means selling the highest bonus across
@@ -138,6 +138,45 @@ public abstract class EntertainmentStrategy {
 		 * 
 		 * 
 		 */
+		
+		@SuppressWarnings("unchecked")
+		PriorityQueue<ClientPosition>[] ticketQueues = new PriorityQueue[3];
+		
+		int i = 0;
+		for (TacTypeEnum ticket : ticketTypes) {
+			PriorityQueue<ClientPosition> queue =
+					new PriorityQueue<ClientPosition>(8, new BonusComparator(ticket));
+			for (ClientPosition client : clients) {
+				queue.add(client);
+			}
+			ticketQueues[i] = queue;
+			i++;
+		}
+		
+		for (i = 0; i < ticketQueues.length; i++) {
+			TacTypeEnum ticket = ticketTypes[i];
+			
+			for (ClientPosition client : clients) {
+				int bonus = client.getEntertainmentBonus(ticket);
+				for (EntertainmentAuction auction : client.eAuctions) {
+					if (client.isStaying(auction.AUCTION_DAY)) {
+						if (agent.getOwn(auction.AUCTION_ID) > 0) {
+							
+						} else {
+							
+						}
+					} else {
+						if (agent.getOwn(auction.AUCTION_ID) > 0) {
+							
+						} else {
+							
+						}
+					}
+				}
+			}
+		}
+		
+		
 		
 	}
 	

@@ -263,10 +263,10 @@ public class AuctionMaster {
 	}
 
 	public void gameEnd() {
-		for(FlightAuction f: flightAuctions.values()){
-			f.plot();
-		}
-		System.out.println("We predicted our score would be " + strategy.getScore());
+//		for(FlightAuction f: flightAuctions.values()){
+//			f.plot();
+//		}
+//		System.out.println("We predicted our score would be " + strategy.getScore());
 	}
 
 	public Strategy getStrategy() {

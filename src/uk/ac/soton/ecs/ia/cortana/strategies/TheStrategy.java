@@ -140,8 +140,8 @@ public class TheStrategy extends Strategy {
 		
 		// Make hotels mean price
 		for(int i = 1; i < cheapHotelsSums.size(); i++) {
-			cheapHotelsSums.get(i)[0] = cheapHotelsSums.get(i)[0] / cheapHotelsSums.get(i)[1];
-			premiumHotelsSums.get(i)[0] = premiumHotelsSums.get(i)[0] / premiumHotelsSums.get(i)[1];
+			cheapHotelsSums.get(i)[0] = Math.ceil(cheapHotelsSums.get(i)[0] / cheapHotelsSums.get(i)[1]);
+			premiumHotelsSums.get(i)[0] = Math.ceil(premiumHotelsSums.get(i)[0] / premiumHotelsSums.get(i)[1]);
 		}
 		
 		for(int i = 1; i < 5; i++) {

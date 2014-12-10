@@ -23,6 +23,8 @@ public class EntertainmentAuction extends Auction {
 			System.err.println("Invalid bid quantity. Must be a positive number.");
 			return;
 		}
+
+		System.out.println("Entertainment BIDDING for " + quantity + " at price " + price);
 				
 		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(quantity, price);
@@ -37,6 +39,8 @@ public class EntertainmentAuction extends Auction {
 			System.err.println("Invalid ask quantity. Must be a negative number.");
 			return null;
 		}
+		
+		System.out.println("Entertainment ASKING for " + quantity + " at price " + price);
 		
 		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(quantity, price);

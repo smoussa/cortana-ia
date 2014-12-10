@@ -96,44 +96,61 @@ AMUSEMENT on TUESDAY with Client 5 has bonus [1]
 
 		 */
 		
-//		EntertainmentAuction auction = master.getEntertainmentAuction(quote.getAuction());
-//		
-//		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
-//			
-//			int allocated = agent.getAllocation(auction.AUCTION_ID);
-//			int owned = agent.getOwn(auction.AUCTION_ID);
-//			int alloc = allocated - owned;
-//			if (alloc == 0)
-//				break;
-//			
-//			EntertainmentAuction auc = itr.next(); // find client who wants
-//			float bidPrice = (float) auction.getCurrentBidPrice();
-//			float bonus = auc.client.getEntertainmentBonus(auc.AUCTION_TYPE);
-//			
-//			if (auction.AUCTION_DAY == auc.AUCTION_DAY && auction.AUCTION_TYPE == auc.AUCTION_TYPE) { // if found
-//				if (alloc < 0) { // if we have tickets
-////					if (auction.getCurrentBidPrice() > bonus) { // if worth selling
-////						auction.ask(alloc, bidPrice - 1.0f);
-////					} else { // allocate to client
-//						auc.client.giveEntertainmentTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
-//						agent.setAllocation(auction.AUCTION_ID, allocated + 1);
-//						itr.remove();
-////					}
-//				} else { // buy for client
-//					float askPrice = (float) auction.getAskPrice();
-//					if (askPrice < bonus) {
-//						auction.bid(1, 55.f);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		EntertainmentAuction auction = master.getEntertainmentAuction(quote.getAuction());
+		int allocated = agent.getAllocation(auction.AUCTION_ID);
+		int owned = agent.getOwn(auction.AUCTION_ID);
+		int alloc = allocated - owned;
+		if (alloc == 0)
+			return;
+		
+		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
+			EntertainmentAuction auc = itr.next(); // find client who wants
+			
+			if (auction.AUCTION_DAY == auc.AUCTION_DAY && auction.AUCTION_TYPE == auc.AUCTION_TYPE) { // if found
+				
+				float bonus = auc.client.getEntertainmentBonus(auc.AUCTION_TYPE);
+				
+				if (alloc < 0) { // if we have tickets
+					if (auction.getCurrentBidPrice() > bonus) { // if worth selling
+						
+						auction.ask(1, (float) auction.getCurrentBidPrice() + 1.f);
+//						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) - 1);
+						
+					} else if (!(auc.client.hasEntertainmentTicket(auc.AUCTION_DAY) ||
+							auc.client.hasEntertainmentTicket(auc.AUCTION_TYPE))) { // allocate to client
+						
+						auc.client.giveEntertainmentTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
+						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
+						itr.remove();
+					}
+				} else if (!(auc.client.hasEntertainmentTicket(auc.AUCTION_DAY) ||
+						auc.client.hasEntertainmentTicket(auc.AUCTION_TYPE))) { // buy for client
+					float askPrice = (float) auction.getAskPrice();
+					if (askPrice > 0 && askPrice < bonus) {
+						auction.bid(1, askPrice);
 //						auc.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
 //						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
 //						itr.remove();
-//					}
+					}
+				}
+			} else { // no client found/wanting
+//				if (alloc < 0) { // sell
+//					auction.ask(alloc, 130f - (agent.getGameTime() * 120f) / 720000);
 //				}
-//			} else { // no client found/wanting
-////				if (alloc < 0) { // sell
-////					auction.ask(alloc, 130f - (agent.getGameTime() * 120f) / 720000);
-////				}
-//			}
-//		}
+			}
+		}
 		
 	}
 	
@@ -172,8 +189,15 @@ AMUSEMENT on TUESDAY with Client 5 has bonus [1]
 		Comparator<EntertainmentAuction> comparator = new Comparator<EntertainmentAuction>() {
 			@Override
 			public int compare(EntertainmentAuction e1, EntertainmentAuction e2) {
-				return (e1.client.getEntertainmentBonus(e1.AUCTION_TYPE) <=
-						e2.client.getEntertainmentBonus(e2.AUCTION_TYPE)) ? 1 : -1;
+				if (e1.client.getEntertainmentBonus(e1.AUCTION_TYPE) <
+						e2.client.getEntertainmentBonus(e2.AUCTION_TYPE)) {
+					return 1;
+				} else if (e1.client.getEntertainmentBonus(e1.AUCTION_TYPE) ==
+						e2.client.getEntertainmentBonus(e2.AUCTION_TYPE)) {
+					return 0;
+				} else {
+					return -1;
+				}
 			}
 		};
 		Collections.sort(auctionsList, comparator);
@@ -189,13 +213,8 @@ AMUSEMENT on TUESDAY with Client 5 has bonus [1]
 				int allocated = agent.getAllocation(auction.AUCTION_ID);
 				
 				if (owned > 0 && (owned - allocated) > 0) {
-					float bidPrice = (float) auction.getCurrentBidPrice();
-					if (bidPrice > auction.client.getEntertainmentBonus(auction.AUCTION_TYPE)) {
-						auction.ask(-1, bidPrice - 1.0f);
-					} else {
-						auction.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-						agent.setAllocation(auction.AUCTION_ID, allocated + 1);
-					}
+					auction.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+					agent.setAllocation(auction.AUCTION_ID, allocated + 1);
 					itr.remove();
 				}
 				
@@ -206,10 +225,7 @@ AMUSEMENT on TUESDAY with Client 5 has bonus [1]
 		
 	}
 	
-	private void buyNeeded() { // possibly call this only when strategy updated?
-		
-		int margin = 0;
-//		int[] quantities = new int[auctionsList.size()];
+	private void buyNeeded() {
 		
 		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
 			EntertainmentAuction auction = itr.next();
@@ -219,17 +235,35 @@ AMUSEMENT on TUESDAY with Client 5 has bonus [1]
 			
 			if (bonus < 100)
 				break;
-			if (askPrice < bonus - margin) { // initial buy
-//				quantities[auctionsList.indexOf(auction)]++;
+			if (askPrice > 0 && askPrice < bonus) { // initial buy
 				auction.bid(1, askPrice);
-				auction.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-				agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
-				itr.remove();
 			}
 		}
 		
 		printAuctionList();
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	/**

@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;
 import se.sics.tac.aw.Quote;
@@ -62,222 +61,103 @@ public class EntertainmentStrategy {
 		sellToAuctions = new ArrayList<EntertainmentAuction>();
 		buyFromAuctions = new ArrayList<EntertainmentAuction>();
 		
-//		allocateTickets();
-		allocateTickets2();
+		allocateTickets();
+		buyNeeded();
 	}
 	
 	public void quoteUpdated(Quote quote) {
 		
-		int auctionId = quote.getAuction();
-		EntertainmentAuction auction = master.getEntertainmentAuction(auctionId);
+		/*
+	
+Auctions List:
+MUSEUM on THURSDAY with Client 7 has bonus [189]
+AMUSEMENT on WEDNESDAY with Client 6 has bonus [159]
+AMUSEMENT on TUESDAY with Client 6 has bonus [159]
+MUSEUM on TUESDAY with Client 5 has bonus [158]
+MUSEUM on MONDAY with Client 5 has bonus [158]
+ALLIGATOR_WRESTLING on TUESDAY with Client 5 has bonus [149]
+MUSEUM on THURSDAY with Client 0 has bonus [138]
+ALLIGATOR_WRESTLING on THURSDAY with Client 0 has bonus [119]
+ALLIGATOR_WRESTLING on TUESDAY with Client 0 has bonus [119]
+MUSEUM on THURSDAY with Client 1 has bonus [112]
+ALLIGATOR_WRESTLING on THURSDAY with Client 7 has bonus [107]
+MUSEUM on TUESDAY with Client 6 has bonus [97]
+AMUSEMENT on WEDNESDAY with Client 4 has bonus [90]
+AMUSEMENT on TUESDAY with Client 4 has bonus [90]
+AMUSEMENT on TUESDAY with Client 3 has bonus [69]
+AMUSEMENT on MONDAY with Client 3 has bonus [69]
+MUSEUM on TUESDAY with Client 4 has bonus [41]
+ALLIGATOR_WRESTLING on TUESDAY with Client 1 has bonus [30]
+MUSEUM on MONDAY with Client 3 has bonus [2]
+MUSEUM on TUESDAY with Client 3 has bonus [2]
+AMUSEMENT on TUESDAY with Client 5 has bonus [1]
+
 		
-		int alloc = agent.getAllocation(auctionId) - agent.getOwn(auctionId);
-		if (alloc != 0) {
-			if (alloc < 0) {
-				prices[auctionId] = 100f - (agent.getGameTime() * 120f) / 720000;
-				auction.ask(alloc, prices[auctionId]);
-			} else {
-				prices[auctionId] = 20f + (agent.getGameTime() * 100f) / 720000;
-				auction.bid(alloc, prices[auctionId]);
-			}
-		} else {
-			
-		}
+
+		 */
+		
+//		EntertainmentAuction auction = master.getEntertainmentAuction(quote.getAuction());
+//		
+//		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
+//			
+//			int allocated = agent.getAllocation(auction.AUCTION_ID);
+//			int owned = agent.getOwn(auction.AUCTION_ID);
+//			int alloc = allocated - owned;
+//			if (alloc == 0)
+//				break;
+//			
+//			EntertainmentAuction auc = itr.next(); // find client who wants
+//			float bidPrice = (float) auction.getCurrentBidPrice();
+//			float bonus = auc.client.getEntertainmentBonus(auc.AUCTION_TYPE);
+//			
+//			if (auction.AUCTION_DAY == auc.AUCTION_DAY && auction.AUCTION_TYPE == auc.AUCTION_TYPE) { // if found
+//				if (alloc < 0) { // if we have tickets
+////					if (auction.getCurrentBidPrice() > bonus) { // if worth selling
+////						auction.ask(alloc, bidPrice - 1.0f);
+////					} else { // allocate to client
+//						auc.client.giveEntertainmentTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
+//						agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+//						itr.remove();
+////					}
+//				} else { // buy for client
+//					float askPrice = (float) auction.getAskPrice();
+//					if (askPrice < bonus) {
+//						auction.bid(1, 55.f);
+//						auc.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+//						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
+//						itr.remove();
+//					}
+//				}
+//			} else { // no client found/wanting
+////				if (alloc < 0) { // sell
+////					auction.ask(alloc, 130f - (agent.getGameTime() * 120f) / 720000);
+////				}
+//			}
+//		}
+		
 	}
 	
 	public void update() {
-		
 		this.clients = master.getStrategy().getAllClientPositions();
-		
+		agent.clearAllocation();
 		auctionsList = new ArrayList<EntertainmentAuction>(96);
 		buyFromAuctions = new ArrayList<EntertainmentAuction>();
-		
-		agent.clearAllocation();
-		allocateTickets2();
+		allocateTickets();
 	}
 	
-	private void allocateTickets2() {
+	private void printAuctionList() {
 		
-		/*
-
-Auctions List:
-MUSEUM on THURSDAY with Client 1 has bonus [194]
-MUSEUM on WEDNESDAY with Client 1 has bonus [194]
-MUSEUM on TUESDAY with Client 1 has bonus [194]
-AMUSEMENT on WEDNESDAY with Client 0 has bonus [183]
-AMUSEMENT on TUESDAY with Client 0 has bonus [183]
-AMUSEMENT on MONDAY with Client 0 has bonus [183]
-AMUSEMENT on THURSDAY with Client 1 has bonus [165]
-AMUSEMENT on WEDNESDAY with Client 1 has bonus [165]
-AMUSEMENT on TUESDAY with Client 1 has bonus [165]
-ALLIGATOR_WRESTLING on THURSDAY with Client 3 has bonus [159]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 3 has bonus [159]
-ALLIGATOR_WRESTLING on TUESDAY with Client 3 has bonus [159]
-ALLIGATOR_WRESTLING on MONDAY with Client 3 has bonus [159]
-AMUSEMENT on THURSDAY with Client 5 has bonus [143]
-AMUSEMENT on WEDNESDAY with Client 5 has bonus [143]
-ALLIGATOR_WRESTLING on TUESDAY with Client 7 has bonus [135]
-ALLIGATOR_WRESTLING on MONDAY with Client 7 has bonus [135]
-ALLIGATOR_WRESTLING on THURSDAY with Client 4 has bonus [124]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 4 has bonus [124]
-ALLIGATOR_WRESTLING on TUESDAY with Client 4 has bonus [124]
-AMUSEMENT on THURSDAY with Client 3 has bonus [122]
-AMUSEMENT on TUESDAY with Client 3 has bonus [122]
-AMUSEMENT on WEDNESDAY with Client 3 has bonus [122]
-AMUSEMENT on MONDAY with Client 3 has bonus [122]
-AMUSEMENT on WEDNESDAY with Client 6 has bonus [119]
-ALLIGATOR_WRESTLING on THURSDAY with Client 5 has bonus [114]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 5 has bonus [114]
-ALLIGATOR_WRESTLING on THURSDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on TUESDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 0 has bonus [99]
-ALLIGATOR_WRESTLING on TUESDAY with Client 0 has bonus [99]
-ALLIGATOR_WRESTLING on MONDAY with Client 0 has bonus [99]
-AMUSEMENT on TUESDAY with Client 7 has bonus [91]
-AMUSEMENT on MONDAY with Client 7 has bonus [91]
-MUSEUM on THURSDAY with Client 3 has bonus [81]
-MUSEUM on WEDNESDAY with Client 3 has bonus [81]
-MUSEUM on TUESDAY with Client 3 has bonus [81]
-MUSEUM on MONDAY with Client 3 has bonus [81]
-MUSEUM on WEDNESDAY with Client 0 has bonus [80]
-MUSEUM on TUESDAY with Client 0 has bonus [80]
-MUSEUM on MONDAY with Client 0 has bonus [80]
-MUSEUM on THURSDAY with Client 5 has bonus [77]
-MUSEUM on WEDNESDAY with Client 5 has bonus [77]
-AMUSEMENT on THURSDAY with Client 4 has bonus [56]
-AMUSEMENT on WEDNESDAY with Client 4 has bonus [56]
-AMUSEMENT on TUESDAY with Client 4 has bonus [56]
-MUSEUM on THURSDAY with Client 2 has bonus [55]
-MUSEUM on WEDNESDAY with Client 2 has bonus [55]
-MUSEUM on TUESDAY with Client 2 has bonus [55]
-MUSEUM on WEDNESDAY with Client 6 has bonus [54]
-ALLIGATOR_WRESTLING on THURSDAY with Client 1 has bonus [48]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 1 has bonus [48]
-ALLIGATOR_WRESTLING on TUESDAY with Client 1 has bonus [48]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 6 has bonus [32]
-MUSEUM on THURSDAY with Client 4 has bonus [23]
-MUSEUM on WEDNESDAY with Client 4 has bonus [23]
-MUSEUM on TUESDAY with Client 4 has bonus [23]
-MUSEUM on TUESDAY with Client 7 has bonus [21]
-MUSEUM on MONDAY with Client 7 has bonus [21]
-AMUSEMENT on THURSDAY with Client 2 has bonus [13]
-AMUSEMENT on WEDNESDAY with Client 2 has bonus [13]
-AMUSEMENT on TUESDAY with Client 2 has bonus [13]
-
-Buy From Auctions List:
-AMUSEMENT on WEDNESDAY with Client 0 has bonus [183]
-AMUSEMENT on WEDNESDAY with Client 1 has bonus [165]
-AMUSEMENT on THURSDAY with Client 5 has bonus [143]
-AMUSEMENT on WEDNESDAY with Client 5 has bonus [143]
-AMUSEMENT on WEDNESDAY with Client 6 has bonus [119]
-ALLIGATOR_WRESTLING on THURSDAY with Client 5 has bonus [114]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 5 has bonus [114]
-ALLIGATOR_WRESTLING on THURSDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 0 has bonus [99]
-ALLIGATOR_WRESTLING on MONDAY with Client 0 has bonus [99]
-AMUSEMENT on MONDAY with Client 7 has bonus [91]
-MUSEUM on WEDNESDAY with Client 3 has bonus [81]
-MUSEUM on MONDAY with Client 3 has bonus [81]
-MUSEUM on WEDNESDAY with Client 0 has bonus [80]
-MUSEUM on MONDAY with Client 0 has bonus [80]
-AMUSEMENT on WEDNESDAY with Client 4 has bonus [56]
-MUSEUM on WEDNESDAY with Client 6 has bonus [54]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 1 has bonus [48]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 6 has bonus [32]
-MUSEUM on WEDNESDAY with Client 4 has bonus [23]
-MUSEUM on MONDAY with Client 7 has bonus [21]
-AMUSEMENT on WEDNESDAY with Client 2 has bonus [13]
-
-after strategy update
-
-
-Auctions List:
-MUSEUM on THURSDAY with Client 1 has bonus [194]
-MUSEUM on WEDNESDAY with Client 1 has bonus [194]
-MUSEUM on TUESDAY with Client 1 has bonus [194]
-AMUSEMENT on TUESDAY with Client 0 has bonus [183]
-AMUSEMENT on MONDAY with Client 0 has bonus [183]
-AMUSEMENT on THURSDAY with Client 1 has bonus [165]
-AMUSEMENT on WEDNESDAY with Client 1 has bonus [165]
-AMUSEMENT on TUESDAY with Client 1 has bonus [165]
-ALLIGATOR_WRESTLING on THURSDAY with Client 3 has bonus [159]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 3 has bonus [159]
-ALLIGATOR_WRESTLING on TUESDAY with Client 3 has bonus [159]
-ALLIGATOR_WRESTLING on MONDAY with Client 3 has bonus [159]
-AMUSEMENT on THURSDAY with Client 5 has bonus [143]
-ALLIGATOR_WRESTLING on TUESDAY with Client 7 has bonus [135]
-ALLIGATOR_WRESTLING on MONDAY with Client 7 has bonus [135]
-ALLIGATOR_WRESTLING on THURSDAY with Client 4 has bonus [124]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 4 has bonus [124]
-ALLIGATOR_WRESTLING on TUESDAY with Client 4 has bonus [124]
-AMUSEMENT on THURSDAY with Client 3 has bonus [122]
-AMUSEMENT on WEDNESDAY with Client 3 has bonus [122]
-AMUSEMENT on TUESDAY with Client 3 has bonus [122]
-AMUSEMENT on MONDAY with Client 3 has bonus [122]
-AMUSEMENT on WEDNESDAY with Client 6 has bonus [119]
-ALLIGATOR_WRESTLING on THURSDAY with Client 5 has bonus [114]
-ALLIGATOR_WRESTLING on THURSDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on TUESDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on TUESDAY with Client 0 has bonus [99]
-ALLIGATOR_WRESTLING on MONDAY with Client 0 has bonus [99]
-AMUSEMENT on TUESDAY with Client 7 has bonus [91]
-AMUSEMENT on MONDAY with Client 7 has bonus [91]
-MUSEUM on THURSDAY with Client 3 has bonus [81]
-MUSEUM on WEDNESDAY with Client 3 has bonus [81]
-MUSEUM on TUESDAY with Client 3 has bonus [81]
-MUSEUM on MONDAY with Client 3 has bonus [81]
-MUSEUM on TUESDAY with Client 0 has bonus [80]
-MUSEUM on MONDAY with Client 0 has bonus [80]
-MUSEUM on THURSDAY with Client 5 has bonus [77]
-AMUSEMENT on THURSDAY with Client 4 has bonus [56]
-AMUSEMENT on WEDNESDAY with Client 4 has bonus [56]
-AMUSEMENT on TUESDAY with Client 4 has bonus [56]
-MUSEUM on THURSDAY with Client 2 has bonus [55]
-MUSEUM on WEDNESDAY with Client 2 has bonus [55]
-MUSEUM on TUESDAY with Client 2 has bonus [55]
-MUSEUM on WEDNESDAY with Client 6 has bonus [54]
-ALLIGATOR_WRESTLING on THURSDAY with Client 1 has bonus [48]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 1 has bonus [48]
-ALLIGATOR_WRESTLING on TUESDAY with Client 1 has bonus [48]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 6 has bonus [32]
-MUSEUM on THURSDAY with Client 4 has bonus [23]
-MUSEUM on WEDNESDAY with Client 4 has bonus [23]
-MUSEUM on TUESDAY with Client 4 has bonus [23]
-MUSEUM on TUESDAY with Client 7 has bonus [21]
-MUSEUM on MONDAY with Client 7 has bonus [21]
-AMUSEMENT on THURSDAY with Client 2 has bonus [13]
-AMUSEMENT on WEDNESDAY with Client 2 has bonus [13]
-AMUSEMENT on TUESDAY with Client 2 has bonus [13]
-
-Buy From Auctions List:
-AMUSEMENT on WEDNESDAY with Client 1 has bonus [165]
-AMUSEMENT on THURSDAY with Client 5 has bonus [143]
-AMUSEMENT on WEDNESDAY with Client 3 has bonus [122]
-AMUSEMENT on WEDNESDAY with Client 6 has bonus [119]
-ALLIGATOR_WRESTLING on THURSDAY with Client 5 has bonus [114]
-ALLIGATOR_WRESTLING on THURSDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on MONDAY with Client 0 has bonus [99]
-AMUSEMENT on MONDAY with Client 7 has bonus [91]
-MUSEUM on WEDNESDAY with Client 3 has bonus [81]
-MUSEUM on MONDAY with Client 3 has bonus [81]
-MUSEUM on MONDAY with Client 0 has bonus [80]
-AMUSEMENT on WEDNESDAY with Client 4 has bonus [56]
-MUSEUM on WEDNESDAY with Client 6 has bonus [54]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 1 has bonus [48]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 6 has bonus [32]
-MUSEUM on WEDNESDAY with Client 4 has bonus [23]
-MUSEUM on MONDAY with Client 7 has bonus [21]
-AMUSEMENT on WEDNESDAY with Client 2 has bonus [13]
-
-
-		 
-		 */
-		
-		
+		System.out.println();
+		System.out.println("Auctions List:");
+		for (EntertainmentAuction auction : auctionsList) {
+			System.out.println(auction.AUCTION_TYPE + " on " + auction.AUCTION_DAY +
+					" with Client " + auction.client.client.CLIENT_ID +
+					" has bonus [" + auction.client.getEntertainmentBonus(auction.AUCTION_TYPE) + "]");
+		}
+		System.out.println();
+	}
+	
+	private void allocateTickets() {
 		
 		// assign clients to auctions
 		for (ClientPosition client : clients) {
@@ -292,21 +172,11 @@ AMUSEMENT on WEDNESDAY with Client 2 has bonus [13]
 		Comparator<EntertainmentAuction> comparator = new Comparator<EntertainmentAuction>() {
 			@Override
 			public int compare(EntertainmentAuction e1, EntertainmentAuction e2) {
-				return (e1.client.getEntertainmentBonus(e1.AUCTION_TYPE) <
+				return (e1.client.getEntertainmentBonus(e1.AUCTION_TYPE) <=
 						e2.client.getEntertainmentBonus(e2.AUCTION_TYPE)) ? 1 : -1;
 			}
 		};
 		Collections.sort(auctionsList, comparator);
-		
-		// print auction list
-		System.out.println();
-		System.out.println("Auctions List:");
-		for (EntertainmentAuction auction : auctionsList) {
-			System.out.println(auction.AUCTION_TYPE + " on " + auction.AUCTION_DAY +
-					" with Client " + auction.client.client.CLIENT_ID +
-					" has bonus [" + auction.client.getEntertainmentBonus(auction.AUCTION_TYPE) + "]");
-		}
-		System.out.println();
 		
 		// allocate
 		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
@@ -319,8 +189,13 @@ AMUSEMENT on WEDNESDAY with Client 2 has bonus [13]
 				int allocated = agent.getAllocation(auction.AUCTION_ID);
 				
 				if (owned > 0 && (owned - allocated) > 0) {
-					auction.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-					agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+					float bidPrice = (float) auction.getCurrentBidPrice();
+					if (bidPrice > auction.client.getEntertainmentBonus(auction.AUCTION_TYPE)) {
+						auction.ask(-1, bidPrice - 1.0f);
+					} else {
+						auction.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+						agent.setAllocation(auction.AUCTION_ID, allocated + 1);
+					}
 					itr.remove();
 				}
 				
@@ -329,218 +204,32 @@ AMUSEMENT on WEDNESDAY with Client 2 has bonus [13]
 			}
 		}
 		
-		// print to buy from list
-		System.out.println("Buy From Auctions List:");
-		for (EntertainmentAuction auction : auctionsList) {
-			System.out.println(auction.AUCTION_TYPE + " on " + auction.AUCTION_DAY +
-					" with Client " + auction.client.client.CLIENT_ID +
-					" has bonus [" + auction.client.getEntertainmentBonus(auction.AUCTION_TYPE) + "]");
+	}
+	
+	private void buyNeeded() { // possibly call this only when strategy updated?
+		
+		int margin = 0;
+//		int[] quantities = new int[auctionsList.size()];
+		
+		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
+			EntertainmentAuction auction = itr.next();
+			
+			int bonus = auction.client.getEntertainmentBonus(auction.AUCTION_TYPE);
+			float askPrice = (float) auction.getAskPrice();
+			
+			if (bonus < 100)
+				break;
+			if (askPrice < bonus - margin) { // initial buy
+//				quantities[auctionsList.indexOf(auction)]++;
+				auction.bid(1, askPrice);
+				auction.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+				agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
+				itr.remove();
+			}
 		}
-		System.out.println();
+		
+		printAuctionList();
 	}
-	
-	private void buyNeeded() {
-		
-		/*
-		 * 
-		 * AMUSEMENT on WEDNESDAY with Client 1 has bonus [165]
-AMUSEMENT on THURSDAY with Client 5 has bonus [143]
-AMUSEMENT on WEDNESDAY with Client 3 has bonus [122]
-AMUSEMENT on WEDNESDAY with Client 6 has bonus [119]
-ALLIGATOR_WRESTLING on THURSDAY with Client 5 has bonus [114]
-ALLIGATOR_WRESTLING on THURSDAY with Client 2 has bonus [104]
-ALLIGATOR_WRESTLING on WEDNESDAY with Client 2 has bonus [104]
-
-		 * for each auction in auction list
-		 * get bonus
-		 * 
-		 * 
-		 */
-		
-		
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-//	public void allocateTickets() {
-//		
-//		// prioritise auctions by client bonuses
-//		for (ClientPosition client : clients) {
-//			for (TacTypeEnum ticket : ticketTypes) {
-//				for (EntertainmentAuction auction : client.getEntertainmentAuctions(ticket)) {
-//					
-//					boolean containsAuction = false;
-//					EntertainmentAuction chosenAuction = null;
-//					for (EntertainmentAuction auc : auctionsList) {
-//						if (auc.AUCTION_DAY == auction.AUCTION_DAY && auc.AUCTION_TYPE == auction.AUCTION_TYPE) {
-//							containsAuction = true;
-//							chosenAuction = auc;
-//							break;
-//						}
-//					}
-//					
-//					if (containsAuction) {
-//						chosenAuction.addClient(client);
-//					} else {
-//						chosenAuction = new EntertainmentAuction(agent, auction.getQuote());
-//						chosenAuction.addClient(client);
-//						auctionsList.add(chosenAuction);
-//					}
-//				}
-//			}
-//		}
-//		
-//		// sort auctions
-//		Comparator<EntertainmentAuction> comparator = new Comparator<EntertainmentAuction>() {
-//			@Override
-//			public int compare(EntertainmentAuction e1, EntertainmentAuction e2) {
-//				return (e1.highestBonus < e2.highestBonus) ? 1 : -1;
-//			}
-//		};
-//		Collections.sort(auctionsList, comparator);
-//		
-//		// print before allocations
-//		for (EntertainmentAuction auction : auctionsList) {
-//			System.out.println();
-//			System.out.println(auction.AUCTION_TYPE + " auction on day " + auction.AUCTION_DAY + " has bonus [" + auction.highestBonus + "]");
-//			for (ClientPosition client : auction.clientsNeeding) {
-//				System.out.println("\tClient " + client.client.CLIENT_ID + " with bonus [" + client.getEntertainmentBonus(auction.AUCTION_TYPE) + "]");
-//			}
-//		}
-//		
-//		// allocate
-//		for (EntertainmentAuction auction : auctionsList) {
-//			for (ClientPosition client : auction.clientsNeeding) {
-//				
-//				int owned = agent.getOwn(auction.AUCTION_ID);
-//				int allocated = agent.getAllocation(auction.AUCTION_ID);
-//				
-//				if (owned > 0 && (owned - allocated) > 0) {
-//					client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-//					agent.setAllocation(auction.AUCTION_ID, allocated + 1);
-////					auction.removeClient(client);
-//				} else {
-//					break;
-//				}
-//			}
-////			if (auction.clientsNeeding.isEmpty()) {
-////				auctionsList.remove(auction);
-////			}
-//		}
-//		
-//		// print allocations
-//		for (EntertainmentAuction auction : auctionsList) {
-//			System.out.println();
-//			System.out.println(auction.AUCTION_TYPE + " auction on day " + auction.AUCTION_DAY + " has bonus [" + auction.highestBonus + "]");
-//			for (ClientPosition client : auction.clientsNeeding) {
-//				System.out.println("\tClient " + client.client.CLIENT_ID + " with bonus [" + client.getEntertainmentBonus(auction.AUCTION_TYPE) + "]");
-//			}
-//		}
-//	}
-	
-	
-	
-	/*
-	
-MUSEUM auction on day THURSDAY has bonus [193]
-	Client 1 with bonus [193]
-	Client 0 with bonus [133]
-	Client 7 with bonus [113]
-	Client 3 with bonus [110]
-
-AMUSEMENT auction on day THURSDAY has bonus [184]
-	Client 0 with bonus [184]
-	Client 7 with bonus [151]
-	Client 3 with bonus [68]
-	Client 1 with bonus [9]
-
-AMUSEMENT auction on day WEDNESDAY has bonus [184]
-	Client 0 with bonus [184]
-	Client 7 with bonus [151]
-	Client 3 with bonus [68]
-	Client 4 with bonus [49]
-	Client 5 with bonus [29]
-
-ALLIGATOR_WRESTLING auction on day TUESDAY has bonus [180]
-	Client 6 with bonus [180]
-	Client 7 with bonus [135]
-	Client 4 with bonus [113]
-	Client 5 with bonus [4]
-
-ALLIGATOR_WRESTLING auction on day MONDAY has bonus [180]
-	Client 6 with bonus [180]
-	Client 7 with bonus [135]
-	Client 2 with bonus [104]
-	Client 5 with bonus [4]
-
-ALLIGATOR_WRESTLING auction on day THURSDAY has bonus [172]
-	Client 1 with bonus [172]
-	Client 3 with bonus [153]
-	Client 7 with bonus [135]
-	Client 0 with bonus [12]
-
-ALLIGATOR_WRESTLING auction on day WEDNESDAY has bonus [153]
-	Client 3 with bonus [153]
-	Client 7 with bonus [135]
-	Client 4 with bonus [113]
-	Client 0 with bonus [12]
-	Client 5 with bonus [4]
-
-AMUSEMENT auction on day TUESDAY has bonus [151]
-	Client 7 with bonus [151]
-	Client 6 with bonus [62]
-	Client 4 with bonus [49]
-	Client 5 with bonus [29]
-
-AMUSEMENT auction on day MONDAY has bonus [151]
-	Client 7 with bonus [151]
-	Client 6 with bonus [62]
-	Client 2 with bonus [47]
-	Client 5 with bonus [29]
-
-MUSEUM auction on day WEDNESDAY has bonus [133]
-	Client 0 with bonus [133]
-	Client 5 with bonus [125]
-	Client 7 with bonus [113]
-	Client 3 with bonus [110]
-	Client 4 with bonus [83]
-
-MUSEUM auction on day TUESDAY has bonus [125]
-	Client 5 with bonus [125]
-	Client 7 with bonus [113]
-	Client 4 with bonus [83]
-	Client 6 with bonus [2]
-
-MUSEUM auction on day MONDAY has bonus [125]
-	Client 5 with bonus [125]
-	Client 7 with bonus [113]
-	Client 2 with bonus [60]
-	Client 6 with bonus [2]
-	
-	
-	
-	
-	
-
-	 */
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	/**
@@ -782,6 +471,8 @@ MUSEUM auction on day MONDAY has bonus [125]
 		 */
 		
 	}
+
+	
 
 	
 

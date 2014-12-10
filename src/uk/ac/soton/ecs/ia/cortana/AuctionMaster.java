@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.ClientPreferenceEnum;
 import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.DummyAgent;

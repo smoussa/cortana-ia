@@ -1,8 +1,5 @@
 package uk.ac.soton.ecs.ia.cortana.entertainment;
 
-import java.util.Comparator;
-import java.util.TreeSet;
-
 import se.sics.tac.aw.Bid;
 import se.sics.tac.aw.Quote;
 import se.sics.tac.aw.TACAgent;
@@ -11,12 +8,10 @@ import uk.ac.soton.ecs.ia.cortana.ClientPosition;
 
 public class EntertainmentAuction extends Auction {
 	
-	public int clientBonus;
 	public ClientPosition client;
 
 	public EntertainmentAuction(TACAgent agent, Quote quote) {
 		super(agent, quote);
-		clientBonus = 0;
 		client = null;
 	}
 	
@@ -34,33 +29,21 @@ public class EntertainmentAuction extends Auction {
 		agent.submitBid(bid);
 	}
 
-	public void ask(int quantity, float price) {
+	public Bid ask(int quantity, float price) {
 		
 		System.out.println("Entertainment " + AUCTION_TYPE + " on day: " + AUCTION_DAY + " has been set an ask price");
 		
 		if (quantity > -1) {
 			System.err.println("Invalid ask quantity. Must be a negative number.");
-			return;
+			return null;
 		}
-//		if (getQuote().getBid().getQuantity() > 0) {
-//			System.err.println("Invalid ask bid. It is illegal to sell to yourself.");
-//			return;
-//		}
 		
 		Bid bid = new Bid(AUCTION_ID);
 		bid.addBidPoint(quantity, price);
 		agent.submitBid(bid);
+		
+		return bid;
 	}
-	
-//	public void addClient(ClientPosition client) {
-//		clientsNeeding.add(client);
-//		highestBonus = clientsNeeding.first().getEntertainmentBonus(AUCTION_TYPE);
-//	}
-//	
-//	public void removeClient(ClientPosition client) {
-//		clientsNeeding.remove(client);
-//		highestBonus = clientsNeeding.first().getEntertainmentBonus(AUCTION_TYPE);
-//	}
 	
 	public Quote getQuote() {
 		return agent.getQuote(AUCTION_ID);
@@ -76,10 +59,6 @@ public class EntertainmentAuction extends Auction {
 	
 	public double getCurrentBidPrice() {
 		return getQuote().getBidPrice();
-	}
-	
-	public double getCurrentAskPrice() {
-		return getQuote().getAskPrice();
 	}
 
 	public int getNumberOwned() {

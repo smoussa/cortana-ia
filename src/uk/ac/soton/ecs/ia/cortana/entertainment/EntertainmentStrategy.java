@@ -84,35 +84,33 @@ public class EntertainmentStrategy {
 					itr.remove();
 				} else if (alloc > 0 && !auc.client.biddingOnTicket(auc.AUCTION_DAY)) { // if we haven't already bid, then bid
 					float askPrice = (float) auc.getAskPrice();
-					auc.bid(1, askPrice - (agent.getGameTime() * 120f) / 720000);
-					auc.client.bidOnTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
+					if (askPrice < auc.client.getEntertainmentBonus(auc.AUCTION_TYPE)) {
+						auc.bid(1, askPrice - 30f);
+						auc.client.bidOnTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
+					}
 				}
 			} else { // client has ticket
-				if (alloc < 0) { // if we have tickets, sell them
-					float bidPrice = (float) auc.getCurrentBidPrice();
-					auc.ask(alloc, 45f + (agent.getGameTime() * 120f) / 720000);
+				if (alloc < 0 && allocated >= 0 && owned > 0) { // if we have tickets, sell them
+					float price = 120f - (agent.getGameTime() * 120f) / 720000;
+					if (price > 70f) {
+						auc.ask(alloc, price);
+					} else {
+						auc.ask(alloc, 70f);
+					}
 				}
 			}
 		}
 		
-//		int allocated = agent.getAllocation(quote.getAuction());
-//		int owned = agent.getOwn(quote.getAuction());
-//		int alloc = allocated - owned;
-//		
-//		System.out.println();
-//		System.out.println();
-//		System.out.println("===");
-//		System.out.println(alloc);
-//		System.out.println("===");
-//		System.out.println();
-//		System.out.println();
-//		
-//		if (alloc < 0) {
-////			float price = 140f - (agent.getGameTime() * 100f) / 720000;
-////			master.getEntertainmentAuction(quote.getAuction()).ask(alloc, price);
-//			agent.setAllocation(quote.getAuction(), owned);
-//		}
+		EntertainmentAuction auc = master.getEntertainmentAuction(quote.getAuction());
+		int allocated = agent.getAllocation(auc.AUCTION_ID);
+		int owned = agent.getOwn(auc.AUCTION_ID);
 		
+		if (owned < 0 && (float) auc.getAskPrice() < 200) {
+			auc.bid(owned, (float) auc.getAskPrice());
+		}
+		if (allocated < 0 && (float) auc.getAskPrice() < 200) {
+			auc.bid(allocated, (float) auc.getAskPrice());
+		}
 		
 	}
 	

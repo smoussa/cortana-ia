@@ -5,6 +5,8 @@ import se.sics.tac.aw.Bid;
 // Bids on a hotel for our true value and pads out the remaining possible tickets with bids of 1
 public class HotelPositionBidNowPadded extends Position {
 
+	private static final int MAX_PAD_PRICE = 5;
+	
 	private double price;
 
 	public HotelPositionBidNowPadded(Auction auction, double price) {
@@ -21,8 +23,12 @@ public class HotelPositionBidNowPadded extends Position {
 			auctionH.setup();
 			
 			if(isFullySatisfied() && !auction.isClosed()){
-				auctionH.bidPoint(16, 1);
-				auctionH.bidNow();
+//				Only pad if the price is low
+				float askPrice = (float) auctionH.getAskPrice();
+				if(askPrice <= MAX_PAD_PRICE) {
+					auctionH.bidPoint(8, askPrice + 1);
+					auctionH.bidNow();
+				}
 			}
 			else if(!isFullySatisfied() && !auction.isClosed()){
 				int qtyToBid = getQuantityToBid();
@@ -33,7 +39,12 @@ public class HotelPositionBidNowPadded extends Position {
 				if(qtyToBid>0){
 					auctionH.bidPoint(qtyToBid, actualBidPrice);
 				}
-				auctionH.bidPoint(16-qtyToBid, 1);
+				
+				// Only pad if the price is low
+				double askPrice = auctionH.getAskPrice();
+				if(askPrice <= MAX_PAD_PRICE) {
+					auctionH.bidPoint(8-qtyToBid, (float)askPrice + 1);
+				}
 				auctionH.bidNow();
 			}
 			

@@ -90,7 +90,7 @@ public class EntertainmentStrategy {
 			} else { // client has ticket
 				if (alloc < 0) { // if we have tickets, sell them
 					float bidPrice = (float) auc.getCurrentBidPrice();
-					auc.ask(alloc, bidPrice + (agent.getGameTime() * 120f) / 720000);
+					auc.ask(alloc, 45f + (agent.getGameTime() * 120f) / 720000);
 				}
 			}
 		}

@@ -20,18 +20,19 @@ import uk.ac.soton.ecs.ia.cortana.estimators.flightAuction.estimators.FlightPric
 
 public class FlightAuction extends Auction {
 
-	//used for plotting graph
+	// Used for plotting graph
 	float biddedPrice;
 	float biddedTime;
 	private HashMap<Integer, Double> futureAveragePricesFromEstimator;
 	
-	//used for prediction
+	// Used for prediction
 	private FlightAuctionChangeStore facs = new FlightAuctionChangeStore();
 	private List<Float> prices = new ArrayList<Float>();
 	private Estimator e;
 	private float minPriceEstimate;
-	//just in case
-	private int expectedT = 0;
+	
+	// Checks that the time calculation is correct
+//	private int expectedT = 0;
 	
 	public FlightAuction(TACAgent agent, Quote quote) {
 		super(agent, quote);
@@ -55,7 +56,7 @@ public class FlightAuction extends Auction {
 			System.out.println("Got " + tSecondsNearest10);
 			System.exit(1);
 		}*/
-		expectedT = expectedT + 10;
+//		expectedT = expectedT + 10;
 		
 		prices.add((float) this.getAskPrice());
 

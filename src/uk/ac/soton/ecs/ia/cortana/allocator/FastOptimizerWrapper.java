@@ -6,11 +6,15 @@ import se.sics.tac.aw.DayEnum;
 import se.sics.tac.aw.TacTypeEnum;
 import uk.ac.soton.ecs.ia.cortana.ClientPreference;
 
+// Provides a nice interface for the Fast Optimizer
 public class FastOptimizerWrapper {
 	
 	FastOptimizer fo;
 	
+	// Client preferences
 	int prefs[][] = new int[8][6];
+	
+	// What we own
 	int owns[][] = new int[5][7];
 	
 	public FastOptimizerWrapper(){
@@ -62,6 +66,7 @@ public class FastOptimizerWrapper {
 		owns[day.getDayNumber()-1][firstIndex] = owned;
 	}
 	
+	// Runs the solver given our preferences and what we own
 	public int[][] go(){
 		fo.setClientData(prefs, owns);
 		fo.solve();

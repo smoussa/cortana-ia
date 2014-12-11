@@ -2,6 +2,7 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import se.sics.tac.aw.Bid;
 
+// Bids on a hotel for our true value and pads out the remaining possible tickets with bids of 1
 public class HotelPositionBidNowPadded extends Position {
 
 	private double price;
@@ -11,6 +12,7 @@ public class HotelPositionBidNowPadded extends Position {
 		this.price = price;
 		this.shouldBid = true;
 	}
+	
 	@Override
 	public void bidMe() {
 		if (shouldBid && isTheoretical) {

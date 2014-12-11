@@ -39,12 +39,10 @@ public class ClientPosition implements Comparator<Integer> {
 	
 	public double getTotalUtility(){
 
-
 		if(!isFeasible())
 			return -99999;
 		
-		// Under predicts because fun bonus is not considered!
-		
+		// This function under-predicts because fun bonus is not considered!
 		double ut = CortanaHeuristics.CLIENT_UTILITY;
 		
 		if (hotels.get(0).AUCTION_TYPE == TacTypeEnum.GOOD_HOTEL)
@@ -149,9 +147,9 @@ public class ClientPosition implements Comparator<Integer> {
 		return outFlight.AUCTION_DAY.getDayNumber() - inFlight.AUCTION_DAY.getDayNumber();
 	}
 	
-	public boolean isStaying(DayEnum day) { // should be based on actual days staying rather than pref?
-		return client.inFlight.getDayNumber() <= day.getDayNumber()
-				&& day.getDayNumber() < client.outFlight.getDayNumber();
+	public boolean isStaying(DayEnum day) { 
+		// should be based on actual days staying rather than pref?
+		return client.inFlight.getDayNumber() <= day.getDayNumber() && day.getDayNumber() < client.outFlight.getDayNumber();
 	}
 	
 	public List<DayEnum> daysStaying() {

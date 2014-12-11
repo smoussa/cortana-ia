@@ -2,6 +2,7 @@ package uk.ac.soton.ecs.ia.cortana;
 
 import java.util.List;
 
+// Not used in our bot
 public class ClientPositionFixedHotelPrice extends ClientPosition {
 
 	public double pricePerNight;

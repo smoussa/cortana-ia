@@ -50,6 +50,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+
+/*
+ * This code is not written by us but is taken from the Tac server code
+ */
 public class FastOptimizer implements Solver {
 
 	private final static String EOL = System.getProperty("line.separator",

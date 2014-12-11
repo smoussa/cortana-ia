@@ -8,6 +8,7 @@ import uk.ac.soton.ecs.ia.cortana.entertainment.EntertainmentAuction;
 
 public class ClientPositionVariableHotelPrice extends ClientPosition {
 
+	// Prices per hotel auction
 	public Map<HotelAuction, Double> clientHotelPrices;
 	
 	public ClientPositionVariableHotelPrice(ClientPreference client,

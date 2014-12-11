@@ -9,6 +9,8 @@ import uk.ac.soton.ecs.ia.cortana.ClientPosition;
 public class EntertainmentAuction extends Auction {
 	
 	public ClientPosition client;
+	public boolean biddingFor = false;
+	public boolean sellingInstead = false;
 
 	public EntertainmentAuction(TACAgent agent, Quote quote) {
 		super(agent, quote);

@@ -84,14 +84,13 @@ public class EntertainmentStrategy {
 					itr.remove();
 				} else if (alloc > 0 && !auc.client.biddingOnTicket(auc.AUCTION_DAY)) { // if we haven't already bid, then bid
 					float askPrice = (float) auc.getAskPrice();
-					auc.bid(1, askPrice - 30.f);
+					auc.bid(1, askPrice - (agent.getGameTime() * 120f) / 720000);
 					auc.client.bidOnTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
 				}
 			} else { // client has ticket
 				if (alloc < 0) { // if we have tickets, sell them
 					float bidPrice = (float) auc.getCurrentBidPrice();
-					auc.ask(alloc, bidPrice + 30f);
-					agent.setAllocation(auc.AUCTION_ID, owned);
+					auc.ask(alloc, bidPrice + (agent.getGameTime() * 120f) / 720000);
 				}
 			}
 		}

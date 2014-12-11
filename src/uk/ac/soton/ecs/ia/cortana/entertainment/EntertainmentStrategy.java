@@ -65,198 +65,54 @@ public class EntertainmentStrategy {
 		bidRemaining();
 	}
 	
-	public void quoteUpdated(Quote quote) {
+	public synchronized void quoteUpdated(Quote quote) {
 		
-		EntertainmentAuction auction = master.getEntertainmentAuction(quote.getAuction());
+//		printAuctionList();
 		
 		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
 			EntertainmentAuction auc = itr.next(); // find client who wants
-
-			// for all clients in this auction
-			if (auction.AUCTION_DAY == auc.AUCTION_DAY && auction.AUCTION_TYPE == auc.AUCTION_TYPE) {
 				
-				// calculate how many we have
-				int allocated = agent.getAllocation(auction.AUCTION_ID);
-				int owned = agent.getOwn(auction.AUCTION_ID);
-				int alloc = allocated - owned;
+			// calculate how many we have
+			int allocated = agent.getAllocation(auc.AUCTION_ID);
+			int owned = agent.getOwn(auc.AUCTION_ID);
+			int alloc = allocated - owned;
+			
+			if (alloc == 0)
+				return;
+			
+			// if client doesn't have ticket
+			if (!(auc.client.hasEntertainmentTicket(auc.AUCTION_DAY) || auc.client.hasEntertainmentTicket(auc.AUCTION_TYPE))) {
 				
-				if (alloc == 0)
-					return;
-				
-				// if client doesn't have ticket
-				if (!(auc.client.hasEntertainmentTicket(auc.AUCTION_DAY) || auc.client.hasEntertainmentTicket(auc.AUCTION_TYPE))) {
-					if (alloc < 0) { // if we have ticket
-						auc.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
-						itr.remove();
-					} else { // client doesn't have, so buy
-						if (!auc.biddingFor) { // if we haven't already bid
-							float askPrice = (float) auction.getAskPrice();
-							auction.bid(1, askPrice - (agent.getGameTime() * 120f) / 720000);
-							auc.biddingFor = true;
-						}
-					}
-				} else { // client has ticket, so remove
+				if (alloc < 0) { // if we have ticket
+					auc.client.giveEntertainmentTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
+					agent.setAllocation(auc.AUCTION_ID, agent.getAllocation(auc.AUCTION_ID) + 1);
 					itr.remove();
+				} else if (!auc.client.biddingOnTicket(auc.AUCTION_DAY)) { // if we haven't already bid, then bid
+					float askPrice = (float) auc.getAskPrice();
+					auc.bid(1, askPrice - 30.f);
+					auc.client.bidOnTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
 				}
 			}
 		}
 		
-		printAuctionList();
+		int allocated = agent.getAllocation(quote.getAuction());
+		int owned = agent.getOwn(quote.getAuction());
+		int alloc = allocated - owned;
 		
+		System.out.println();
+		System.out.println();
+		System.out.println("===");
+		System.out.println(alloc);
+		System.out.println("===");
+		System.out.println();
+		System.out.println();
 		
+		if (alloc < 0) {
+//			float price = 140f - (agent.getGameTime() * 100f) / 720000;
+//			master.getEntertainmentAuction(quote.getAuction()).ask(alloc, price);
+			agent.setAllocation(quote.getAuction(), owned);
+		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-//		EntertainmentAuction updatedAuc = master.getEntertainmentAuction(quote.getAuction());
-//		
-//		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
-//			EntertainmentAuction auction = itr.next(); // find client who wants
-//			
-//			int allocated = agent.getAllocation(auction.AUCTION_ID);
-//			int owned = agent.getOwn(auction.AUCTION_ID);
-//			int alloc = allocated - owned;
-//			
-//			// if bidding for and we have tickets, allocate and remove
-//			if (auction.biddingFor && alloc < 0) {
-//				auction.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-//				agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
-//				itr.remove();
-//			} else if (alloc < 0) { // if we have tickets and client doesn't wait
-//				
-//			}
-//			
-//			
-//			
-//			if (!(auc.client.hasEntertainmentTicket(auc.AUCTION_DAY) || auc.client.hasEntertainmentTicket(auc.AUCTION_TYPE))
-//		}
-//		
-//		
-//		
-//		
-//		
-//		
-//		
-//		
-//		
-//		EntertainmentAuction auction = master.getEntertainmentAuction(quote.getAuction());
-//		
-//		for (Iterator<EntertainmentAuction> itr = auctionsList.iterator(); itr.hasNext();) {
-//			EntertainmentAuction auc = itr.next(); // find client who wants
-//			
-//			if (auction.AUCTION_DAY == auc.AUCTION_DAY && auction.AUCTION_TYPE == auc.AUCTION_TYPE) { // if found
-//				
-//				float bonus = auc.client.getEntertainmentBonus(auc.AUCTION_TYPE);
-//				int allocated = agent.getAllocation(auction.AUCTION_ID);
-//				int owned = agent.getOwn(auction.AUCTION_ID);
-//				
-//				int alloc = allocated - owned;
-//				if (alloc == 0)
-//					return;
-//				
-//				// 
-//				if (auc.biddingFor && alloc < 0) {
-//					auc.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-//					agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
-//					itr.remove();
-//				}
-//				
-//				
-//				
-//				
-//				
-//				
-//				
-//				
-//				
-//				// if client doesnt have ticket
-//				if (!(auc.client.hasEntertainmentTicket(auc.AUCTION_DAY) || auc.client.hasEntertainmentTicket(auc.AUCTION_TYPE))
-//						&& !auc.sellingInstead && !auc.biddingFor) {
-//					
-//					float bidPrice = (float) auction.getCurrentBidPrice();
-//					
-//					if (bidPrice > bonus && bidPrice > 0) { // sell instead
-//						auction.ask(1, (float) bidPrice + 1.f);
-//						auc.sellingInstead = true;
-//					} else if (alloc < 0) {
-//						auc.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-//						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
-//						itr.remove();
-//					} else {
-//						float askPrice = (float) auction.getAskPrice();
-//						if (askPrice > 0 && askPrice < bonus) {
-//							auction.bid(1, askPrice - (agent.getGameTime() * 120f) / 720000);
-//							auc.biddingFor = true;
-//						}
-//					}
-//					
-//				}
-//				
-//				
-//				
-//				
-//				
-//				
-//				
-//			}
-//		}
-//				
-////				if (alloc < 0) { // if we have tickets
-//////					if (auction.getCurrentBidPrice() > bonus && auction.getCurrentBidPrice() > 0) { // if worth selling
-//////						
-//////						auction.ask(1, (float) auction.getCurrentBidPrice() + 1.f);
-//////						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) - 1);
-//////						
-//////					} else
-////						
-////					if (!(auc.client.hasEntertainmentTicket(auc.AUCTION_DAY) ||
-////							auc.client.hasEntertainmentTicket(auc.AUCTION_TYPE))) { // allocate to client
-////						
-////						auc.client.giveEntertainmentTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
-////						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
-////						itr.remove();
-////					}
-////				} else if (!(auc.client.hasEntertainmentTicket(auc.AUCTION_DAY) ||
-////						auc.client.hasEntertainmentTicket(auc.AUCTION_TYPE))) { // buy for client
-////					
-////					float askPrice = (float) auction.getAskPrice();
-////					if (askPrice > 0 && askPrice < bonus) {
-////						auction.bid(1, askPrice);
-//////						auc.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-//////						agent.setAllocation(auction.AUCTION_ID, agent.getAllocation(auction.AUCTION_ID) + 1);
-//////						itr.remove();
-////					}
-////				}
-////			} else { // no client found/wanting
-////				int allocated = agent.getAllocation(auction.AUCTION_ID);
-////				int owned = agent.getOwn(auction.AUCTION_ID);
-////				int alloc = allocated - owned;
-////				if (alloc < 0) { // sell
-////					auction.ask(alloc, 130f - (agent.getGameTime() * 120f) / 720000);
-////				}
-////			}
-////		}
-//		
-//		System.out.println("\t\t\tGAME TIME: " + agent.getGameTime());
-//		
-////		int allocated = agent.getAllocation(auction.AUCTION_ID);
-////		int owned = agent.getOwn(auction.AUCTION_ID);
-////		int alloc = allocated - owned;
-////		
-////		if (alloc < 0) {
-////			float price = 140.f - (agent.getGameTime() * 100f) / 720000;
-////			auction.bid(alloc, price);
-////		} else if (allocated > owned || allocated < 0) {
-////			agent.setAllocation(auction.AUCTION_ID, owned);
-////		}
-//		
-////		printAuctionList();
 		
 	}
 	
@@ -341,10 +197,10 @@ public class EntertainmentStrategy {
 			
 			if (bonus < 100)
 				break;
-			if (askPrice > 0 && askPrice < bonus - 35) { // initial buy
-				auction.bid(1, askPrice);
-				auction.client.giveEntertainmentTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
-			}
+//			if (askPrice > 0 && askPrice < bonus - 30) { // initial buy
+//				auction.bid(1, askPrice);
+//				auction.client.bidOnTicket(auction.AUCTION_DAY, auction.AUCTION_TYPE);
+//			}
 		}
 	}
 	

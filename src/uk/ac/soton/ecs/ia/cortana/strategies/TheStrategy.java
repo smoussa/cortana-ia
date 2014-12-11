@@ -63,9 +63,12 @@ public class TheStrategy extends Strategy {
 
 			double nightPrice;
 			
-			// TODO use estimator on flights to get a better idea
+			int hotelBonus = 0;
 			
-			nightPrice = (CortanaHeuristics.CLIENT_UTILITY - inflight.getAskPrice() - outflight.getAskPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT) / hotelList.size();
+			if(hotelType == TacTypeEnum.GOOD_HOTEL)
+				hotelBonus = c.hotelBonus;
+			
+			nightPrice = (hotelBonus + (CortanaHeuristics.CLIENT_UTILITY - inflight.getAskPrice() - outflight.getAskPrice() - CortanaHeuristics.ATTEMPTED_PROFIT_PER_CLIENT)) / hotelList.size();
 			
 			Map<HotelAuction, Double> hotelMap = new HashMap<HotelAuction, Double>();
 			

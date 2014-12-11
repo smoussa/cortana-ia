@@ -19,6 +19,7 @@ public class ClientPosition implements Comparator<Integer> {
 	
 	private Map<DayEnum, TacTypeEnum> eTickets;
 	private Map<DayEnum, TacTypeEnum> bidedTickets;
+	private Map<DayEnum, TacTypeEnum> sellingTickets;
 	private int numETickets;
 
 	public ClientPosition(
@@ -37,6 +38,7 @@ public class ClientPosition implements Comparator<Integer> {
 		numETickets = 0;
 		eTickets = new HashMap<>();
 		bidedTickets = new HashMap<>();
+		sellingTickets = new HashMap<>();
 	}
 	
 	public double getTotalUtility(){
@@ -147,6 +149,18 @@ public class ClientPosition implements Comparator<Integer> {
 	
 	public void bidOnTicket(DayEnum day, TacTypeEnum ticket) {
 		bidedTickets.put(day, ticket);
+	}
+	
+	public boolean sellingTicket(DayEnum day) {
+		return sellingTickets.get(day) != null;
+	}
+	
+	public boolean sellingTicket(TacTypeEnum ticket) {
+		return sellingTickets.containsValue(ticket);
+	}
+	
+	public void sellTicket(DayEnum day, TacTypeEnum ticket) {
+		sellingTickets.put(day, ticket);
 	}
 	
 	public boolean hasEntertainmentTicket(DayEnum day) {

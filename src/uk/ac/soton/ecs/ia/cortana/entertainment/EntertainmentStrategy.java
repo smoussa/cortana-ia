@@ -359,7 +359,7 @@ public class EntertainmentStrategy {
 		 */
 	}
 	
-	private double speculatedFuturePrice() {
+	private void speculatedFuturePrice() {
 		
 		/*
 		 * The future price (or direction of change) of a ticket depends on the following parameters:
@@ -373,7 +373,7 @@ public class EntertainmentStrategy {
 		
 	}
 	
-	private int getSuggestedBuyQuantity() {
+	private void getSuggestedBuyQuantity() {
 		
 		/*
 		 * How much of a particular ticket do we buy given the following parameters?
@@ -387,7 +387,7 @@ public class EntertainmentStrategy {
 		
 	}
 	
-	private int daysFreeToTrade() {
+	private void daysFreeToTrade() {
 		
 		/*
 		 * Get the days clients won't need entertainment tickets
@@ -396,7 +396,7 @@ public class EntertainmentStrategy {
 		
 	}
 	
-	private boolean safeToTrade() {
+	private void safeToTrade() {
 		
 		/*
 		 * Check whether we have satisfied as many clients as possible

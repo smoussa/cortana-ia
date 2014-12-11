@@ -170,6 +170,11 @@ public class ClientPosition implements Comparator<Integer> {
 	public boolean hasEntertainmentTicket(TacTypeEnum ticket) {
 		return eTickets.containsValue(ticket);
 	}
+
+//	public void resetMarkers(DayEnum day, TacTypeEnum ticket) {
+//		
+//		if (bidedTickets.containsKey(day) && bidedTickets.containsValue(ticket))
+//	}
 	
 	public int numDaysStaying() {
 		return outFlight.AUCTION_DAY.getDayNumber() - inFlight.AUCTION_DAY.getDayNumber();

@@ -80,6 +80,7 @@ public class EntertainmentStrategy {
 				
 				if (alloc < 0) { // if we have ticket
 					auc.client.giveEntertainmentTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
+//					auc.client.resetMarkers();
 					agent.setAllocation(auc.AUCTION_ID, agent.getAllocation(auc.AUCTION_ID) + 1);
 					itr.remove();
 				} else if (alloc > 0 && !auc.client.biddingOnTicket(auc.AUCTION_DAY)) { // if we haven't already bid, then bid
@@ -90,7 +91,9 @@ public class EntertainmentStrategy {
 					}
 				}
 			} else if (alloc < 0 && !(auc.client.sellingTicket(auc.AUCTION_DAY)
-						|| auc.client.sellingTicket(auc.AUCTION_TYPE))) { // if we have tickets, sell them
+						|| auc.client.sellingTicket(auc.AUCTION_TYPE)) &&
+						!(auc.client.biddingOnTicket(auc.AUCTION_DAY)
+								|| auc.client.biddingOnTicket(auc.AUCTION_TYPE))) { // if we have tickets, sell them
 				float price = 120f - (agent.getGameTime() * 120f) / 720000;
 				if (price > 70f) {
 					auc.ask(alloc, price);
@@ -101,9 +104,6 @@ public class EntertainmentStrategy {
 				}
 			}
 			
-//			if (allocated > owned) {
-//				agent.setAllocation(auc.AUCTION_ID, owned);
-//			}
 		}
 		
 //		EntertainmentAuction auc = master.getEntertainmentAuction(quote.getAuction());

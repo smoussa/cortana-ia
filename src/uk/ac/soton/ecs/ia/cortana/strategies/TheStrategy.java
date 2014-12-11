@@ -88,7 +88,15 @@ public class TheStrategy extends Strategy {
 	
 	protected TacTypeEnum calculateBestHotel(int hotelBonus, FlightAuction inflight, FlightAuction outflight) {
 		
-		if(hotelBonus / (float)(outflight.AUCTION_DAY.getDayNumber() - inflight.AUCTION_DAY.getDayNumber()) < 20)
+		//determined via review of 5000 games from the ecs tac server and tac1 server
+		float[] priceDiff = {0,16,34,39,28};
+		
+		float sum = 0f;
+		for (int d = inflight.AUCTION_DAY.getDayNumber(); d<outflight.AUCTION_DAY.getDayNumber(); d++){
+			sum = sum + priceDiff[d];
+		}
+		
+		if(hotelBonus < sum)
 			return TacTypeEnum.CHEAP_HOTEL;
 
 		return TacTypeEnum.GOOD_HOTEL;

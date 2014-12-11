@@ -88,8 +88,7 @@ public class TheStrategy extends Strategy {
 	
 	protected TacTypeEnum calculateBestHotel(int hotelBonus, FlightAuction inflight, FlightAuction outflight) {
 		
-		//TODO do probability stuff
-		if(hotelBonus < 70)
+		if(hotelBonus / (float)(outflight.AUCTION_DAY.getDayNumber() - inflight.AUCTION_DAY.getDayNumber()) < 20)
 			return TacTypeEnum.CHEAP_HOTEL;
 
 		return TacTypeEnum.GOOD_HOTEL;

@@ -4,11 +4,9 @@ package uk.ac.soton.ecs.ia.cortana;
 public class FlightPositionBidMin extends FlightPosition {
 
 	private float min;
-	private AuctionMaster auctionMaster;
 		
-	public FlightPositionBidMin(FlightAuction auction, AuctionMaster auctionMaster) {
+	public FlightPositionBidMin(FlightAuction auction) {
 		super(auction);
-		this.auctionMaster = auctionMaster;
 		min = 0;
 	}
 

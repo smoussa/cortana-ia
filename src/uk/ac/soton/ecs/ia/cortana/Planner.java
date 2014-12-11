@@ -5,6 +5,7 @@ import java.util.PriorityQueue;
 
 import uk.ac.soton.ecs.ia.cortana.strategies.TheStrategy;
 
+// No longer used. Used to make a group of strategies and picked the best one.
 public class Planner {
 
 	public static Strategy makeStrategy(AuctionMaster auctionMaster, Strategy oldStrategy) {

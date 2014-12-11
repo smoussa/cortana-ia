@@ -1,22 +1,26 @@
 package uk.ac.soton.ecs.ia.cortana;
 
-
+// Sits on an auction and dictates what we want to do for that auction
 public abstract class Position {
 
 	protected final Auction auction;
-	protected boolean isTheoretical = true; // indicates position has been put into play. i.e has been bidded
 	
-//	public List<ClientPosition> peopleWhoWantMe;
+//  indicates position has been put into play. i.e has been bid
+	protected boolean isTheoretical = true;
+	
 	public int peopleWhoWantMe;
 	
-	private boolean finalised; // indicates peopleWhoWantMe, the bid price and quantity wont be changed
+//	indicates peopleWhoWantMe, the bid price and quantity wont be changed	
+	private boolean finalised;
+	
 	private float actualBid;
 	private int quantityBid;
+	
+//	We might not want to actually bid on an auction, or might be waiting to bid
 	protected boolean shouldBid;
 	
 	public Position(Auction auction) {
 		this.auction = auction;
-//		this.peopleWhoWantMe = new ArrayList<ClientPosition>();
 		this.peopleWhoWantMe = 0;
 		this.finalised = false;
 		this.shouldBid = false;
@@ -68,7 +72,6 @@ public abstract class Position {
 		
 		boolean isValid = true;
 		
-		//TODO Check this. Dont't think it the use of finalised is correct
 		if(!auction.isClosed() && finalised && getActualBidPrice() >= auction.getAskPrice()) {
 //			System.out.println("Auction open and we are bidding enough :)");
 		}
@@ -77,7 +80,7 @@ public abstract class Position {
 			isValid = false;
 		}
 		
-		// Probably owened has potential for being wrong but seems to work :S
+		// Probably owned has potential for being wrong but seems to work :S
 		if(!auction.isClosed() && !isTheoretical && peopleWhoWantMe <= auction.getNumberProbablyOwned() + auction.getNumberOwned()) {
 //			System.out.println("Auction open and we placed a bid and we probably/do own enough :)");
 		}
@@ -106,6 +109,7 @@ public abstract class Position {
 	
 	public abstract float getCost();
 	
+	// Locks in what we will bid on the auction
 	public void finalise() {
 		this.actualBid = getActualBidPrice();
 		this.quantityBid = getQuantityToBid();

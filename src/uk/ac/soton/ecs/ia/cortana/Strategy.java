@@ -9,6 +9,7 @@ import java.util.Map;
 
 public abstract class Strategy {
 
+	// Constants for the 'Validity Health Bar'
 	private static final int VALIDITY_WAIT_TIME = 1;
 	private static final int MAX_VALIDITY = 5;
 
@@ -19,7 +20,8 @@ public abstract class Strategy {
 	
 	protected Strategy oldStrategy;
 	
-	Date lastTimeFailed;
+	// Validity variables
+	private Date lastTimeFailed;
 	private int validity;
 	
 	// Updated Strategy
@@ -57,6 +59,11 @@ public abstract class Strategy {
 		}
 	}
 
+	/*
+	 * We check that a strategy is valid by making sure our positions own what they should and are bidding correctly.
+	 * Since there are lags in the server e.g a hotel auction closes where we have won tickets but our owned isn't updated
+	 * we have a health bar which has to decrease to 0 before we accept that we are actually invalid.
+	 */
 	public boolean isStrategyValid() {
 		boolean isStrategyValid = true;
 		
@@ -74,6 +81,7 @@ public abstract class Strategy {
 			decreaseValidity();
 		}
 		
+		// If a strategy is valid then max health bar full
 		if(isStrategyValid)
 			validity = MAX_VALIDITY;
 		

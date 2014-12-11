@@ -20,7 +20,10 @@ import uk.ac.soton.ecs.ia.cortana.strategies.StrategyUtils.StrategyInfo;
 
 public class TheOtherStrategy extends TheStrategy {
 
+	// The game score we would get with the property we currently own + probably own
 	private int currentScore;
+	
+	// The game score we would get if we had unlimited flights for every night
 	private StrategyInfo scoreGivenUnlimitedFlights;
 	
 	public TheOtherStrategy(Strategy oldStrategy) {
@@ -32,11 +35,12 @@ public class TheOtherStrategy extends TheStrategy {
 		
 		currentScore = this.auctionMaster.getCurrentScore();
 		
-		// Run allocator to find positions
+		// Run allocator to find positions if we had every flight
 		scoreGivenUnlimitedFlights = StrategyUtils.getScoreGivenUnlimitedFlights(auctionMaster, true);
 		
 		int index = 0;
 		
+		// Look at client positions if we had unlimited flights
 		for(int[] preference:scoreGivenUnlimitedFlights.getPrefs()) {
 			
 			FlightAuction inflight = auctionMaster.getFlightAuction(TacTypeEnum.INFLIGHT, DayEnum.getDay(preference[0]));
@@ -88,7 +92,7 @@ public class TheOtherStrategy extends TheStrategy {
 
 		System.out.println("Other Strategy buy flights? " + buyFlights);
 		
-		// Make flight positions
+		// Make flight positions if it would be profitable to buy more flights
 		if(buyFlights) {
 			for(ClientPosition cp: this.clientPositions){
 				
@@ -99,20 +103,20 @@ public class TheOtherStrategy extends TheStrategy {
 				FlightAuction outflightAuction = cp.outFlight;
 		
 				if (!auctionPositions.containsKey(inflightAuction)){
-					Position flightPosition = new FlightPositionBidMin(inflightAuction, this.auctionMaster);
+					Position flightPosition = new FlightPositionBidMin(inflightAuction);
 					auctionPositions.put(inflightAuction, flightPosition);
 				}
 				auctionPositions.get(inflightAuction).peopleWhoWantMe++;
 				
 				if (!auctionPositions.containsKey(outflightAuction)){
-					Position flightPosition = new FlightPositionBidMin(outflightAuction, this.auctionMaster);
+					Position flightPosition = new FlightPositionBidMin(outflightAuction);
 					auctionPositions.put(outflightAuction, flightPosition);
 				}
 				auctionPositions.get(outflightAuction).peopleWhoWantMe++;
 			}
 		}
 		
-		// Carry over old hotel positions
+		// Carry over old hotel positions, we do not update the hotel prices
 		for(Entry<Auction, Position> entry:this.oldStrategy.auctionPositions.entrySet()) {
 			if(entry.getKey().AUCTION_CAT == TacCategoryEnum.CAT_HOTEL && entry.getValue().isValid()) {
 				auctionPositions.put(entry.getKey(), entry.getValue());

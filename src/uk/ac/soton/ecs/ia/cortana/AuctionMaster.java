@@ -28,6 +28,7 @@ public class AuctionMaster {
 	private Map<Integer, FlightAuction> flightAuctions;
 	private Map<Integer, HotelAuction> hotelAuctions;
 	private Map<Integer, EntertainmentAuction> entertainmentAuctions;
+	
 	public Map<Integer, ClientPreference> clientPreferences;
 	
 	public final DummyAgent cortana;
@@ -39,18 +40,24 @@ public class AuctionMaster {
 	private Strategy strategy;
 	private EntertainmentStrategy entertainmentStrategy;
 
-	private Timer gameTimer;
+	private Timer lastMinStrategyTimer;
 	
 	public AuctionMaster(DummyAgent cortana) {
-		this.cortana = cortana;
+
 		flightAuctions = new HashMap<Integer, FlightAuction>();
 		hotelAuctions = new HashMap<Integer, HotelAuction>();
 		entertainmentAuctions = new HashMap<Integer, EntertainmentAuction>();
+		
 		clientPreferences = new HashMap<Integer, ClientPreference>();
 		
+		this.cortana = cortana;
+		
+		// Put the client bonus information into client preference classes
 		createClientPreferences();
-		gameTimer = new Timer();
-		gameTimer.schedule(new TimerTask() {
+		
+		// Start timer to run last min strategy 8 min + 10 seconds into the game
+		lastMinStrategyTimer = new Timer();
+		lastMinStrategyTimer.schedule(new TimerTask() {
 			
 			@Override
 			public void run() {
@@ -127,8 +134,6 @@ public class AuctionMaster {
 		this.strategy = new TheStrategy(this);
 		this.entertainmentStrategy = new EntertainmentStrategy(this);
 		
-		System.out.println("We chose: " + this.strategy.toString());
-		
 		sendBids();
 	}
 	
@@ -159,7 +164,7 @@ public class AuctionMaster {
 	}
 	
 	public synchronized void lastMinuteStrategy() {
-		gameTimer.cancel();
+		lastMinStrategyTimer.cancel();
 		
 		System.out.println("LAST MIN FLIGHT PURCHASES");
 		
@@ -231,8 +236,7 @@ public class AuctionMaster {
 			auction = this.getAuction(quote);
 		}
 		
-		if(auction.AUCTION_CAT == TacCategoryEnum.CAT_FLIGHT)
-		{
+		if(auction.AUCTION_CAT == TacCategoryEnum.CAT_FLIGHT) {
 			((FlightAuction) auction).tick(cortana.agent.get10SecondChunkElapsed());	
 			
 			if (this.strategy != null){
@@ -241,7 +245,8 @@ public class AuctionMaster {
 					((FlightPosition) this.strategy.getPosition(auction)).tick(this.cortana.agent.get10SecondChunkElapsed());
 				}
 			}
-		} else if (auction.AUCTION_CAT == TacCategoryEnum.CAT_ENTERTAINMENT) {
+		} 
+		else if (auction.AUCTION_CAT == TacCategoryEnum.CAT_ENTERTAINMENT) {
 			if (entertainmentStrategy != null) {
 				entertainmentStrategy.quoteUpdated(quote);
 			}
@@ -250,6 +255,7 @@ public class AuctionMaster {
 	}
 
 	public synchronized void check() {
+		// If we don't have a strategy and all the auction objects have been made, then we can start planning
 		if(strategy == null && this.entertainmentAuctions.size()+this.flightAuctions.size()+this.hotelAuctions.size() == 28) {
 			createStrategy();
 		}
@@ -263,6 +269,7 @@ public class AuctionMaster {
 	}
 
 	public void gameEnd() {
+//		Code to print out flight purchase information, shows if we bought at the true minimum price
 //		for(FlightAuction f: flightAuctions.values()){
 //			f.plot();
 //		}

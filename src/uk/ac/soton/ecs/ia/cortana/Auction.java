@@ -34,6 +34,7 @@ public abstract class Auction {
 	
 	public void bid(int quantity, float price) {
 		
+		// Bid validity checks
 		if (price < this.agent.getQuote(AUCTION_ID).getBidPrice()){
 			System.err.println("Invalid bid price. Must be higher than our current bid.");
 			return;
@@ -72,6 +73,7 @@ public abstract class Auction {
 		return this.agent.getBid(this.AUCTION_ID);
 	}
 	
+	// Get the minimum price we can bid at for this auction
 	public double getMinimumBid() {
 		
 		if(this.getBid() == null)

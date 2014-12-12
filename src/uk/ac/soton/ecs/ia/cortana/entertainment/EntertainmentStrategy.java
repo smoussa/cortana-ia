@@ -94,12 +94,12 @@ public class EntertainmentStrategy {
 						|| auc.client.sellingTicket(auc.AUCTION_TYPE)) &&
 						!(auc.client.biddingOnTicket(auc.AUCTION_DAY)
 								|| auc.client.biddingOnTicket(auc.AUCTION_TYPE))) { // if we have tickets, sell them
-				float price = 120f - (agent.getGameTime() * 120f) / 720000;
-				if (price > 70f) {
+				float price = 250f - (agent.getGameTime() * 120f) / 720000;
+				if (price > 130f) {
 					auc.ask(alloc, price);
 					auc.client.sellTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
 				} else {
-					auc.ask(alloc, 70f);
+					auc.ask(alloc, 130f);
 					auc.client.sellTicket(auc.AUCTION_DAY, auc.AUCTION_TYPE);
 				}
 			}
